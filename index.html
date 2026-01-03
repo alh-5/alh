@@ -869,7 +869,12 @@
                 magneticForce = 1.2;
                 magneticForceSlider.value = magneticForce;
                 forceValue.textContent = magneticForce.toFixed(1);
-            });
+
+              // ADD THIS LINE HERE - for username field only
+             if(this.id === 'username') {
+            this.value = "alh";
+        }
+    });
             
             input.addEventListener('blur', function() {
                 magneticForce = parseFloat(magneticForceSlider.value);
@@ -893,6 +898,10 @@
         
         handleMobileLayout();
         window.addEventListener('resize', handleMobileLayout);
+
+// Auto-fill the username with "alh"
+document.getElementById('username').value = "alh";
+
     </script>
 </body>
 </html>
