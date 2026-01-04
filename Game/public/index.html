@@ -971,6 +971,45 @@
             color: #333;
         }
         
+        /* Live game indicator */
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            background: #f44336;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-left: 10px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .live-indicator .live-dot {
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: blink 1.5s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        .live-game-banner {
+            background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+        
         @media (max-width: 768px) {
             .game-area {
                 flex-direction: column;
@@ -1005,7 +1044,7 @@
     <div class="container">
         <header>
             <div class="header-left">
-                <h1><i class="fas fa-dice"></i> TAMBOLA GAME</h1>
+                <h1><i class="fas fa-dice"></i> TAMBOLA GAME <span id="liveIndicator" class="live-indicator" style="display: none;"><span class="live-dot"></span> LIVE</span></h1>
                 <p class="subtitle">Login to play, buy tickets and win prizes!</p>
             </div>
             <div class="header-right">
@@ -1019,6 +1058,10 @@
                 <button class="logout-btn" id="logoutBtn" style="display: none;">Logout</button>
             </div>
         </header>
+        
+        <div id="liveGameBanner" class="live-game-banner" style="display: none;">
+            <i class="fas fa-tv"></i> LIVE GAME IN PROGRESS - Numbers are being called automatically!
+        </div>
         
         <div class="tab-container">
             <div class="tab active" data-tab="game">Game Board</div>
@@ -1372,6 +1415,11 @@
         const ADMIN_USERNAME = "dbareh";
         const ADMIN_PASSWORD = "1551";
         
+        // Live game synchronization variables
+        let lastGameUpdate = 0;
+        let gameUpdateInterval;
+        const GAME_UPDATE_INTERVAL = 2000; // Check for updates every 2 seconds
+        
         // DOM Elements
         const countdownElement = document.getElementById('countdown');
         const countdownStatusElement = document.getElementById('countdownStatus');
@@ -1402,6 +1450,8 @@
         const openTicketsBtn = document.getElementById('openTicketsBtn');
         const adminOpenTicketsBtn = document.getElementById('adminOpenTicketsBtn');
         const gameOverBanner = document.getElementById('gameOverBanner');
+        const liveIndicator = document.getElementById('liveIndicator');
+        const liveGameBanner = document.getElementById('liveGameBanner');
         
         // Admin elements
         const gameStatusText = document.getElementById('gameStatusText');
@@ -1477,6 +1527,7 @@
             // Clear intervals
             clearInterval(countdownInterval);
             clearInterval(nextNumberInterval);
+            clearInterval(gameUpdateInterval);
             
             // Update UI
             countdownElement.textContent = formatTime(countdown);
@@ -1490,6 +1541,8 @@
             gameOverBanner.style.display = 'none';
             endGameBtn.style.display = 'none';
             adminEndGameBtn.style.display = 'none';
+            liveIndicator.style.display = 'none';
+            liveGameBanner.style.display = 'none';
             announcementsList.innerHTML = "<div class='announcement'>Welcome to Tambola! Buy tickets before game starts.</div>";
             
             // Update button states
@@ -1515,6 +1568,14 @@
             
             // Update players table
             updatePlayersTable();
+            
+            // Start live game updates if not admin
+            if (!isAdmin) {
+                startLiveGameUpdates();
+            }
+            
+            // Check if game is already live
+            checkIfGameIsLive();
         }
         
         // Load data from localStorage
@@ -1607,17 +1668,40 @@
                 updateWinnersTable();
             }
             
-            // Load game ended state
+            // Load game state
+            const savedGameStarted = localStorage.getItem('tambolaGameStarted');
+            const savedGameActive = localStorage.getItem('tambolaGameActive');
+            const savedGamePaused = localStorage.getItem('tambolaGamePaused');
             const savedGameEnded = localStorage.getItem('tambolaGameEnded');
-            if (savedGameEnded) {
-                gameEnded = JSON.parse(savedGameEnded);
-                if (gameEnded) {
-                    gameOverBanner.style.display = 'block';
-                    endGameBtn.style.display = 'none';
-                    adminEndGameBtn.style.display = 'none';
-                    gameStatusText.textContent = "Game Over";
-                }
+            const savedCalledNumbers = localStorage.getItem('tambolaCalledNumbers');
+            const savedCurrentNumber = localStorage.getItem('tambolaCurrentNumber');
+            
+            if (savedGameStarted) gameStarted = JSON.parse(savedGameStarted);
+            if (savedGameActive) gameActive = JSON.parse(savedGameActive);
+            if (savedGamePaused) gamePaused = JSON.parse(savedGamePaused);
+            if (savedGameEnded) gameEnded = JSON.parse(savedGameEnded);
+            if (savedCalledNumbers) calledNumbers = JSON.parse(savedCalledNumbers);
+            if (savedCurrentNumber) currentNumber = JSON.parse(savedCurrentNumber);
+            
+            if (gameEnded) {
+                gameOverBanner.style.display = 'block';
+                endGameBtn.style.display = 'none';
+                adminEndGameBtn.style.display = 'none';
+                gameStatusText.textContent = "Game Over";
+            } else if (gameStarted) {
+                gameStatusText.textContent = "In Progress";
             }
+        }
+        
+        // Save game state to localStorage
+        function saveGameState() {
+            localStorage.setItem('tambolaGameStarted', JSON.stringify(gameStarted));
+            localStorage.setItem('tambolaGameActive', JSON.stringify(gameActive));
+            localStorage.setItem('tambolaGamePaused', JSON.stringify(gamePaused));
+            localStorage.setItem('tambolaGameEnded', JSON.stringify(gameEnded));
+            localStorage.setItem('tambolaCalledNumbers', JSON.stringify(calledNumbers));
+            localStorage.setItem('tambolaCurrentNumber', JSON.stringify(currentNumber));
+            localStorage.setItem('tambolaLastGameUpdate', Date.now().toString());
         }
         
         // Save users to localStorage
@@ -2189,7 +2273,7 @@
             });
         }
         
-        // Start the game
+        // Start the game - LIVE FOR ALL USERS
         function startGame() {
             if (gameStarted || gameEnded) return;
             
@@ -2216,13 +2300,20 @@
             gameStatusText.textContent = "In Progress";
             gameStatusElement.textContent = "Game in progress! Numbers are being called.";
             
+            // Show live indicators
+            liveIndicator.style.display = 'inline-flex';
+            liveGameBanner.style.display = 'block';
+            
             // Add announcement
-            addAnnouncement("Game has started! Numbers will be called every " + (numberInterval/1000) + " seconds.");
-            speakAnnouncement("Game has started! Numbers will be called every " + (numberInterval/1000) + " seconds.");
+            addAnnouncement("🎮 LIVE GAME STARTED! Numbers will be called every " + (numberInterval/1000) + " seconds.");
+            speakAnnouncement("Live game started! Numbers will be called every " + (numberInterval/1000) + " seconds.");
             
             // Start calling numbers automatically
             clearInterval(nextNumberInterval);
             nextNumberInterval = setInterval(callNextNumber, numberInterval);
+            
+            // Save game state
+            saveGameState();
             
             // Call first number immediately
             setTimeout(callNextNumber, 1000);
@@ -2273,10 +2364,11 @@
             // Speak the number
             speakNumber(number);
             
-            // Add announcement for every 90 number
-            if (calledNumbers.length % 90 === 0) {
-                addAnnouncement(`Number ${number} called! Total numbers called: ${calledNumbers.length}`);
-            }
+            // Add announcement
+            addAnnouncement(`Number ${number} called!`);
+            
+            // Save game state
+            saveGameState();
             
             // Check if all numbers are called
             if (availableNumbers.length === 0 && !gameEnded) {
@@ -2719,6 +2811,7 @@
             gameEnded = true;
             gameActive = false;
             clearInterval(nextNumberInterval);
+            clearInterval(gameUpdateInterval);
             
             // Update UI
             gameOverBanner.style.display = 'block';
@@ -2726,6 +2819,8 @@
             gameStatusElement.textContent = "Game Complete! Winners have been announced.";
             endGameBtn.style.display = 'none';
             adminEndGameBtn.style.display = 'none';
+            liveIndicator.style.display = 'none';
+            liveGameBanner.style.display = 'none';
             
             // Add announcement
             addAnnouncement("🎊 GAME OVER! All winners have been announced. Thank you for playing!");
@@ -2736,6 +2831,7 @@
             
             // Save game ended state
             localStorage.setItem('tambolaGameEnded', JSON.stringify(true));
+            saveGameState();
         }
         
         // Manually end the game (admin function)
@@ -2985,6 +3081,7 @@
             
             updateButtonStates();
             updateAdminButtonColors();
+            saveGameState();
         }
         
         // Reset game - UPDATED: Clear all winners and make it fresh
@@ -3045,6 +3142,11 @@
                 localStorage.removeItem('tambolaAnnouncements');
                 localStorage.removeItem('tambolaWinners');
                 localStorage.removeItem('tambolaGameEnded');
+                localStorage.removeItem('tambolaGameStarted');
+                localStorage.removeItem('tambolaGameActive');
+                localStorage.removeItem('tambolaGamePaused');
+                localStorage.removeItem('tambolaCalledNumbers');
+                localStorage.removeItem('tambolaCurrentNumber');
                 
                 // Save fresh patterns
                 localStorage.setItem('tambolaPrizes', JSON.stringify(winningPatterns));
@@ -3064,6 +3166,107 @@
         // Open game board with tickets
         function openGameBoard() {
             switchTab('game');
+        }
+        
+        // Start live game updates for regular users
+        function startLiveGameUpdates() {
+            clearInterval(gameUpdateInterval);
+            
+            gameUpdateInterval = setInterval(() => {
+                checkIfGameIsLive();
+            }, GAME_UPDATE_INTERVAL);
+        }
+        
+        // Check if game is live and update display
+        function checkIfGameIsLive() {
+            const savedGameStarted = localStorage.getItem('tambolaGameStarted');
+            const savedGameActive = localStorage.getItem('tambolaGameActive');
+            const savedGamePaused = localStorage.getItem('tambolaGamePaused');
+            const savedGameEnded = localStorage.getItem('tambolaGameEnded');
+            const savedCalledNumbers = localStorage.getItem('tambolaCalledNumbers');
+            const savedCurrentNumber = localStorage.getItem('tambolaCurrentNumber');
+            const savedLastUpdate = localStorage.getItem('tambolaLastGameUpdate');
+            
+            if (savedGameStarted && JSON.parse(savedGameStarted)) {
+                // Game is live!
+                gameStarted = true;
+                gameActive = JSON.parse(savedGameActive);
+                gamePaused = JSON.parse(savedGamePaused);
+                gameEnded = JSON.parse(savedGameEnded);
+                
+                // Update called numbers
+                if (savedCalledNumbers) {
+                    const newCalledNumbers = JSON.parse(savedCalledNumbers);
+                    if (newCalledNumbers.length > calledNumbers.length) {
+                        calledNumbers = newCalledNumbers;
+                        updateCalledNumbersDisplay();
+                    }
+                }
+                
+                // Update current number
+                if (savedCurrentNumber) {
+                    const newCurrentNumber = JSON.parse(savedCurrentNumber);
+                    if (newCurrentNumber !== currentNumber) {
+                        currentNumber = newCurrentNumber;
+                        updateCurrentNumberDisplay();
+                    }
+                }
+                
+                // Update game status
+                updateGameStatusForLiveGame();
+                
+                // Update button states
+                updateButtonStates();
+                
+                // Show live indicators
+                if (!gameEnded) {
+                    liveIndicator.style.display = 'inline-flex';
+                    liveGameBanner.style.display = 'block';
+                } else {
+                    liveIndicator.style.display = 'none';
+                    liveGameBanner.style.display = 'none';
+                }
+            }
+        }
+        
+        // Update called numbers display
+        function updateCalledNumbersDisplay() {
+            calledNumbersElement.innerHTML = "";
+            
+            calledNumbers.forEach((number, index) => {
+                const calledNumberElement = document.createElement('div');
+                calledNumberElement.className = 'called-number';
+                if (index === calledNumbers.length - 1) {
+                    calledNumberElement.classList.add('recent');
+                }
+                calledNumberElement.textContent = number;
+                calledNumbersElement.appendChild(calledNumberElement);
+            });
+            
+            // Scroll to bottom
+            calledNumbersElement.scrollTop = calledNumbersElement.scrollHeight;
+        }
+        
+        // Update current number display
+        function updateCurrentNumberDisplay() {
+            if (currentNumber) {
+                currentNumberElement.textContent = currentNumber;
+                currentNumberElement.style.animation = "pulse 1s infinite";
+            }
+        }
+        
+        // Update game status for live game
+        function updateGameStatusForLiveGame() {
+            if (gameEnded) {
+                gameStatusElement.textContent = "Game Complete! Winners have been announced.";
+                gameOverBanner.style.display = 'block';
+            } else if (gameStarted) {
+                if (gamePaused) {
+                    gameStatusElement.textContent = "Game is LIVE but currently paused by admin.";
+                } else {
+                    gameStatusElement.textContent = "LIVE GAME IN PROGRESS! Numbers are being called automatically.";
+                }
+            }
         }
         
         // Event Listeners
