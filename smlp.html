@@ -1,203 +1,351 @@
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
-
-<!-- inactivity -->
-<meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="5000;url=https://servodata5.github.io/nissa/">  <!-- Refresh every seconds if 2 min is "120" -->
-	
-  <meta name="description" content="">
-  <meta name="keywords" content="">
-
-<!-- Fonts -->
-  <link href="https://fonts.googleapis.com/" rel="preconnect">
-  <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin="">
-  <link href="../portal_files/css2" rel="stylesheet">
-
-<!-- Vendor CSS Files -->
- <link href="../portal_files/bootstrap.min.css" rel="stylesheet">
-  <link href="../portal_files/bootstrap-icons.css" rel="stylesheet">
-  <link href="../portal_files/glightbox.min.css" rel="stylesheet">
-  <link href="../portal_files/swiper-bundle.min.css" rel="stylesheet">
-  
-  <!-- Main CSS File -->
-    <link href="../portal_files/style2.css" rel="stylesheet">
-
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">	 
-    <title>Small Pack Pricelist</title>
-    <link rel="stylesheet" href="../portal_files/style2.css">  
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"/>	
- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="5000;url=https://servodata5.github.io/nissa/">
+    <meta name="description" content="Small Pack Pricelist">
+    <meta name="keywords" content="pricelist, small pack, lubricants, oil prices">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- PDF Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <title>Small Pack Pricelist</title>
+    
+    <style>
+        /* Magnetic Wave Background - Golden Theme */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 80% 70%, rgba(218, 165, 32, 0.15) 0%, transparent 20%),
+                linear-gradient(135deg, #fff8dc 0%, #faf0e6 100%);
+            overflow-x: hidden;
+            position: relative;
+            padding-bottom: 20px;
+        }
 
+        /* Animated wave layers */
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
 
-<body class="index-page" data-aos-easing="ease-in-out" data-aos-duration="800" data-aos-delay="0">
+        /* First wave layer */
+        body::before {
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255, 215, 0, 0.08) 0%, transparent 25%),
+                radial-gradient(circle at 90% 80%, rgba(184, 134, 11, 0.08) 0%, transparent 25%);
+            animation: waveMove 25s infinite linear;
+        }
+
+        /* Second wave layer */
+        body::after {
+            background: 
+                radial-gradient(circle at 50% 10%, rgba(218, 165, 32, 0.05) 0%, transparent 30%),
+                radial-gradient(circle at 30% 90%, rgba(255, 215, 0, 0.05) 0%, transparent 30%);
+            animation: waveMove 35s infinite linear reverse;
+        }
+
+        /* Wave animation */
+        @keyframes waveMove {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(2%, 1%) rotate(1deg);
+            }
+            50% {
+                transform: translate(0, 2%) rotate(0deg);
+            }
+            75% {
+                transform: translate(-2%, 1%) rotate(-1deg);
+            }
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+        }
+
+        /* Navigation Styles */
+        nav {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.95), rgba(218, 165, 32, 0.95));
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 3px solid #B8860B;
+        }
+
+        .logo h1 {
+            color: #8B4513;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #menuList {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            gap: 25px;
+        }
+
+        #menuList li {
+            display: inline-block;
+        }
+
+        #menuList a {
+            color: #8B4513;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        #menuList a:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            color: #FFD700;
+            transform: translateY(-2px);
+        }
+
+        .menu-icon {
+            display: none;
+            font-size: 1.5rem;
+            color: #8B4513;
+            cursor: pointer;
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #FFD700, #DAA520);
+            border: 1px solid #B8860B;
+            color: #8B4513;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #DAA520, #B8860B);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(218, 165, 32, 0.3);
+        }
+
+        /* Search Container */
+        .search-container {
+            width: 90%;
+            max-width: 800px;
+            margin: 30px auto;
+            background: rgba(255, 248, 220, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid #DAA520;
+        }
+
+        #myInput {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid #DAA520;
+            border-radius: 5px;
+            background-color: #fff;
+            transition: all 0.3s;
+        }
+
+        #myInput:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.3);
+        }
+
+        /* Table Styles */
+        table {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            border: 2px solid #DAA520;
+        }
+
+        th {
+            background: linear-gradient(135deg, #FFD700, #DAA520);
+            color: #8B4513;
+            font-weight: 700;
+            padding: 15px;
+            text-align: left;
+            font-size: 0.9rem;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        tr:hover {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(218, 165, 32, 0.15));
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(255, 248, 220, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            nav {
+                flex-wrap: wrap;
+            }
+            
+            .menu-icon {
+                display: block;
+            }
+            
+            #menuList {
+                flex-direction: column;
+                width: 100%;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+                margin-top: 15px;
+            }
+            
+            #menuList.active {
+                max-height: 300px;
+            }
+            
+            #menuList li {
+                width: 100%;
+                text-align: center;
+                padding: 10px 0;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Particle styles */
+        .wave-particle {
+            position: fixed;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.4), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.3;
+            }
+            25% {
+                transform: translate(100px, 50px) scale(1.2);
+                opacity: 0.5;
+            }
+            50% {
+                transform: translate(200px, 0) scale(1);
+                opacity: 0.3;
+            }
+            75% {
+                transform: translate(100px, -50px) scale(0.8);
+                opacity: 0.5;
+            }
+            100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.3;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
     <nav>
         <div class="logo">
             <h1>Small Pack Price List</h1>
-       </div>
-        	 <ul id="menuList">
-		<p></p>
-		<li><a href="brlp.html">Barrel Price</a></li>
-		<button class="btn btn-primary" onclick="downloadPDF()">Download PDF</button>
-		<button class="btn btn-primary" onclick="portal.html" type="button">
-    <li><a href="alhhome.html">Home</a></li>
-            
-			 
+        </div>
+        <ul id="menuList">
+            <li><a href="brlp.html">Barrel Price</a></li>
+            <li><button class="btn-primary" onclick="downloadPDF()">Download PDF</button></li>
+            <li><a href="alhhome.html">Home</a></li>
         </ul>
-        <div class="menu-icon">
-            <i class="fa-solid fa-bars" onclick="toggleMenu()"></i>
+        <div class="menu-icon" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
         </div>
     </nav>
 
+    <!-- Search -->
+    <div class="search-container">
+        <input type="text" id="myInput" onkeyup="searchTable()" placeholder="Search for material code, description, or any field...">
+    </div>
 
-
-    <script>
-        let menuList = document.getElementById("menuList")
-        menuList.style.maxHeight = "0px";
-
-        function toggleMenu(){
-            if(menuList.style.maxHeight == "0px")
-            {
-                menuList.style.maxHeight = "300px";
-            }
-            else{
-                menuList.style.maxHeight = "0px";
-            }
-        }
-        
-    </script><script>
-        let menuList = document.getElementById("menuList")
-        menuList.style.maxHeight = "0px";
-
-        function toggleMenu(){
-            if(menuList.style.maxHeight == "0px")
-            {
-                menuList.style.maxHeight = "300px";
-            }
-            else{
-                menuList.style.maxHeight = "0px";
-            }
-        }
-        
-    </script>
-	
-	
-
-	<style>
-table, th, td {
-  border: 1px solid black; /* Sets border for table, headers, and data cells */
-  border-collapse: collapse; /* Collapses borders to avoid double borders */
-  padding: 5px; /* Adds padding inside cells */
-}
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-th, td {
-  border: 1px solid #000000;
-  padding: 8px;
-  text-align: left;
-}
-
-.header-row th { /* Style header row cells differently */
-  background-color: #FFFF00;
-  font-weight: bold;
-} 
-
-table {
-  width: 60%; /* Or a specific width like 300px */
-  margin: 0 auto; /* Centers the table horizontally */
-  border-collapse: collapse;
-}
-
-th, td {
-  border: 4px solid black;
-  padding: 8px;
-  text-align: left;
-}
-
- #ForSearchTable {
-    border-collapse: collapse; /* Collapse table borders */
-    width: 100%; /* Full width */
-    border: 1px solid #ddd; /* Add a grey border */
-    font-size: 18px; /* Set font size */
-  }
-
-  #myTable th, #myTable td {
-    text-align: left; /* Left-align text */
-    padding: 12px; /* Add padding */
-  }
-
-  #myTable tr {
-    /* Add a bottom border to each table row */
-    border-bottom: 1px solid #ddd;
-  }
-
-  #myTable tr:hover {
-    /* Add a hover effect to the table rows */
-    background-color: #FFB6C1;
-  }
-
-  #myInput {
-    background-image: url('/css/searchicon.png'); /* Add a search icon to input */
-    background-position: 10px 12px; /* Position the search icon */
-    background-repeat: no-repeat; /* Do not repeat the icon */
-    width: 100%; /* Full-width input */
-    font-size: 16px; /* Set font size */
-    padding: 12px 20px 12px 40px; /* Add padding */
-    border: 1px solid #ddd; /* Add a grey border */
-    margin-bottom: 12px; /* Add some space below the input */
-    box-sizing: border-box; /* Make sure that padding and width stays in place */
-  }
-
-.search-container {
-    /* Container for better layout control */
-    width: 620px; /* Example width */
-    margin: 20px auto; /* Center the container */
-  }
-
-  .search-input {
-    width: 100%; /* Occupy full width of container */
-    padding: 10px;
-    box-sizing: border-box; /* Include padding in width calculation */
-  }
-</style>
-
-
-<div class="search-container">
-<input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names..." >
-</div>
-
- <table id="myTable">
- <thead>  
-<tr>
-<th>Mat code</th>
-<th>Mat Description</th>
-<th>MRP/Pc</th>
-<th>DLP/Pc</th>
-<th>Disc/L</th>
-<th>M Support/L</th>
-<th>Bonanza</th>
-<th>Invoice rate</th>
-<th>Margin</th>
-<th>Margin/L</th>
-<th>Margin%</th>
-<th>Per Case/Buc</th>
-</tr>
-  
-</thead>
-  <tbody>
-  
-  
-<tr> <td>2540199</td><td>MGGO 80W-90 - 4 X 2.1 L</td><td>750</td><td>601.95</td><td>0</td><td>0</td><td>0</td><td>601.95</td><td>148.05</td><td>70.4999999999999</td><td>24.595066035385</td><td>2407.8</td></tr>
+    <!-- Table -->
+    <table id="myTable">
+        <thead>  
+            <tr>
+                <th>Mat code</th>
+                <th>Mat Description</th>
+                <th>MRP/Pc</th>
+                <th>DLP/Pc</th>
+                <th>Disc/L</th>
+                <th>M Support/L</th>
+                <th>Bonanza</th>
+                <th>Invoice rate</th>
+                <th>Margin</th>
+                <th>Margin/L</th>
+                <th>Margin%</th>
+                <th>Per Case/Buc</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr> <td>2540199</td><td>MGGO 80W-90 - 4 X 2.1 L</td><td>750</td><td>601.95</td><td>0</td><td>0</td><td>0</td><td>601.95</td><td>148.05</td><td>70.4999999999999</td><td>24.595066035385</td><td>2407.8</td></tr>
 <tr> <td>2960184</td><td>SERVO FUTURA SYNTH 0W-40-20 X 1 L</td><td>1165</td><td>757.5995</td><td>0</td><td>0</td><td>0</td><td>757.5995</td><td>407.4005</td><td>407.4005</td><td>53.7751806858373</td><td>15151.99</td></tr>
 <tr> <td>2960222</td><td>SERVO FUTURA SYNTH 0W-40-4 x 4 L</td><td>4660</td><td>3030.398</td><td>0</td><td>0</td><td>0</td><td>3030.398</td><td>1629.602</td><td>407.4005</td><td>53.7751806858373</td><td>12121.592</td></tr>
 <tr> <td>7427213</td><td>ECSTAR PETROL 0W-20-4 X 3.5 L</td><td>1614</td><td>1415.8008</td><td>46</td><td>0</td><td>0</td><td>1225.8208</td><td>388.1792</td><td>110.908342857143</td><td>31.6668798571537</td><td>4903.2832</td></tr>
@@ -471,62 +619,118 @@ th, td {
 <tr> <td>7376184</td><td>SERVO ECO TRACTOR OIL-20 X 1 L</td><td>270</td><td>169.803</td><td>0</td><td>0</td><td>0</td><td>169.803</td><td>100.197</td><td>100.197</td><td>59.0077913817777</td><td>3396.06</td></tr>
 <tr> <td>7376251</td><td>SERVO ECO TRACTOR OIL-7.5 L</td><td>2100</td><td>1273.65</td><td>0</td><td>0</td><td>0</td><td>1273.65</td><td>826.35</td><td>110.18</td><td>64.8804616652927</td><td>1273.65</td></tr>
 
-  
+    </table>
 
-
-
-
-</tbody>
-</table> 
-<script>
-function myFunction() {
-  var input, filter, table, tr, td, i, txtValue;
-  input = document.getElementById("myInput");
-  filter = input.value.toUpperCase();
-  table = document.getElementById("myTable");
-  tr = table.getElementsByTagName("tr");
-  for (i = 1; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td");
-    let rowMatchesFilter = false; // Flag to track if any cell in the row matches
-    for (let j = 0; j < td.length; j++) { // Iterate through all columns in the row
-      if (td[j]) {
-        txtValue = td[j].textContent || td[j].innerText;
-        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-          rowMatchesFilter = true; // Set flag to true if a cell matches
-          break; // No need to check other cells in this row if one matches
+    <script>
+        // Mobile menu toggle
+        function toggleMenu() {
+            const menuList = document.getElementById('menuList');
+            menuList.classList.toggle('active');
         }
-      }
-    }
-    if (rowMatchesFilter) {
-      tr[i].style.display = "";
-    } else {
-      tr[i].style.display = "none";
-    }
-  }
-}
-</script>
 
-<script>
-        function downloadPDF() {
-            // Get the table element
+        // Search function
+        function searchTable() {
+            const input = document.getElementById('myInput');
+            const filter = input.value.toUpperCase();
             const table = document.getElementById('myTable');
+            const tr = table.getElementsByTagName('tr');
+            
+            for (let i = 1; i < tr.length; i++) {
+                const td = tr[i].getElementsByTagName('td');
+                let rowMatchesFilter = false;
+                
+                for (let j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        const txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            rowMatchesFilter = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (rowMatchesFilter) {
+                    tr[i].style.display = '';
+                } else {
+                    tr[i].style.display = 'none';
+                }
+            }
+        }
 
-            // Use html2canvas to convert the table to an image
+        // PDF download function
+        function downloadPDF() {
+            const table = document.getElementById('myTable');
+            
             html2canvas(table).then((canvas) => {
-                const imgData = canvas.toDataURL('image/png'); // Convert canvas to image data
-                const pdf = new jspdf.jsPDF('p', 'mm', 'a4'); // Create a new PDF
-
-                // Add the image to the PDF
-                const imgWidth = 190; // Width of the image in the PDF
-                const imgHeight = (canvas.height * imgWidth) / canvas.width; // Calculate height to maintain aspect ratio
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+                
+                const imgWidth = 190;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
                 pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-
-                // Save the PDF
-                pdf.save('table.pdf');
+                pdf.save('small-pack-pricelist.pdf');
+                
+                alert('PDF download started!');
             });
         }
-    </script>
 
+        // Create magnetic wave particles
+        document.addEventListener('DOMContentLoaded', function() {
+            const particleContainer = document.createElement('div');
+            particleContainer.id = 'wave-particles';
+            document.body.appendChild(particleContainer);
+            
+            // Create 15 particles
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'wave-particle';
+                
+                const size = Math.random() * 150 + 50;
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${x}vw`;
+                particle.style.top = `${y}vh`;
+                particle.style.animationDuration = `${Math.random() * 30 + 20}s`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                
+                particleContainer.appendChild(particle);
+            }
+            
+            // Interactive particles on mouse move
+            document.addEventListener('mousemove', function(e) {
+                const particles = document.querySelectorAll('.wave-particle');
+                
+                particles.forEach(particle => {
+                    const rect = particle.getBoundingClientRect();
+                    const particleX = rect.left + rect.width / 2;
+                    const particleY = rect.top + rect.height / 2;
+                    
+                    const distanceX = e.clientX - particleX;
+                    const distanceY = e.clientY - particleY;
+                    const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+                    
+                    if (distance < 200) {
+                        const force = (200 - distance) / 200;
+                        const moveX = distanceX * force * 0.1;
+                        const moveY = distanceY * force * 0.1;
+                        
+                        particle.style.transform = `translate(${moveX}px, ${moveY}px) scale(${1 + force * 0.2})`;
+                    }
+                });
+            });
+            
+            // Reset particles position on mouse leave
+            document.addEventListener('mouseleave', function() {
+                const particles = document.querySelectorAll('.wave-particle');
+                particles.forEach(particle => {
+                    particle.style.transform = 'translate(0, 0) scale(1)';
+                });
+            });
+        });
+    </script>
 </body>
-</head>
 </html>
