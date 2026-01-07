@@ -168,12 +168,20 @@
             margin-bottom: 15px;
         }
         
+        #gameDate {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #ffcc80;
+        }
+        
         #countdown {
             font-size: 2.5rem;
             font-weight: bold;
             color: #ff4081;
             text-shadow: 0 0 10px rgba(255, 64, 129, 0.7);
             margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
         }
         
         .status {
@@ -184,15 +192,15 @@
         
         .ticket-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
             margin-top: 20px;
         }
         
         .ticket {
             background: white;
             border-radius: 10px;
-            padding: 15px;
+            padding: 12px;
             color: #333;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -202,8 +210,8 @@
         }
         
         .ticket:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             border-color: #ffeb3b;
         }
         
@@ -222,7 +230,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: bold;
             color: #ff5252;
         }
@@ -231,29 +239,31 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
             border-bottom: 1px solid #eee;
         }
         
         .ticket-price {
             background: #ff4081;
             color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
+            padding: 3px 10px;
+            border-radius: 15px;
             font-weight: bold;
+            font-size: 0.9rem;
         }
         
         .ticket-id {
             font-weight: bold;
             color: #666;
+            font-size: 0.9rem;
         }
         
         .ticket-numbers {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            margin-top: 10px;
+            gap: 5px;
+            margin-top: 8px;
         }
         
         .ticket-number {
@@ -263,9 +273,9 @@
             justify-content: center;
             align-items: center;
             background: #f5f5f5;
-            border-radius: 5px;
+            border-radius: 4px;
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             border: 1px solid #ddd;
             position: relative;
             transition: all 0.3s;
@@ -284,7 +294,7 @@
         
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
         
@@ -417,8 +427,8 @@
         #called-numbers {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            max-height: 150px;
+            gap: 8px;
+            max-height: 120px;
             overflow-y: auto;
             padding: 10px;
             background: rgba(0, 0, 0, 0.2);
@@ -426,8 +436,8 @@
         }
         
         .called-number {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -1010,6 +1020,47 @@
             animation: pulse 2s infinite;
         }
         
+        /* My Tickets - Smaller ticket styling */
+        .my-ticket-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .my-ticket-container .ticket {
+            min-width: 140px;
+            max-width: 160px;
+            padding: 8px;
+            margin: 0 auto;
+            cursor: default;
+        }
+        
+        .my-ticket-container .ticket-header {
+            font-size: 0.8rem;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .my-ticket-container .ticket-numbers {
+            gap: 3px;
+        }
+        
+        .my-ticket-container .ticket-number {
+            font-size: 0.7rem;
+            min-height: 22px;
+        }
+        
+        .my-ticket-container .ticket-price {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+        }
+        
+        .my-ticket-container .ticket-id {
+            font-size: 0.75rem;
+        }
+        
+        /* Responsive adjustments for My Tickets */
         @media (max-width: 768px) {
             .game-area {
                 flex-direction: column;
@@ -1037,6 +1088,132 @@
             .action-buttons {
                 flex-direction: column;
             }
+            
+            #countdown {
+                font-size: 1.8rem;
+            }
+            
+            .game-date-time {
+                font-size: 0.9rem;
+            }
+            
+            .ticket-container {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .ticket-numbers {
+                gap: 4px;
+            }
+            
+            .ticket-number {
+                font-size: 0.8rem;
+            }
+            
+            .my-ticket-container {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important;
+                gap: 8px !important;
+            }
+            
+            .my-ticket-container .ticket {
+                min-width: 115px !important;
+                padding: 6px !important;
+            }
+            
+            .my-ticket-container .ticket-number {
+                font-size: 0.65rem !important;
+                min-height: 18px !important;
+            }
+        }
+        
+        /* Game date and time styles */
+        .game-date-time {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .game-date {
+            font-size: 1.1rem;
+            color: #ffcc80;
+        }
+        
+        .game-time {
+            font-size: 1.1rem;
+            color: #81c784;
+        }
+        
+        /* Voice control */
+        .voice-control {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .voice-control label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        
+        /* Number display animation */
+        @keyframes numberCalled {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .number-called {
+            animation: numberCalled 1s ease-out;
+        }
+        
+        /* Audio controls */
+        .audio-controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+        
+        .audio-btn {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .audio-btn:hover {
+            background: #1976d2;
+        }
+        
+        .audio-btn.muted {
+            background: #f44336;
+        }
+        
+        /* Hide ticket section when game is live */
+        .ticket-section-hidden {
+            display: none !important;
+        }
+        
+        .game-live-message {
+            background: rgba(244, 67, 54, 0.2);
+            border: 2px solid #f44336;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -1076,19 +1253,32 @@
             
             <div class="game-area">
                 <div class="left-panel">
-                    <h2 class="panel-title">Buy Tickets</h2>
+                    <h2 class="panel-title" id="ticketSectionTitle">Buy Tickets</h2>
                     
                     <div class="countdown-container">
+                        <div class="game-date-time">
+                            <div id="gameDate" class="game-date"></div>
+                            <div id="gameTime" class="game-time"></div>
+                        </div>
                         <div class="countdown-title">Game Starts In:</div>
-                        <div id="countdown">10:00</div>
+                        <div id="countdown">00:00:00</div>
                         <div class="status" id="countdownStatus">Ticket purchase is open</div>
                     </div>
                     
-                    <div class="ticket-container" id="ticketContainer">
-                        <!-- Tickets will be generated here in ascending order -->
+                    <!-- Ticket Purchase Section - Hidden when game is live -->
+                    <div id="ticketPurchaseSection">
+                        <div class="ticket-container" id="ticketContainer">
+                            <!-- Tickets will be generated here in ascending order -->
+                        </div>
+                        
+                        <button id="buyButton" class="buy-btn">Buy Selected Ticket</button>
                     </div>
                     
-                    <button id="buyButton" class="buy-btn">Buy Selected Ticket</button>
+                    <!-- Message when game is live -->
+                    <div id="gameLiveMessage" class="game-live-message" style="display: none;">
+                        <i class="fas fa-gamepad"></i> GAME IS NOW LIVE!<br>
+                        <small>Ticket purchase is closed. Watch the game and check your tickets!</small>
+                    </div>
                     
                     <button class="open-tickets-btn" id="openTicketsBtn" style="display: none;">
                         <i class="fas fa-external-link-alt"></i> Open Tickets for Game
@@ -1111,7 +1301,7 @@
                     </div>
                     
                     <div class="announcements">
-                        <h3>Announcements</h3>
+                        <h3>Winning Announcements</h3>
                         <div id="announcements-list">
                             <!-- Game announcements will appear here -->
                         </div>
@@ -1295,7 +1485,6 @@
                             <input type="number" id="ticketPrice" value="20" min="5" max="100">
                         </div>
                         <button class="admin-btn" id="generateTicketsBtn">Generate Tickets</button>
-                        <button class="admin-btn" id="regenerateTicketsBtn" style="background: #2196f3;">Regenerate All Tickets</button>
                     </div>
                 </div>
                 
@@ -1373,7 +1562,7 @@
 
     <script>
         // Game variables
-        let countdown = 300; // 5 minutes in seconds
+        let countdown = 600; // 10 minutes in seconds
         let countdownInterval;
         let gameStarted = false;
         let gameActive = false;
@@ -1386,7 +1575,7 @@
         let selectedTicket = null;
         let tickets = [];
         let nextNumberInterval;
-        let numberInterval = 7000; // 7 seconds
+        let numberInterval = 5000; // 5 seconds
         let isAdmin = false;
         let currentUser = null;
         let users = [];
@@ -1422,6 +1611,8 @@
         
         // DOM Elements
         const countdownElement = document.getElementById('countdown');
+        const gameDateElement = document.getElementById('gameDate');
+        const gameTimeElement = document.getElementById('gameTime');
         const countdownStatusElement = document.getElementById('countdownStatus');
         const ticketContainer = document.getElementById('ticketContainer');
         const buyButton = document.getElementById('buyButton');
@@ -1452,6 +1643,9 @@
         const gameOverBanner = document.getElementById('gameOverBanner');
         const liveIndicator = document.getElementById('liveIndicator');
         const liveGameBanner = document.getElementById('liveGameBanner');
+        const ticketSectionTitle = document.getElementById('ticketSectionTitle');
+        const ticketPurchaseSection = document.getElementById('ticketPurchaseSection');
+        const gameLiveMessage = document.getElementById('gameLiveMessage');
         
         // Admin elements
         const gameStatusText = document.getElementById('gameStatusText');
@@ -1493,7 +1687,6 @@
         const maxNumberInput = document.getElementById('maxNumber');
         const numbersPerTicketInput = document.getElementById('numbersPerTicket');
         const generateTicketsBtn = document.getElementById('generateTicketsBtn');
-        const regenerateTicketsBtn = document.getElementById('regenerateTicketsBtn');
         
         // Password reset modal elements
         const passwordResetModal = document.getElementById('passwordResetModal');
@@ -1529,6 +1722,9 @@
             clearInterval(nextNumberInterval);
             clearInterval(gameUpdateInterval);
             
+            // Update date and time
+            updateDateTime();
+            
             // Update UI
             countdownElement.textContent = formatTime(countdown);
             countdownStatusElement.textContent = "Ticket purchase is open";
@@ -1543,6 +1739,9 @@
             adminEndGameBtn.style.display = 'none';
             liveIndicator.style.display = 'none';
             liveGameBanner.style.display = 'none';
+            gameLiveMessage.style.display = 'none';
+            ticketPurchaseSection.style.display = 'block';
+            ticketSectionTitle.textContent = "Buy Tickets";
             announcementsList.innerHTML = "<div class='announcement'>Welcome to Tambola! Buy tickets before game starts.</div>";
             
             // Update button states
@@ -1576,6 +1775,9 @@
             
             // Check if game is already live
             checkIfGameIsLive();
+            
+            // Voice announcement for game initialization
+            speakAnnouncement("Welcome to Tambola Game! Please login to buy tickets and play.");
         }
         
         // Load data from localStorage
@@ -1709,24 +1911,47 @@
             localStorage.setItem('tambolaUsers', JSON.stringify(users));
         }
         
-        // Format time as MM:SS
+        // Format time as HH:MM:SS
         function formatTime(seconds) {
-            const mins = Math.floor(seconds / 60);
+            const hours = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
             const secs = seconds % 60;
-            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // Update date and time display
+        function updateDateTime() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            gameDateElement.textContent = now.toLocaleDateString('en-US', options);
+            gameTimeElement.textContent = now.toLocaleTimeString('en-US', {hour12: true});
         }
         
         // Start the countdown timer
         function startCountdown() {
             clearInterval(countdownInterval);
             
+            // Update date and time first
+            updateDateTime();
+            
             countdownInterval = setInterval(() => {
                 countdown--;
                 countdownElement.textContent = formatTime(countdown);
                 
-                if (countdown <= 60) {
+                if (countdown <= 300) { // 5 minutes
                     countdownStatusElement.textContent = "Hurry! Ticket purchase closing soon!";
                     countdownStatusElement.style.color = "#ff9800";
+                    if (countdown === 300) {
+                        speakAnnouncement("Five minutes remaining to buy tickets! Hurry up!");
+                    }
+                }
+                
+                if (countdown <= 60) { // 1 minute
+                    countdownStatusElement.textContent = "Almost closing! Buy tickets now!";
+                    countdownStatusElement.style.color = "#ff5252";
+                    if (countdown === 60) {
+                        speakAnnouncement("One minute remaining! Final chance to buy tickets!");
+                    }
                 }
                 
                 if (countdown <= 0) {
@@ -1734,6 +1959,9 @@
                     countdownStatusElement.textContent = "Ticket purchase is closed!";
                     countdownStatusElement.style.color = "#ff5252";
                     buyButton.disabled = true;
+                    
+                    // Voice announcement for ticket purchase closing
+                    speakAnnouncement("Ticket purchase is now closed! The game will start soon.");
                     
                     // If game hasn't started yet and admin is online, auto-start
                     if (!gameStarted && isAdmin && !gameEnded) {
@@ -1997,6 +2225,7 @@
                 isAdmin = true;
                 
                 alert("Admin login successful!");
+                speakAnnouncement("Welcome Admin! You can now manage the game.");
             } else {
                 // Regular user login/registration
                 // Check if user exists
@@ -2014,11 +2243,13 @@
                     users.push(user);
                     saveUsersToLocalStorage();
                     alert("Registration successful! You are now logged in.");
+                    speakAnnouncement(`Welcome ${username}! Registration successful. You can now buy tickets.`);
                 } else if (user.password !== password) {
                     alert("Invalid password! Contact admin if you forgot your password.");
                     return;
                 } else {
                     alert("Login successful!");
+                    speakAnnouncement(`Welcome back ${username}!`);
                 }
                 
                 currentUser = user;
@@ -2070,6 +2301,7 @@
         
         // Logout user
         function logout() {
+            speakAnnouncement("Goodbye! Thank you for playing Tambola.");
             currentUser = null;
             isAdmin = false;
             updateUserUI();
@@ -2138,6 +2370,9 @@
             // Show confirmation
             alert(`You've successfully purchased ticket ${ticket.id} for $${ticket.price}!`);
             
+            // Voice announcement
+            speakAnnouncement(`Ticket ${ticket.id} purchased successfully for $${ticket.price}. Good luck!`);
+            
             // Update game statistics
             updateGameStats();
             
@@ -2199,11 +2434,12 @@
             
             // Add announcement
             addAnnouncement(`Ticket ${ticketId} has been returned to the pool by admin.`);
+            speakAnnouncement(`Ticket ${ticketId} has been returned to the ticket pool.`);
             
             alert(`Ticket ${ticketId} has been successfully returned to the ticket pool.`);
         }
         
-        // Update purchased tickets display
+        // Update purchased tickets display with smaller size
         function updatePurchasedTicketsDisplay() {
             myTicketsContainer.innerHTML = "";
             
@@ -2219,6 +2455,10 @@
                 return;
             }
             
+            // Create container for grid layout
+            const gridContainer = document.createElement('div');
+            gridContainer.className = 'my-ticket-container';
+            
             userTickets.forEach(ticket => {
                 const ticketElement = document.createElement('div');
                 ticketElement.className = 'ticket';
@@ -2229,7 +2469,7 @@
                 ticketHeader.className = 'ticket-header';
                 ticketHeader.innerHTML = `
                     <div class="ticket-id">${ticket.id}</div>
-                    <div style="font-size: 0.9rem; color: #4caf50;">Your Ticket</div>
+                    <div class="ticket-price">$${parseInt(ticketPriceInput.value) || 20}</div>
                 `;
                 
                 // Ticket numbers grid
@@ -2241,6 +2481,7 @@
                     const numberElement = document.createElement('div');
                     numberElement.className = 'ticket-number';
                     numberElement.textContent = num;
+                    numberElement.dataset.number = num;
                     
                     // Mark corners
                     if (index === 0 || index === 4 || index === 10 || index === 14) {
@@ -2259,18 +2500,21 @@
                 ticketElement.appendChild(ticketHeader);
                 ticketElement.appendChild(numbersGrid);
                 
-                // Add patterns info
-                if (ticket.patternsCompleted.length > 0) {
+                // Add patterns info (only if there are any)
+                if (ticket.patternsCompleted && ticket.patternsCompleted.length > 0) {
                     const patternsInfo = document.createElement('div');
-                    patternsInfo.style.marginTop = '10px';
-                    patternsInfo.style.fontSize = '0.9rem';
+                    patternsInfo.style.marginTop = '6px';
+                    patternsInfo.style.fontSize = '0.7rem';
                     patternsInfo.style.color = '#4caf50';
+                    patternsInfo.style.textAlign = 'center';
                     patternsInfo.innerHTML = `<strong>Won:</strong> ${ticket.patternsCompleted.join(', ')}`;
                     ticketElement.appendChild(patternsInfo);
                 }
                 
-                myTicketsContainer.appendChild(ticketElement);
+                gridContainer.appendChild(ticketElement);
             });
+            
+            myTicketsContainer.appendChild(gridContainer);
         }
         
         // Start the game - LIVE FOR ALL USERS
@@ -2281,16 +2525,23 @@
             gameActive = true;
             gamePaused = false;
             
-            // Reset winning patterns completion status when game starts
+            // Reset winning patterns completion status when game starts (but keep winner names if they exist)
             for (const key in winningPatterns) {
-                winningPatterns[key].completed = false;
-                winningPatterns[key].winner = null;
+                // Only reset if winner is null (game reset scenario)
+                if (!winningPatterns[key].winner) {
+                    winningPatterns[key].completed = false;
+                }
             }
             
             // Stop countdown
             clearInterval(countdownInterval);
             countdownStatusElement.textContent = "Game in progress - Ticket purchase closed";
             countdownStatusElement.style.color = "#ff5252";
+            
+            // Hide ticket purchase section and show game live message
+            ticketPurchaseSection.style.display = 'none';
+            gameLiveMessage.style.display = 'block';
+            ticketSectionTitle.textContent = "Game Status";
             
             // Update button states
             updateButtonStates();
@@ -2306,7 +2557,7 @@
             
             // Add announcement
             addAnnouncement("🎮 LIVE GAME STARTED! Numbers will be called every " + (numberInterval/1000) + " seconds.");
-            speakAnnouncement("Live game started! Numbers will be called every " + (numberInterval/1000) + " seconds.");
+            speakAnnouncement("Live game started! Numbers will be called every " + (numberInterval/1000) + " seconds. Get ready to play!");
             
             // Start calling numbers automatically
             clearInterval(nextNumberInterval);
@@ -2337,6 +2588,8 @@
             // Update UI with animation
             currentNumberElement.textContent = number;
             currentNumberElement.style.animation = "pulse 1s infinite";
+            currentNumberElement.classList.add('number-called');
+            setTimeout(() => currentNumberElement.classList.remove('number-called'), 1000);
             
             // Add to called numbers list with highlight
             const calledNumberElement = document.createElement('div');
@@ -2363,9 +2616,6 @@
             
             // Speak the number
             speakNumber(number);
-            
-            // Add announcement
-            addAnnouncement(`Number ${number} called!`);
             
             // Save game state
             saveGameState();
@@ -2411,31 +2661,37 @@
             }
         }
         
-        // Check for winning patterns
+        // Check for winning patterns - MODIFIED: Only add announcements for winners
         function checkWinningPatterns() {
             purchasedTickets.forEach(ticket => {
                 // Check Early 7 (first 7 numbers marked)
                 if (winningPatterns.earlySeven.enabled && !winningPatterns.earlySeven.completed && ticket.markedNumbers.length >= 7) {
                     winningPatterns.earlySeven.completed = true;
-                    winningPatterns.earlySeven.winner = ticket.owner;
+                    // Only set winner if not already set (preserve if from previous game)
+                    if (!winningPatterns.earlySeven.winner) {
+                        winningPatterns.earlySeven.winner = ticket.owner;
+                    }
                     ticket.patternsCompleted.push("Early 7");
                     
-                    // Add to winners list
-                    winners.push({
-                        pattern: "Early 7",
-                        winner: ticket.owner,
-                        ticketId: ticket.id,
-                        prize: winningPatterns.earlySeven.prize,
-                        time: new Date().toLocaleTimeString()
-                    });
-                    
-                    const announcement = `🎉 EARLY 7 WINNER! ${ticket.owner} won $${winningPatterns.earlySeven.prize} with ticket ${ticket.id}!`;
-                    addAnnouncement(announcement);
-                    speakAnnouncement(`Early Seven Winner! ${ticket.owner} won with ticket ${ticket.id}!`);
-                    
-                    // Save winners to localStorage
-                    localStorage.setItem('tambolaWinners', JSON.stringify(winners));
-                    updateWinnersTable();
+                    // Add to winners list only if not already there
+                    const existingWinner = winners.find(w => w.pattern === "Early 7");
+                    if (!existingWinner && winningPatterns.earlySeven.winner) {
+                        winners.push({
+                            pattern: "Early 7",
+                            winner: winningPatterns.earlySeven.winner,
+                            ticketId: ticket.id,
+                            prize: winningPatterns.earlySeven.prize,
+                            time: new Date().toLocaleTimeString()
+                        });
+                        
+                        const announcement = `🎉 EARLY 7 WINNER! ${winningPatterns.earlySeven.winner} won $${winningPatterns.earlySeven.prize} with ticket ${ticket.id}!`;
+                        addAnnouncement(announcement);
+                        speakAnnouncement(`Early Seven Winner! ${winningPatterns.earlySeven.winner} won with ticket ${ticket.id}!`);
+                        
+                        // Save winners to localStorage
+                        localStorage.setItem('tambolaWinners', JSON.stringify(winners));
+                        updateWinnersTable();
+                    }
                 }
                 
                 // Check Top Line (first row all marked)
@@ -2444,24 +2700,28 @@
                 
                 if (winningPatterns.topLine.enabled && !winningPatterns.topLine.completed && topLineMarked) {
                     winningPatterns.topLine.completed = true;
-                    winningPatterns.topLine.winner = ticket.owner;
+                    if (!winningPatterns.topLine.winner) {
+                        winningPatterns.topLine.winner = ticket.owner;
+                    }
                     ticket.patternsCompleted.push("Top Line");
                     
-                    // Add to winners list
-                    winners.push({
-                        pattern: "Top Line",
-                        winner: ticket.owner,
-                        ticketId: ticket.id,
-                        prize: winningPatterns.topLine.prize,
-                        time: new Date().toLocaleTimeString()
-                    });
-                    
-                    const announcement = `🎉 TOP LINE WINNER! ${ticket.owner} won $${winningPatterns.topLine.prize} with ticket ${ticket.id}!`;
-                    addAnnouncement(announcement);
-                    speakAnnouncement(`Top Line Winner! ${ticket.owner} won with ticket ${ticket.id}!`);
-                    
-                    localStorage.setItem('tambolaWinners', JSON.stringify(winners));
-                    updateWinnersTable();
+                    const existingWinner = winners.find(w => w.pattern === "Top Line");
+                    if (!existingWinner && winningPatterns.topLine.winner) {
+                        winners.push({
+                            pattern: "Top Line",
+                            winner: winningPatterns.topLine.winner,
+                            ticketId: ticket.id,
+                            prize: winningPatterns.topLine.prize,
+                            time: new Date().toLocaleTimeString()
+                        });
+                        
+                        const announcement = `🎉 TOP LINE WINNER! ${winningPatterns.topLine.winner} won $${winningPatterns.topLine.prize} with ticket ${ticket.id}!`;
+                        addAnnouncement(announcement);
+                        speakAnnouncement(`Top Line Winner! ${winningPatterns.topLine.winner} won with ticket ${ticket.id}!`);
+                        
+                        localStorage.setItem('tambolaWinners', JSON.stringify(winners));
+                        updateWinnersTable();
+                    }
                 }
                 
                 // Check Corners (first, fifth, eleventh, fifteenth positions)
@@ -2470,24 +2730,28 @@
                 
                 if (winningPatterns.corners.enabled && !winningPatterns.corners.completed && cornersMarked) {
                     winningPatterns.corners.completed = true;
-                    winningPatterns.corners.winner = ticket.owner;
+                    if (!winningPatterns.corners.winner) {
+                        winningPatterns.corners.winner = ticket.owner;
+                    }
                     ticket.patternsCompleted.push("Corners");
                     
-                    // Add to winners list
-                    winners.push({
-                        pattern: "Corners",
-                        winner: ticket.owner,
-                        ticketId: ticket.id,
-                        prize: winningPatterns.corners.prize,
-                        time: new Date().toLocaleTimeString()
-                    });
-                    
-                    const announcement = `🎉 CORNERS WINNER! ${ticket.owner} won $${winningPatterns.corners.prize} with ticket ${ticket.id}!`;
-                    addAnnouncement(announcement);
-                    speakAnnouncement(`Corners Winner! ${ticket.owner} won with ticket ${ticket.id}!`);
-                    
-                    localStorage.setItem('tambolaWinners', JSON.stringify(winners));
-                    updateWinnersTable();
+                    const existingWinner = winners.find(w => w.pattern === "Corners");
+                    if (!existingWinner && winningPatterns.corners.winner) {
+                        winners.push({
+                            pattern: "Corners",
+                            winner: winningPatterns.corners.winner,
+                            ticketId: ticket.id,
+                            prize: winningPatterns.corners.prize,
+                            time: new Date().toLocaleTimeString()
+                        });
+                        
+                        const announcement = `🎉 CORNERS WINNER! ${winningPatterns.corners.winner} won $${winningPatterns.corners.prize} with ticket ${ticket.id}!`;
+                        addAnnouncement(announcement);
+                        speakAnnouncement(`Corners Winner! ${winningPatterns.corners.winner} won with ticket ${ticket.id}!`);
+                        
+                        localStorage.setItem('tambolaWinners', JSON.stringify(winners));
+                        updateWinnersTable();
+                    }
                 }
                 
                 // Check Middle Line (second row all marked)
@@ -2496,24 +2760,28 @@
                 
                 if (winningPatterns.middleLine.enabled && !winningPatterns.middleLine.completed && middleLineMarked) {
                     winningPatterns.middleLine.completed = true;
-                    winningPatterns.middleLine.winner = ticket.owner;
+                    if (!winningPatterns.middleLine.winner) {
+                        winningPatterns.middleLine.winner = ticket.owner;
+                    }
                     ticket.patternsCompleted.push("Middle Line");
                     
-                    // Add to winners list
-                    winners.push({
-                        pattern: "Middle Line",
-                        winner: ticket.owner,
-                        ticketId: ticket.id,
-                        prize: winningPatterns.middleLine.prize,
-                        time: new Date().toLocaleTimeString()
-                    });
-                    
-                    const announcement = `🎉 MIDDLE LINE WINNER! ${ticket.owner} won $${winningPatterns.middleLine.prize} with ticket ${ticket.id}!`;
-                    addAnnouncement(announcement);
-                    speakAnnouncement(`Middle Line Winner! ${ticket.owner} won with ticket ${ticket.id}!`);
-                    
-                    localStorage.setItem('tambolaWinners', JSON.stringify(winners));
-                    updateWinnersTable();
+                    const existingWinner = winners.find(w => w.pattern === "Middle Line");
+                    if (!existingWinner && winningPatterns.middleLine.winner) {
+                        winners.push({
+                            pattern: "Middle Line",
+                            winner: winningPatterns.middleLine.winner,
+                            ticketId: ticket.id,
+                            prize: winningPatterns.middleLine.prize,
+                            time: new Date().toLocaleTimeString()
+                        });
+                        
+                        const announcement = `🎉 MIDDLE LINE WINNER! ${winningPatterns.middleLine.winner} won $${winningPatterns.middleLine.prize} with ticket ${ticket.id}!`;
+                        addAnnouncement(announcement);
+                        speakAnnouncement(`Middle Line Winner! ${winningPatterns.middleLine.winner} won with ticket ${ticket.id}!`);
+                        
+                        localStorage.setItem('tambolaWinners', JSON.stringify(winners));
+                        updateWinnersTable();
+                    }
                 }
                 
                 // Check Bottom Line (third row all marked)
@@ -2522,50 +2790,58 @@
                 
                 if (winningPatterns.bottomLine.enabled && !winningPatterns.bottomLine.completed && bottomLineMarked) {
                     winningPatterns.bottomLine.completed = true;
-                    winningPatterns.bottomLine.winner = ticket.owner;
+                    if (!winningPatterns.bottomLine.winner) {
+                        winningPatterns.bottomLine.winner = ticket.owner;
+                    }
                     ticket.patternsCompleted.push("Bottom Line");
                     
-                    // Add to winners list
-                    winners.push({
-                        pattern: "Bottom Line",
-                        winner: ticket.owner,
-                        ticketId: ticket.id,
-                        prize: winningPatterns.bottomLine.prize,
-                        time: new Date().toLocaleTimeString()
-                    });
-                    
-                    const announcement = `🎉 BOTTOM LINE WINNER! ${ticket.owner} won $${winningPatterns.bottomLine.prize} with ticket ${ticket.id}!`;
-                    addAnnouncement(announcement);
-                    speakAnnouncement(`Bottom Line Winner! ${ticket.owner} won with ticket ${ticket.id}!`);
-                    
-                    localStorage.setItem('tambolaWinners', JSON.stringify(winners));
-                    updateWinnersTable();
+                    const existingWinner = winners.find(w => w.pattern === "Bottom Line");
+                    if (!existingWinner && winningPatterns.bottomLine.winner) {
+                        winners.push({
+                            pattern: "Bottom Line",
+                            winner: winningPatterns.bottomLine.winner,
+                            ticketId: ticket.id,
+                            prize: winningPatterns.bottomLine.prize,
+                            time: new Date().toLocaleTimeString()
+                        });
+                        
+                        const announcement = `🎉 BOTTOM LINE WINNER! ${winningPatterns.bottomLine.winner} won $${winningPatterns.bottomLine.prize} with ticket ${ticket.id}!`;
+                        addAnnouncement(announcement);
+                        speakAnnouncement(`Bottom Line Winner! ${winningPatterns.bottomLine.winner} won with ticket ${ticket.id}!`);
+                        
+                        localStorage.setItem('tambolaWinners', JSON.stringify(winners));
+                        updateWinnersTable();
+                    }
                 }
                 
                 // Check Full House (all numbers marked)
                 if (winningPatterns.fullHouse.enabled && !winningPatterns.fullHouse.completed && ticket.markedNumbers.length === ticket.numbers.length) {
                     winningPatterns.fullHouse.completed = true;
-                    winningPatterns.fullHouse.winner = ticket.owner;
+                    if (!winningPatterns.fullHouse.winner) {
+                        winningPatterns.fullHouse.winner = ticket.owner;
+                    }
                     ticket.patternsCompleted.push("Full House");
                     
-                    // Add to winners list
-                    winners.push({
-                        pattern: "Full House",
-                        winner: ticket.owner,
-                        ticketId: ticket.id,
-                        prize: winningPatterns.fullHouse.prize,
-                        time: new Date().toLocaleTimeString()
-                    });
-                    
-                    const announcement = `🏆 FULL HOUSE WINNER! ${ticket.owner} won the JACKPOT of $${winningPatterns.fullHouse.prize} with ticket ${ticket.id}!`;
-                    addAnnouncement(announcement);
-                    speakAnnouncement(`FULL HOUSE JACKPOT WINNER! ${ticket.owner} won the jackpot with ticket ${ticket.id}!`);
-                    
-                    localStorage.setItem('tambolaWinners', JSON.stringify(winners));
-                    updateWinnersTable();
-                    
-                    // End the game
-                    endGame();
+                    const existingWinner = winners.find(w => w.pattern === "Full House");
+                    if (!existingWinner && winningPatterns.fullHouse.winner) {
+                        winners.push({
+                            pattern: "Full House",
+                            winner: winningPatterns.fullHouse.winner,
+                            ticketId: ticket.id,
+                            prize: winningPatterns.fullHouse.prize,
+                            time: new Date().toLocaleTimeString()
+                        });
+                        
+                        const announcement = `🏆 FULL HOUSE WINNER! ${winningPatterns.fullHouse.winner} won the JACKPOT of $${winningPatterns.fullHouse.prize} with ticket ${ticket.id}!`;
+                        addAnnouncement(announcement);
+                        speakAnnouncement(`FULL HOUSE JACKPOT WINNER! ${winningPatterns.fullHouse.winner} won the jackpot with ticket ${ticket.id}!`);
+                        
+                        localStorage.setItem('tambolaWinners', JSON.stringify(winners));
+                        updateWinnersTable();
+                        
+                        // End the game
+                        endGame();
+                    }
                 }
             });
             
@@ -2576,7 +2852,7 @@
             localStorage.setItem('tambolaPrizes', JSON.stringify(winningPatterns));
         }
         
-        // Update winning patterns display - UPDATED: Don't show amount for disabled patterns
+        // Update winning patterns display - MODIFIED: Don't show winner names if they don't exist
         function updateWinningPatternsDisplay() {
             winningPatternsElement.innerHTML = "";
             
@@ -2590,6 +2866,7 @@
                 if (pattern.enabled) {
                     patternHTML += `<div class="prize">$${pattern.prize}</div>`;
                     
+                    // Only show winner if it exists
                     if (pattern.winner) {
                         patternHTML += `<div class="winner">Winner: ${pattern.winner}</div>`;
                     }
@@ -2620,7 +2897,7 @@
             toggleFullHouse.checked = winningPatterns.fullHouse.enabled;
         }
         
-        // Update players table - UPDATED WITH UNDO BUTTON AND PASSWORD RESET
+        // Update players table
         function updatePlayersTable() {
             playersTableBody.innerHTML = "";
             
@@ -2769,7 +3046,7 @@
             }
         }
         
-        // Add announcement
+        // Add announcement - MODIFIED: Only for winning patterns
         function addAnnouncement(text) {
             const announcement = {
                 text,
@@ -2794,7 +3071,23 @@
         function updateAnnouncements() {
             announcementsList.innerHTML = "";
             
-            announcements.forEach(announcement => {
+            // Filter announcements to show only winning announcements
+            const winningAnnouncements = announcements.filter(ann => 
+                ann.text.includes("WINNER") || 
+                ann.text.includes("JACKPOT") || 
+                ann.text.includes("STARTED") ||
+                ann.text.includes("GAME OVER") ||
+                ann.text.includes("paused by admin") ||
+                ann.text.includes("resumed by admin") ||
+                ann.text.includes("reset by admin")
+            );
+            
+            if (winningAnnouncements.length === 0) {
+                announcementsList.innerHTML = '<div class="announcement">No winning announcements yet. Game announcements will appear here.</div>';
+                return;
+            }
+            
+            winningAnnouncements.forEach(announcement => {
                 const announcementElement = document.createElement('div');
                 announcementElement.className = 'announcement';
                 announcementElement.innerHTML = `
@@ -2821,10 +3114,13 @@
             adminEndGameBtn.style.display = 'none';
             liveIndicator.style.display = 'none';
             liveGameBanner.style.display = 'none';
+            gameLiveMessage.style.display = 'none';
+            ticketPurchaseSection.style.display = 'none';
+            ticketSectionTitle.textContent = "Game Complete";
             
             // Add announcement
             addAnnouncement("🎊 GAME OVER! All winners have been announced. Thank you for playing!");
-            speakAnnouncement("Game Over! All winners have been announced. Thank you for playing!");
+            speakAnnouncement("Game Over! All winners have been announced. Thank you for playing! See you next time!");
             
             // Update button states
             updateButtonStates();
@@ -2880,7 +3176,7 @@
             
             let winnersCount = 0;
             for (const key in winningPatterns) {
-                if (winningPatterns[key].completed) winnersCount++;
+                if (winningPatterns[key].completed && winningPatterns[key].winner) winnersCount++;
             }
             winnersAnnouncedElement.textContent = winnersCount;
             
@@ -2961,6 +3257,9 @@
             
             // Regenerate tickets with new price
             generateTickets();
+            
+            // Voice announcement
+            speakAnnouncement("Game settings have been updated successfully.");
         }
         
         // Save ticket generation settings
@@ -2996,38 +3295,7 @@
             generateTickets();
             
             alert("Ticket generation settings saved and tickets regenerated!");
-        }
-        
-        // Regenerate all tickets
-        function regenerateAllTickets() {
-            if (!isAdmin) {
-                alert("Only admin can regenerate tickets!");
-                return;
-            }
-            
-            if (confirm("Are you sure you want to regenerate all tickets? This will reset all purchased tickets!")) {
-                // Clear purchased tickets
-                purchasedTickets = [];
-                localStorage.removeItem('tambolaTickets');
-                
-                // Clear winners
-                winners = [];
-                localStorage.removeItem('tambolaWinners');
-                updateWinnersTable();
-                
-                // Clear game ended state
-                gameEnded = false;
-                localStorage.removeItem('tambolaGameEnded');
-                gameOverBanner.style.display = 'none';
-                
-                // Save ticket generation settings
-                saveTicketGenerationSettings();
-                
-                // Update game
-                initGame();
-                
-                alert("All tickets have been regenerated and purchases reset!");
-            }
+            speakAnnouncement("Ticket generation settings have been updated successfully.");
         }
         
         // Save prize settings
@@ -3059,6 +3327,7 @@
             
             updateWinningPatternsDisplay();
             alert("Prize settings saved successfully!");
+            speakAnnouncement("Prize settings have been updated successfully.");
         }
         
         // Pause/Resume game
@@ -3084,7 +3353,7 @@
             saveGameState();
         }
         
-        // Reset game - UPDATED: Clear all winners and make it fresh
+        // Reset game - MODIFIED: Clear all winners and make it fresh
         function resetGame() {
             if (!isAdmin) {
                 alert("Only admin can reset the game!");
@@ -3105,37 +3374,36 @@
                 currentNumber = null;
                 selectedTicket = null;
                 
-                // Reset winning patterns completely fresh
-                // But keep prize settings from admin panel inputs
+                // Reset winning patterns completely fresh - CLEAR ALL WINNER NAMES
                 winningPatterns.earlySeven.enabled = toggleEarlySeven.checked;
                 winningPatterns.earlySeven.prize = parseInt(earlySevenPrizeInput.value) || 500;
                 winningPatterns.earlySeven.completed = false;
-                winningPatterns.earlySeven.winner = null;
+                winningPatterns.earlySeven.winner = null; // Clear winner name
                 
                 winningPatterns.topLine.enabled = toggleTopLine.checked;
                 winningPatterns.topLine.prize = parseInt(topLinePrizeInput.value) || 1500;
                 winningPatterns.topLine.completed = false;
-                winningPatterns.topLine.winner = null;
+                winningPatterns.topLine.winner = null; // Clear winner name
                 
                 winningPatterns.corners.enabled = toggleCorners.checked;
                 winningPatterns.corners.prize = parseInt(cornersPrizeInput.value) || 1000;
                 winningPatterns.corners.completed = false;
-                winningPatterns.corners.winner = null;
+                winningPatterns.corners.winner = null; // Clear winner name
                 
                 winningPatterns.middleLine.enabled = toggleMiddleLine.checked;
                 winningPatterns.middleLine.prize = parseInt(middleLinePrizeInput.value) || 2000;
                 winningPatterns.middleLine.completed = false;
-                winningPatterns.middleLine.winner = null;
+                winningPatterns.middleLine.winner = null; // Clear winner name
                 
                 winningPatterns.bottomLine.enabled = toggleBottomLine.checked;
                 winningPatterns.bottomLine.prize = parseInt(bottomLinePrizeInput.value) || 1500;
                 winningPatterns.bottomLine.completed = false;
-                winningPatterns.bottomLine.winner = null;
+                winningPatterns.bottomLine.winner = null; // Clear winner name
                 
                 winningPatterns.fullHouse.enabled = toggleFullHouse.checked;
                 winningPatterns.fullHouse.prize = parseInt(fullHousePrizeInput.value) || 5000;
                 winningPatterns.fullHouse.completed = false;
-                winningPatterns.fullHouse.winner = null;
+                winningPatterns.fullHouse.winner = null; // Clear winner name
                 
                 // Clear ALL localStorage data
                 localStorage.removeItem('tambolaTickets');
@@ -3157,7 +3425,7 @@
                 // Initialize fresh game
                 initGame();
                 addAnnouncement("Game has been completely reset by admin. All data cleared.");
-                speakAnnouncement("Game has been completely reset.");
+                speakAnnouncement("Game has been completely reset to fresh state. All previous data cleared.");
                 
                 alert("Game has been completely reset to fresh state!");
             }
@@ -3193,6 +3461,13 @@
                 gameActive = JSON.parse(savedGameActive);
                 gamePaused = JSON.parse(savedGamePaused);
                 gameEnded = JSON.parse(savedGameEnded);
+                
+                // Hide ticket purchase section if game is live
+                if (gameStarted && !gameEnded) {
+                    ticketPurchaseSection.style.display = 'none';
+                    gameLiveMessage.style.display = 'block';
+                    ticketSectionTitle.textContent = "Game Status";
+                }
                 
                 // Update called numbers
                 if (savedCalledNumbers) {
@@ -3260,6 +3535,8 @@
             if (gameEnded) {
                 gameStatusElement.textContent = "Game Complete! Winners have been announced.";
                 gameOverBanner.style.display = 'block';
+                gameLiveMessage.style.display = 'none';
+                ticketSectionTitle.textContent = "Game Complete";
             } else if (gameStarted) {
                 if (gamePaused) {
                     gameStatusElement.textContent = "Game is LIVE but currently paused by admin.";
@@ -3310,7 +3587,6 @@
         
         // Ticket generation controls
         generateTicketsBtn.addEventListener('click', saveTicketGenerationSettings);
-        regenerateTicketsBtn.addEventListener('click', regenerateAllTickets);
         
         // Password reset modal
         confirmResetPasswordBtn.addEventListener('click', function() {
@@ -3330,6 +3606,7 @@
                 alert(`Password for ${playerToReset} has been reset to: ${newPassword}`);
                 hidePasswordResetModal();
                 updatePlayersTable();
+                speakAnnouncement(`Password for ${playerToReset} has been reset successfully.`);
             }
         });
         
@@ -3348,13 +3625,46 @@
         // Initialize the game on page load
         window.addEventListener('DOMContentLoaded', initGame);
         
-        // Auto-show login modal if not logged in after delay
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                if (!currentUser) {
-                    // Don't auto-show, just show login button
-                }
-            }, 500);
+        // Add voice control toggle button to the UI
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create voice control UI
+            const voiceControlUI = `
+                <div class="audio-controls">
+                    <button id="toggleVoiceBtn" class="audio-btn">
+                        <i class="fas fa-volume-up"></i> Voice ON
+                    </button>
+                    <button id="testVoiceBtn" class="audio-btn" style="background: #4caf50;">
+                        <i class="fas fa-play"></i> Test Voice
+                    </button>
+                </div>
+            `;
+            
+            // Add to game status area
+            const gameStatusDiv = document.getElementById('gameStatus');
+            if (gameStatusDiv) {
+                gameStatusDiv.insertAdjacentHTML('afterend', voiceControlUI);
+                
+                // Add event listeners
+                const toggleVoiceBtn = document.getElementById('toggleVoiceBtn');
+                const testVoiceBtn = document.getElementById('testVoiceBtn');
+                
+                toggleVoiceBtn.addEventListener('click', function() {
+                    isSpeechEnabled = !isSpeechEnabled;
+                    if (isSpeechEnabled) {
+                        this.innerHTML = '<i class="fas fa-volume-up"></i> Voice ON';
+                        this.classList.remove('muted');
+                        speakAnnouncement("Voice announcements are now enabled.");
+                    } else {
+                        this.innerHTML = '<i class="fas fa-volume-mute"></i> Voice OFF';
+                        this.classList.add('muted');
+                        // Don't speak when turning off
+                    }
+                });
+                
+                testVoiceBtn.addEventListener('click', function() {
+                    speakAnnouncement("Welcome players!");
+                });
+            }
         });
     </script>
 </body>
