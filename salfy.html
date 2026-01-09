@@ -589,7 +589,7 @@
             border: 1px solid #e0e0e0;
             transition: all 0.3s;
             background: white;
-            margin-bottom: 15px;
+            margin-bottom: 25px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
         
@@ -657,88 +657,6 @@
             font-size: 48px;
             margin-bottom: 15px;
             color: #bdc3c7;
-        }
-        
-        /* Pagination Styles */
-        .pagination-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-            padding: 15px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-        
-        .pagination-info {
-            font-size: 0.95rem;
-            color: #2c3e50;
-            font-weight: 500;
-        }
-        
-        .pagination-info span {
-            color: #3498db;
-            font-weight: 700;
-        }
-        
-        .pagination-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .pagination-btn {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);
-        }
-        
-        .pagination-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(52, 152, 219, 0.3);
-        }
-        
-        .pagination-btn:disabled {
-            background: linear-gradient(135deg, #bdc3c7 0%, #95a5a6 100%);
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-        
-        .pagination-numbers {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .page-number {
-            padding: 8px 15px;
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 500;
-        }
-        
-        .page-number:hover {
-            background: #e9ecef;
-            transform: translateY(-2px);
-        }
-        
-        .page-number.active {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white;
-            border-color: #3498db;
         }
         
         /* Dashboard Charts Section */
@@ -916,11 +834,6 @@
             color: white;
         }
         
-        .download-btn.pdf {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            color: white;
-        }
-        
         .download-btn.chart {
             background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
             color: white;
@@ -928,11 +841,6 @@
         
         .download-btn.report {
             background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-            color: white;
-        }
-        
-        .download-btn.home {
-            background: linear-gradient(135deg, #f39c12 0%, #d35400 100%);
             color: white;
         }
         
@@ -1050,6 +958,77 @@
             animation: spin 1s linear infinite;
         }
         
+        /* NEW: Pagination Styles */
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            border-radius: 0 0 12px 12px;
+        }
+        
+        .pagination-info {
+            font-size: 0.95rem;
+            color: #34495e;
+        }
+        
+        .pagination-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .pagination-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .pagination-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+        }
+        
+        .pagination-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .page-numbers {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        
+        .page-number {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .page-number:hover {
+            background-color: #f0f7ff;
+            border-color: #3498db;
+        }
+        
+        .page-number.active {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border-color: #3498db;
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
             .totals-container {
@@ -1077,11 +1056,10 @@
             .pagination-container {
                 flex-direction: column;
                 gap: 15px;
-                text-align: center;
+                align-items: stretch;
             }
             
-            .pagination-controls {
-                flex-wrap: wrap;
+            .pagination-buttons {
                 justify-content: center;
             }
         }
@@ -1115,7 +1093,7 @@
                     
                     <div class="detection-info" id="detectionInfo">
                         <i class="fas fa-info-circle"></i>
-                        <span>The AI will automatically detect columns like Customer Name, Invoice Number, SKU, etc. from your Excel file.</span>
+                        <span>The Sales AI will automatically detect from your Excel file.</span>
                     </div>
                     
                     <div class="column-mapping-info" id="columnMappingInfo">
@@ -1292,7 +1270,7 @@
 				
 				<!-- Download Buttons -->
                 <div class="download-section">
-				<button class="download-btn pdf" id="PurchaseAnalys" onclick="window.location.href='purfy.html';">
+				<button class="download-btn chart" id="Purcahse Analys" onclick="window.location.href='purfy.html';">
                         <i class="fas fa-chart-pie"></i> Purchase Analysis
                     </button>
 				
@@ -1303,10 +1281,8 @@
                     <button class="download-btn chart" id="downloadCharts">
                         <i class="fas fa-chart-line"></i> Download Charts
                     </button>
-                    
-                    <!-- Home Button -->
-                    <button class="download-btn home" id="Purcahse Analys"onclick="window.location.href='purfy.html';">
-                        <i class="fas fa-home"></i> Purchase Analys
+                    <button class="download-btn report" id="downloadReport">
+                        <i class="fas fa-download"></i> Full Report
                     </button>
                 </div>
 				
@@ -1359,23 +1335,22 @@
                             </tr>
                         </tbody>
                     </table>
-                </div>
-                
-                <!-- Pagination Controls -->
-                <div class="pagination-container" id="paginationContainer" style="display: none;">
-                    <div class="pagination-info" id="paginationInfo">
-                        Showing <span id="pageStart">1</span> to <span id="pageEnd">10</span> of <span id="totalRows">0</span> entries
-                    </div>
-                    <div class="pagination-controls">
-                        <button class="pagination-btn" id="prevPage" disabled>
-                            <i class="fas fa-chevron-left"></i> Previous
-                        </button>
-                        <div class="pagination-numbers" id="pageNumbers">
-                            <!-- Page numbers will be dynamically generated -->
+                    <!-- NEW: Pagination Controls -->
+                    <div class="pagination-container" id="paginationContainer" style="display: none;">
+                        <div class="pagination-info" id="paginationInfo">
+                            Showing 0 to 0 of 0 entries
                         </div>
-                        <button class="pagination-btn" id="nextPage" disabled>
-                            Next <i class="fas fa-chevron-right"></i>
-                        </button>
+                        <div class="pagination-buttons">
+                            <button class="pagination-btn" id="prevPage">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </button>
+                            <div class="page-numbers" id="pageNumbers">
+                                <!-- Page numbers will be generated here -->
+                            </div>
+                            <button class="pagination-btn" id="nextPage">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -1384,7 +1359,7 @@
                         <i class="fas fa-robot"></i>
                         <h4>AI Market Insights</h4>
                     </div>
-                    <p id="aiInsightText">Upload your Excel file to get intelligent market insights about your data. The AI will analyze trends, identify opportunities, and provide actionable recommendations.</p>
+                    <p id="aiInsightText">This Sakes AI will analyze trends, identify opportunities, and provide actionable recommendations.</p>
                 </div>
                 
                 <div class="data-warning" id="dataWarning" style="display: none;">
@@ -1445,14 +1420,11 @@
         // Download buttons
         const downloadExcel = document.getElementById('downloadExcel');
         const downloadCharts = document.getElementById('downloadCharts');
-        const homeButton = document.getElementById('homeButton');
+        const downloadReport = document.getElementById('downloadReport');
         
-        // Pagination Elements
+        // NEW: Pagination elements
         const paginationContainer = document.getElementById('paginationContainer');
         const paginationInfo = document.getElementById('paginationInfo');
-        const pageStart = document.getElementById('pageStart');
-        const pageEnd = document.getElementById('pageEnd');
-        const totalRows = document.getElementById('totalRows');
         const prevPage = document.getElementById('prevPage');
         const nextPage = document.getElementById('nextPage');
         const pageNumbers = document.getElementById('pageNumbers');
@@ -1485,9 +1457,9 @@
         let utilityHistory = [];
         const utilityUpdateInterval = 3000;
         
-        // Pagination variables
+        // NEW: Pagination variables
         let currentPage = 1;
-        const rowsPerPage = 10;
+        const rowsPerPage = 5;
         let totalPages = 1;
         
         // Event Listeners
@@ -1542,6 +1514,10 @@
             applyDataFiltersWithDebounce();
         });
         
+        // NEW: Pagination event listeners
+        prevPage.addEventListener('click', goToPreviousPage);
+        nextPage.addEventListener('click', goToNextPage);
+        
         // NEW: Month checkbox events
         function initializeMonthCheckboxes() {
             monthCheckboxes = [];
@@ -1588,27 +1564,92 @@
             clearAllFilters();
         });
         
-        // Home button event
-        homeButton.addEventListener('click', () => {
-            // Reset to initial state
-            clearAllFilters();
-            fileInput.value = '';
-            fileName.textContent = 'No file selected';
-            detectionInfo.innerHTML = `<i class="fas fa-info-circle"></i> <span>The AI will automatically detect columns like Customer Name, Invoice Number, SKU, etc. from your Excel file.</span>`;
-            detectionInfo.style.background = 'linear-gradient(135deg, #e8f4fc 0%, #d1ecf1 100%)';
-            detectionInfo.style.color = '#2c3e50';
-            
-            // Reload sample data
-            loadSampleData();
-        });
-        
         // Download button events
         downloadExcel.addEventListener('click', downloadAsExcel);
         downloadCharts.addEventListener('click', downloadChartsAsImage);
+        downloadReport.addEventListener('click', downloadFullReport);
         
-        // Pagination button events
-        prevPage.addEventListener('click', goToPreviousPage);
-        nextPage.addEventListener('click', goToNextPage);
+        // NEW: Pagination functions
+        function goToPreviousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderData();
+                updatePaginationControls();
+            }
+        }
+        
+        function goToNextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderData();
+                updatePaginationControls();
+            }
+        }
+        
+        function goToPage(page) {
+            if (page >= 1 && page <= totalPages && page !== currentPage) {
+                currentPage = page;
+                renderData();
+                updatePaginationControls();
+            }
+        }
+        
+        function updatePaginationControls() {
+            // Update previous/next buttons
+            prevPage.disabled = currentPage === 1;
+            nextPage.disabled = currentPage === totalPages;
+            
+            // Update pagination info
+            const startIndex = (currentPage - 1) * rowsPerPage + 1;
+            const endIndex = Math.min(currentPage * rowsPerPage, filteredData.length);
+            paginationInfo.textContent = `Showing ${startIndex} to ${endIndex} of ${filteredData.length} entries`;
+            
+            // Update page numbers
+            pageNumbers.innerHTML = '';
+            
+            // Always show first page
+            addPageNumber(1);
+            
+            // Show ellipsis if needed
+            if (currentPage > 3) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.style.padding = '8px 12px';
+                pageNumbers.appendChild(ellipsis);
+            }
+            
+            // Show pages around current page
+            const startPage = Math.max(2, currentPage - 1);
+            const endPage = Math.min(totalPages - 1, currentPage + 1);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                addPageNumber(i);
+            }
+            
+            // Show ellipsis if needed
+            if (currentPage < totalPages - 2) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.style.padding = '8px 12px';
+                pageNumbers.appendChild(ellipsis);
+            }
+            
+            // Always show last page if more than 1 page
+            if (totalPages > 1) {
+                addPageNumber(totalPages);
+            }
+        }
+        
+        function addPageNumber(page) {
+            const pageElement = document.createElement('span');
+            pageElement.className = 'page-number';
+            if (page === currentPage) {
+                pageElement.classList.add('active');
+            }
+            pageElement.textContent = page;
+            pageElement.addEventListener('click', () => goToPage(page));
+            pageNumbers.appendChild(pageElement);
+        }
         
         // Handle customer input for autocomplete
         function handleCustomerInput() {
@@ -2384,9 +2425,6 @@
             skuSearch.value = '';
             filterSKUs();
             
-            // Reset to page 1
-            currentPage = 1;
-            
             // Re-apply filters
             applyDataFilters();
         }
@@ -2442,6 +2480,9 @@
                         return month && selectedMonths.has(month);
                     });
                 }
+                
+                // Reset to first page when filters change
+                currentPage = 1;
                 
                 // Render filtered data
                 renderData();
@@ -2754,29 +2795,15 @@
             let productTotal = 0;
             let valueTotal = 0;
             
-            // Calculate totals from ALL filtered data (not just current page)
+            // Calculate totals from all filtered data (not just current page)
             filteredData.forEach(row => {
-                const quantity = parseFloat(row['Quantity (Numbers)']) || 0;
-                const productQty = parseFloat(row['Product Quantity(L/Kg)']) || 0;
-                const invoiceValue = parseFloat(row['Invoice Value (Rs.)']) || 0;
-                
-                quantityTotal += quantity;
-                productTotal += productQty;
-                valueTotal += invoiceValue;
+                quantityTotal += parseFloat(row['Quantity (Numbers)']) || 0;
+                productTotal += parseFloat(row['Product Quantity(L/Kg)']) || 0;
+                valueTotal += parseFloat(row['Invoice Value (Rs.)']) || 0;
             });
             
             // Calculate pagination
             totalPages = Math.ceil(filteredData.length / rowsPerPage);
-            
-            // Ensure current page is valid
-            if (currentPage > totalPages) {
-                currentPage = totalPages;
-            }
-            if (currentPage < 1) {
-                currentPage = 1;
-            }
-            
-            // Calculate start and end indices for current page
             const startIndex = (currentPage - 1) * rowsPerPage;
             const endIndex = Math.min(startIndex + rowsPerPage, filteredData.length);
             const currentPageData = filteredData.slice(startIndex, endIndex);
@@ -2806,114 +2833,20 @@
             
             tableBody.innerHTML = tableHTML;
             
+            // Show pagination controls
+            paginationContainer.style.display = 'flex';
+            
             // Update summary with animation
             updateCounter(recordsCount, filteredData.length, 'records');
             updateCounter(totalQuantity, quantityTotal, 'number');
             updateCounter(totalProduct, productTotal, 'number');
             updateCounter(totalValue, valueTotal, 'currency');
             
-            // Update pagination info
-            updatePaginationInfo();
+            // Update pagination controls
+            updatePaginationControls();
             
             // Update AI suggestion
             updateAISuggestion();
-        }
-        
-        // Update pagination information and controls
-        function updatePaginationInfo() {
-            if (filteredData.length === 0) {
-                paginationContainer.style.display = 'none';
-                return;
-            }
-            
-            // Show pagination container
-            paginationContainer.style.display = 'flex';
-            
-            // Update pagination info text
-            const startIndex = (currentPage - 1) * rowsPerPage + 1;
-            const endIndex = Math.min(currentPage * rowsPerPage, filteredData.length);
-            
-            pageStart.textContent = startIndex.toLocaleString();
-            pageEnd.textContent = endIndex.toLocaleString();
-            totalRows.textContent = filteredData.length.toLocaleString();
-            
-            // Update button states
-            prevPage.disabled = currentPage === 1;
-            nextPage.disabled = currentPage === totalPages;
-            
-            // Update page numbers
-            updatePageNumbers();
-        }
-        
-        // Update page number buttons
-        function updatePageNumbers() {
-            pageNumbers.innerHTML = '';
-            
-            // Always show first page
-            addPageNumber(1);
-            
-            // Calculate range of pages to show
-            let startPage = Math.max(2, currentPage - 2);
-            let endPage = Math.min(totalPages - 1, currentPage + 2);
-            
-            // Adjust if we're near the start
-            if (startPage > 2) {
-                pageNumbers.innerHTML += '<span style="padding: 8px 5px;">...</span>';
-            }
-            
-            // Add middle pages
-            for (let i = startPage; i <= endPage; i++) {
-                addPageNumber(i);
-            }
-            
-            // Adjust if we're near the end
-            if (endPage < totalPages - 1) {
-                pageNumbers.innerHTML += '<span style="padding: 8px 5px;">...</span>';
-            }
-            
-            // Always show last page if there is more than one page
-            if (totalPages > 1) {
-                addPageNumber(totalPages);
-            }
-        }
-        
-        // Add a page number button
-        function addPageNumber(pageNum) {
-            const pageButton = document.createElement('span');
-            pageButton.className = 'page-number';
-            if (pageNum === currentPage) {
-                pageButton.classList.add('active');
-            }
-            pageButton.textContent = pageNum;
-            pageButton.addEventListener('click', () => {
-                goToPage(pageNum);
-            });
-            pageNumbers.appendChild(pageButton);
-        }
-        
-        // Go to specific page
-        function goToPage(page) {
-            if (page < 1 || page > totalPages || page === currentPage) return;
-            
-            currentPage = page;
-            renderData();
-            
-            // Scroll table into view
-            tableContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-        
-        // Go to previous page
-        function goToPreviousPage() {
-            if (currentPage > 1) {
-                goToPage(currentPage - 1);
-            }
-        }
-        
-        // Go to next page
-        function goToNextPage() {
-            if (currentPage < totalPages) {
-                goToPage(currentPage + 1);
-            }
         }
         
         // Animate counter updates
@@ -3153,6 +3086,151 @@
             showDownloadSuccess('Charts downloaded as PNG image!');
         }
         
+        // Download full report
+        function downloadFullReport() {
+            if (filteredData.length === 0) {
+                alert('No data to create report. Please upload and filter data first.');
+                return;
+            }
+            
+            // Create comprehensive report
+            const reportContent = `
+AUTO LUBE HOUSE - MARKET ANALYSIS REPORT
+=========================================
+Generated: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}
+
+EXECUTIVE SUMMARY
+-----------------
+Total Records: ${filteredData.length}
+Total Quantity: ${totalQuantity.textContent}
+Total Product Quantity: ${totalProduct.textContent}
+Total Value: ${totalValue.textContent}
+Market Utility Indicator: ${utilityValue.textContent}
+Date Range: ${getDateRange()}
+
+TOP CUSTOMERS
+-------------
+${getTopCustomers(5).map((cust, i) => `${i+1}. ${cust.name}: ${formatCurrency(cust.value)}`).join('\n')}
+
+TOP PRODUCTS
+------------
+${getTopProducts(5).map((prod, i) => `${i+1}. ${prod.name}: ${prod.quantity} units`).join('\n')}
+
+MARKET INSIGHTS
+---------------
+${aiInsightText.textContent}
+
+DATA SAMPLE (First 10 Records)
+------------------------------
+${getDataSample(10).map(row => 
+    `${row['Customer Name'] || 'N/A'} | ${row['Invoice Date'] || 'N/A'} | ${row['SKU Name'] || 'N/A'} | ${row['Quantity (Numbers)'] || 0} | ${formatCurrency(row['Invoice Value (Rs.)'] || 0)}`
+).join('\n')}
+
+FILTERS APPLIED
+---------------
+${getActiveFilters().join('\n') || 'No filters applied'}
+
+RECOMMENDATIONS
+---------------
+1. Focus on top performing customers for retention
+2. Increase inventory for high-demand products
+3. Review underperforming products
+4. Monitor market utility trends regularly
+
+END OF REPORT
+-------------
+Generated by Auto Lube House Smart Dashboard
+            `.trim();
+            
+            // Create and download text file
+            const blob = new Blob([reportContent], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.download = `Auto_Lube_House_Report_${new Date().toISOString().split('T')[0]}.txt`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+            
+            // Show success message
+            showDownloadSuccess('Full market report downloaded!');
+        }
+        
+        // Helper function to get top customers
+        function getTopCustomers(count) {
+            const customerTotals = {};
+            filteredData.forEach(row => {
+                const customer = row['Customer Name'];
+                const value = parseFloat(row['Invoice Value (Rs.)']) || 0;
+                if (customer) {
+                    customerTotals[customer] = (customerTotals[customer] || 0) + value;
+                }
+            });
+            
+            return Object.entries(customerTotals)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, count)
+                .map(([name, value]) => ({ name, value }));
+        }
+        
+        // Helper function to get top products
+        function getTopProducts(count) {
+            const productTotals = {};
+            filteredData.forEach(row => {
+                const product = row['SKU Name'];
+                const quantity = parseFloat(row['Quantity (Numbers)']) || 0;
+                if (product) {
+                    productTotals[product] = (productTotals[product] || 0) + quantity;
+                }
+            });
+            
+            return Object.entries(productTotals)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, count)
+                .map(([name, quantity]) => ({ name, quantity }));
+        }
+        
+        // Helper function to get date range
+        function getDateRange() {
+            if (filteredData.length === 0) return 'N/A';
+            
+            const dates = filteredData
+                .map(row => row['Invoice Date'])
+                .filter(date => date)
+                .map(date => new Date(date));
+            
+            if (dates.length === 0) return 'N/A';
+            
+            const minDate = new Date(Math.min(...dates));
+            const maxDate = new Date(Math.max(...dates));
+            
+            return `${minDate.toLocaleDateString()} - ${maxDate.toLocaleDateString()}`;
+        }
+        
+        // Helper function to get data sample
+        function getDataSample(count) {
+            return filteredData.slice(0, Math.min(count, filteredData.length));
+        }
+        
+        // Helper function to get active filters
+        function getActiveFilters() {
+            const filters = [];
+            
+            if (selectedCustomer && selectedCustomer.trim() !== '') {
+                filters.push(`Customer: ${selectedCustomer}`);
+            }
+            if (groupFilter.value) filters.push(`Group: ${groupFilter.options[groupFilter.selectedIndex].text}`);
+            if (selectedSKUs.size > 0) filters.push(`SKUs: ${selectedSKUs.size} selected`);
+            if (selectedMonths.size > 0) {
+                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                                   'July', 'August', 'September', 'October', 'November', 'December'];
+                const selectedMonthNames = Array.from(selectedMonths)
+                    .map(month => monthNames[parseInt(month) - 1])
+                    .join(', ');
+                filters.push(`Months: ${selectedMonthNames}`);
+            }
+            if (selectedYear) filters.push(`Year: ${selectedYear}`);
+            
+            return filters;
+        }
+        
         // Show download success message
         function showDownloadSuccess(message) {
             const successDiv = document.createElement('div');
@@ -3202,7 +3280,7 @@
             // Generate realistic sample data
             const sampleData = [
                 
-				];
+            ];
             
             // Process the sample data
             processExcelData(sampleData);

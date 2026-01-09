@@ -1169,7 +1169,7 @@
                     
                     <div class="detection-info" id="detectionInfo">
                         <i class="fas fa-info-circle"></i>
-                        <span>The AI will automatically detect columns like State Office, Supply Location, Truck Number, Invoice Number, SKU, etc. from your Excel file.</span>
+                        <span>This Pirchase AI will automatically detect from your Excel file.</span>
                     </div>
                     
                     <div class="column-mapping-info" id="columnMappingInfo">
@@ -1346,6 +1346,11 @@
                 
                 <!-- Download Buttons -->
                 <div class="download-section">
+                    <!-- Home Button -->
+                    <button class="download-btn home" id="Home" onclick="window.location.href='alhhome.html';">
+                        <i class="fas fa-home"></i> Home
+                    </button>
+                    
                     <button class="download-btn excel" id="downloadExcel">
                         <i class="fas fa-file-excel"></i> Download as Excel
                     </button>
@@ -1354,10 +1359,6 @@
                     </button>
                     <button class="download-btn report" id="downloadReport">
                         <i class="fas fa-download"></i> Full Report
-                    </button>
-					 <!-- Home Button -->
-                    <button class="download-btn home" id="Home"onclick="window.location.href='alhhome.html';">
-                        <i class="fas fa-home"></i> Home
                     </button>
                 </div>
                 
@@ -1423,10 +1424,10 @@
                         <div class="page-size-selector">
                             <span>Show:</span>
                             <select id="pageSize">
+                                <option value="5" selected>5 rows</option>
                                 <option value="10">10 rows</option>
                                 <option value="25">25 rows</option>
                                 <option value="50">50 rows</option>
-                                <option value="100">100 rows</option>
                             </select>
                         </div>
                     </div>
@@ -1538,7 +1539,7 @@
         
         // Pagination variables
         let currentPage = 1;
-        let pageSize = 10;
+        let pageSize = 5; // Changed from 10 to 5
         let totalPages = 1;
         
         // Event Listeners
@@ -1645,20 +1646,10 @@
             window.location.reload();
         });
         
-        // Pagination event listeners
-        prevPageBtn.addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                renderCurrentPage();
-            }
-        });
+        // Pagination event listeners - FIXED: Added proper event listeners
+        prevPageBtn.addEventListener('click', goToPreviousPage);
         
-        nextPageBtn.addEventListener('click', () => {
-            if (currentPage < totalPages) {
-                currentPage++;
-                renderCurrentPage();
-            }
-        });
+        nextPageBtn.addEventListener('click', goToNextPage);
         
         pageSizeSelect.addEventListener('change', () => {
             pageSize = parseInt(pageSizeSelect.value);
@@ -2559,8 +2550,29 @@
             pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
             
             // Update button states
+            updatePaginationButtons();
+        }
+        
+        // Update pagination button states
+        function updatePaginationButtons() {
             prevPageBtn.disabled = currentPage <= 1;
             nextPageBtn.disabled = currentPage >= totalPages;
+        }
+        
+        // Go to previous page
+        function goToPreviousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderCurrentPage();
+            }
+        }
+        
+        // Go to next page
+        function goToNextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderCurrentPage();
+            }
         }
         
         // Render current page
@@ -2582,7 +2594,7 @@
             const endIndex = Math.min(startIndex + pageSize, filteredData.length);
             const pageData = filteredData.slice(startIndex, endIndex);
             
-            // Build table rows for current page
+            // Build table rows for current page - Will display only 5 rows
             let tableHTML = '';
             
             pageData.forEach(row => {
@@ -2608,7 +2620,8 @@
             tableBody.innerHTML = tableHTML;
             
             // Update pagination controls
-            updatePagination();
+            pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+            updatePaginationButtons();
         }
         
         // Update market utility meter
