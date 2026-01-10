@@ -1347,7 +1347,7 @@
                 <!-- Download Buttons -->
                 <div class="download-section">
                     <!-- Home Button -->
-                    <button class="download-btn home" id="Home" onclick="window.location.href='alhhome.html';">
+                    <button class="download-btn home" id="homeButton" onclick="window.location.href='alhhome.html';">
                         <i class="fas fa-home"></i> Home
                     </button>
                     
@@ -1502,7 +1502,7 @@
         const downloadCharts = document.getElementById('downloadCharts');
         const downloadReport = document.getElementById('downloadReport');
         
-        // Pagination elements
+        // Pagination elements - FIXED
         const prevPageBtn = document.getElementById('prevPage');
         const nextPageBtn = document.getElementById('nextPage');
         const pageInfo = document.getElementById('pageInfo');
@@ -1537,297 +1537,124 @@
         let utilityHistory = [];
         const utilityUpdateInterval = 3000;
         
-        // Pagination variables
+        // Pagination variables - FIXED
         let currentPage = 1;
-        let pageSize = 5; // Changed from 10 to 5
+        let pageSize = 5;
         let totalPages = 1;
         
-        // Event Listeners
-        uploadBtn.addEventListener('click', () => fileInput.click());
-        uploadArea.addEventListener('click', () => fileInput.click());
-        uploadArea.addEventListener('dragover', (e) => {
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing application...');
+            
+            // Attach event listeners
+            attachEventListeners();
+            
+            // Initialize month checkboxes
+            initializeMonthCheckboxes();
+            
+            // Load sample data after a short delay
+            setTimeout(loadSampleData, 500);
+        });
+        
+        // Attach all event listeners
+        function attachEventListeners() {
+            // File upload events
+            uploadBtn.addEventListener('click', () => fileInput.click());
+            uploadArea.addEventListener('click', () => fileInput.click());
+            uploadArea.addEventListener('dragover', handleDragOver);
+            uploadArea.addEventListener('dragleave', handleDragLeave);
+            uploadArea.addEventListener('drop', handleDrop);
+            fileInput.addEventListener('change', handleFileUpload);
+            
+            // State Office autocomplete events
+            stateofficeAutocomplete.addEventListener('input', handleStateOfficeInput);
+            stateofficeAutocomplete.addEventListener('focus', handleStateOfficeFocus);
+            stateofficeAutocomplete.addEventListener('blur', handleStateOfficeBlur);
+            stateofficeAutocomplete.addEventListener('keydown', handleStateOfficeKeydown);
+            clearStateOfficeBtn.addEventListener('click', clearStateOfficeSelection);
+            
+            // Filter events
+            locationFilter.addEventListener('change', handleFilterChange);
+            yearFilter.addEventListener('change', handleFilterChange);
+            skuSearch.addEventListener('input', filterSKUs);
+            selectAllSKU.addEventListener('change', handleSelectAllSKU);
+            applyFilters.addEventListener('click', applyDataFilters);
+            clearFilters.addEventListener('click', clearAllFilters);
+            
+            // Month checkbox events
+            monthCheckboxes = [];
+            const monthCheckboxElements = monthCheckboxContainer.querySelectorAll('input[type="checkbox"]');
+            monthCheckboxElements.forEach(checkbox => {
+                monthCheckboxes.push(checkbox);
+                checkbox.addEventListener('change', handleMonthCheckboxChange);
+            });
+            
+            // Pagination events - FIXED: Proper event listeners
+            prevPageBtn.addEventListener('click', goToPreviousPage);
+            nextPageBtn.addEventListener('click', goToNextPage);
+            pageSizeSelect.addEventListener('change', handlePageSizeChange);
+            
+            // Download button events
+            downloadExcel.addEventListener('click', downloadAsExcel);
+            downloadCharts.addEventListener('click', downloadChartsAsImage);
+            downloadReport.addEventListener('click', downloadFullReport);
+            
+            console.log('Event listeners attached successfully');
+        }
+        
+        // Handle drag over
+        function handleDragOver(e) {
             e.preventDefault();
             uploadArea.style.backgroundColor = '#f0f7ff';
-        });
-        uploadArea.addEventListener('dragleave', () => {
+        }
+        
+        // Handle drag leave
+        function handleDragLeave() {
             uploadArea.style.backgroundColor = 'white';
-        });
-        uploadArea.addEventListener('drop', (e) => {
+        }
+        
+        // Handle drop
+        function handleDrop(e) {
             e.preventDefault();
             uploadArea.style.backgroundColor = 'white';
             if (e.dataTransfer.files.length) {
                 fileInput.files = e.dataTransfer.files;
                 handleFileUpload();
             }
-        });
+        }
         
-        fileInput.addEventListener('change', handleFileUpload);
-        
-        // State Office autocomplete events
-        stateofficeAutocomplete.addEventListener('input', handleStateOfficeInput);
-        stateofficeAutocomplete.addEventListener('focus', handleStateOfficeFocus);
-        stateofficeAutocomplete.addEventListener('blur', () => {
-            setTimeout(() => {
-                stateofficeDropdown.style.display = 'none';
-            }, 200);
-        });
-        stateofficeAutocomplete.addEventListener('keydown', handleStateOfficeKeydown);
-        
-        clearStateOfficeBtn.addEventListener('click', clearStateOfficeSelection);
-        
-        locationFilter.addEventListener('change', () => {
-            showFilterUpdateEffect(locationFilter);
+        // Handle filter change
+        function handleFilterChange() {
+            showFilterUpdateEffect(this);
             applyDataFiltersWithDebounce();
-        });
+        }
         
-        yearFilter.addEventListener('change', () => {
-            showFilterUpdateEffect(yearFilter);
-            selectedYear = yearFilter.value;
-            applyDataFiltersWithDebounce();
-        });
-        
-        skuSearch.addEventListener('input', filterSKUs);
-        
-        selectAllSKU.addEventListener('change', () => {
-            showFilterUpdateEffect(selectAllSKU);
+        // Handle select all SKU
+        function handleSelectAllSKU() {
+            showFilterUpdateEffect(this);
             toggleAllSKUs();
             applyDataFiltersWithDebounce();
-        });
-        
-        // Month checkbox events
-        function initializeMonthCheckboxes() {
-            monthCheckboxes = [];
-            // Get all month checkboxes
-            const monthCheckboxElements = monthCheckboxContainer.querySelectorAll('input[type="checkbox"]');
-            monthCheckboxElements.forEach(checkbox => {
-                monthCheckboxes.push(checkbox);
-                checkbox.addEventListener('change', () => {
-                    updateMonthSelection();
-                    showFilterUpdateEffect(checkbox);
-                    applyDataFiltersWithDebounce();
-                });
-            });
         }
         
-        // Update month selection
-        function updateMonthSelection() {
-            selectedMonths.clear();
-            monthCheckboxes.forEach(checkbox => {
-                if (checkbox.checked) {
-                    selectedMonths.add(checkbox.value);
-                }
-            });
-            updateMonthSelectedCount();
+        // Handle month checkbox change
+        function handleMonthCheckboxChange() {
+            updateMonthSelection();
+            showFilterUpdateEffect(this);
+            applyDataFiltersWithDebounce();
         }
         
-        // Update month selected count
-        function updateMonthSelectedCount() {
-            const totalMonths = 12;
-            monthSelectedCount.textContent = `${selectedMonths.size} selected`;
-            
-            if (selectedMonths.size === totalMonths) {
-                monthSelectedCount.textContent = 'All selected';
-            }
-        }
-        
-        applyFilters.addEventListener('click', () => {
-            showFilterUpdateEffect(applyFilters);
-            applyDataFilters();
-        });
-        
-        clearFilters.addEventListener('click', () => {
-            showFilterUpdateEffect(clearFilters);
-            clearAllFilters();
-        });
-        
-        // Home button event listener
-        homeButton.addEventListener('click', () => {
-            // Reload the page to go back to home
-            window.location.reload();
-        });
-        
-        // Pagination event listeners - FIXED: Added proper event listeners
-        prevPageBtn.addEventListener('click', goToPreviousPage);
-        
-        nextPageBtn.addEventListener('click', goToNextPage);
-        
-        pageSizeSelect.addEventListener('change', () => {
+        // Handle page size change
+        function handlePageSizeChange() {
             pageSize = parseInt(pageSizeSelect.value);
             currentPage = 1;
             applyDataFilters();
-        });
+        }
         
-        // Download button events
-        downloadExcel.addEventListener('click', downloadAsExcel);
-        downloadCharts.addEventListener('click', downloadChartsAsImage);
-        downloadReport.addEventListener('click', downloadFullReport);
-        
-        // Handle State Office input for autocomplete
-        function handleStateOfficeInput() {
-            const searchTerm = stateofficeAutocomplete.value.trim().toLowerCase();
-            selectedStateOffice = stateofficeAutocomplete.value;
-            
-            // Show/hide clear button
-            clearStateOfficeBtn.style.display = searchTerm ? 'block' : 'none';
-            
-            if (searchTerm.length === 0) {
+        // Handle State Office blur
+        function handleStateOfficeBlur() {
+            setTimeout(() => {
                 stateofficeDropdown.style.display = 'none';
-                applyDataFiltersWithDebounce();
-                return;
-            }
-            
-            // Filter state offices based on search term
-            filteredStateOffices = allStateOffices.filter(office => 
-                office.toLowerCase().includes(searchTerm)
-            );
-            
-            // Show dropdown with results
-            showStateOfficeDropdown(filteredStateOffices, searchTerm);
-            
-            // Apply filters if exact match found
-            if (filteredStateOffices.length === 1 && 
-                filteredStateOffices[0].toLowerCase() === searchTerm) {
-                setTimeout(() => {
-                    selectStateOffice(filteredStateOffices[0]);
-                }, 300);
-            } else {
-                applyDataFiltersWithDebounce();
-            }
-        }
-        
-        // Handle State Office focus
-        function handleStateOfficeFocus() {
-            if (stateofficeAutocomplete.value.trim().length > 0) {
-                const searchTerm = stateofficeAutocomplete.value.trim().toLowerCase();
-                filteredStateOffices = allStateOffices.filter(office => 
-                    office.toLowerCase().includes(searchTerm)
-                );
-                showStateOfficeDropdown(filteredStateOffices, searchTerm);
-            } else {
-                // Show all state offices when clicking on empty field
-                filteredStateOffices = [...allStateOffices];
-                showStateOfficeDropdown(allStateOffices, '');
-            }
-        }
-        
-        // Handle keyboard navigation in autocomplete
-        function handleStateOfficeKeydown(e) {
-            if (!stateofficeDropdown.style.display || stateofficeDropdown.style.display === 'none') {
-                return;
-            }
-            
-            const items = stateofficeDropdown.querySelectorAll('.autocomplete-item');
-            
-            switch(e.key) {
-                case 'ArrowDown':
-                    e.preventDefault();
-                    highlightedIndex = (highlightedIndex + 1) % items.length;
-                    updateHighlightedItem(items);
-                    break;
-                    
-                case 'ArrowUp':
-                    e.preventDefault();
-                    highlightedIndex = highlightedIndex <= 0 ? items.length - 1 : highlightedIndex - 1;
-                    updateHighlightedItem(items);
-                    break;
-                    
-                case 'Enter':
-                    e.preventDefault();
-                    if (highlightedIndex >= 0 && highlightedIndex < items.length) {
-                        selectStateOffice(items[highlightedIndex].textContent);
-                    }
-                    break;
-                    
-                case 'Escape':
-                    stateofficeDropdown.style.display = 'none';
-                    highlightedIndex = -1;
-                    break;
-            }
-        }
-        
-        // Update highlighted item in dropdown
-        function updateHighlightedItem(items) {
-            items.forEach((item, index) => {
-                if (index === highlightedIndex) {
-                    item.classList.add('highlighted');
-                    item.scrollIntoView({ block: 'nearest' });
-                } else {
-                    item.classList.remove('highlighted');
-                }
-            });
-        }
-        
-        // Show State Office dropdown
-        function showStateOfficeDropdown(offices, searchTerm) {
-            stateofficeDropdown.innerHTML = '';
-            
-            if (offices.length === 0) {
-                const noResults = document.createElement('div');
-                noResults.className = 'no-results';
-                noResults.textContent = `No state offices found matching "${searchTerm}"`;
-                stateofficeDropdown.appendChild(noResults);
-            } else {
-                offices.forEach(office => {
-                    const item = document.createElement('div');
-                    item.className = 'autocomplete-item';
-                    
-                    // Highlight matching text
-                    const lowerOffice = office.toLowerCase();
-                    const lowerSearch = searchTerm.toLowerCase();
-                    const matchIndex = lowerOffice.indexOf(lowerSearch);
-                    
-                    if (matchIndex >= 0) {
-                        const beforeMatch = office.substring(0, matchIndex);
-                        const match = office.substring(matchIndex, matchIndex + searchTerm.length);
-                        const afterMatch = office.substring(matchIndex + searchTerm.length);
-                        
-                        item.innerHTML = `
-                            <i class="fas fa-building"></i>
-                            ${beforeMatch}<strong>${match}</strong>${afterMatch}
-                        `;
-                    } else {
-                        item.innerHTML = `
-                            <i class="fas fa-building"></i>
-                            ${office}
-                        `;
-                    }
-                    
-                    item.addEventListener('click', () => {
-                        selectStateOffice(office);
-                    });
-                    
-                    stateofficeDropdown.appendChild(item);
-                });
-            }
-            
-            stateofficeDropdown.style.display = 'block';
-            highlightedIndex = -1;
-        }
-        
-        // Select a State Office from autocomplete
-        function selectStateOffice(office) {
-            stateofficeAutocomplete.value = office;
-            selectedStateOffice = office;
-            stateofficeDropdown.style.display = 'none';
-            clearStateOfficeBtn.style.display = 'block';
-            highlightedIndex = -1;
-            
-            // Show update effect and apply filters
-            showFilterUpdateEffect(stateofficeAutocomplete);
-            applyDataFiltersWithDebounce();
-        }
-        
-        // Clear State Office selection
-        function clearStateOfficeSelection() {
-            stateofficeAutocomplete.value = '';
-            selectedStateOffice = '';
-            clearStateOfficeBtn.style.display = 'none';
-            stateofficeDropdown.style.display = 'none';
-            highlightedIndex = -1;
-            
-            // Show update effect and apply filters
-            showFilterUpdateEffect(stateofficeAutocomplete);
-            applyDataFiltersWithDebounce();
+            }, 200);
         }
         
         // Handle file upload
@@ -2407,6 +2234,210 @@
             }
         }
         
+        // Initialize month checkboxes
+        function initializeMonthCheckboxes() {
+            monthCheckboxes = [];
+            // Get all month checkboxes
+            const monthCheckboxElements = monthCheckboxContainer.querySelectorAll('input[type="checkbox"]');
+            monthCheckboxElements.forEach(checkbox => {
+                monthCheckboxes.push(checkbox);
+                checkbox.addEventListener('change', () => {
+                    updateMonthSelection();
+                    showFilterUpdateEffect(checkbox);
+                    applyDataFiltersWithDebounce();
+                });
+            });
+        }
+        
+        // Update month selection
+        function updateMonthSelection() {
+            selectedMonths.clear();
+            monthCheckboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    selectedMonths.add(checkbox.value);
+                }
+            });
+            updateMonthSelectedCount();
+        }
+        
+        // Update month selected count
+        function updateMonthSelectedCount() {
+            const totalMonths = 12;
+            monthSelectedCount.textContent = `${selectedMonths.size} selected`;
+            
+            if (selectedMonths.size === totalMonths) {
+                monthSelectedCount.textContent = 'All selected';
+            }
+        }
+        
+        // Handle State Office input for autocomplete
+        function handleStateOfficeInput() {
+            const searchTerm = stateofficeAutocomplete.value.trim().toLowerCase();
+            selectedStateOffice = stateofficeAutocomplete.value;
+            
+            // Show/hide clear button
+            clearStateOfficeBtn.style.display = searchTerm ? 'block' : 'none';
+            
+            if (searchTerm.length === 0) {
+                stateofficeDropdown.style.display = 'none';
+                applyDataFiltersWithDebounce();
+                return;
+            }
+            
+            // Filter state offices based on search term
+            filteredStateOffices = allStateOffices.filter(office => 
+                office.toLowerCase().includes(searchTerm)
+            );
+            
+            // Show dropdown with results
+            showStateOfficeDropdown(filteredStateOffices, searchTerm);
+            
+            // Apply filters if exact match found
+            if (filteredStateOffices.length === 1 && 
+                filteredStateOffices[0].toLowerCase() === searchTerm) {
+                setTimeout(() => {
+                    selectStateOffice(filteredStateOffices[0]);
+                }, 300);
+            } else {
+                applyDataFiltersWithDebounce();
+            }
+        }
+        
+        // Handle State Office focus
+        function handleStateOfficeFocus() {
+            if (stateofficeAutocomplete.value.trim().length > 0) {
+                const searchTerm = stateofficeAutocomplete.value.trim().toLowerCase();
+                filteredStateOffices = allStateOffices.filter(office => 
+                    office.toLowerCase().includes(searchTerm)
+                );
+                showStateOfficeDropdown(filteredStateOffices, searchTerm);
+            } else {
+                // Show all state offices when clicking on empty field
+                filteredStateOffices = [...allStateOffices];
+                showStateOfficeDropdown(allStateOffices, '');
+            }
+        }
+        
+        // Handle keyboard navigation in autocomplete
+        function handleStateOfficeKeydown(e) {
+            if (!stateofficeDropdown.style.display || stateofficeDropdown.style.display === 'none') {
+                return;
+            }
+            
+            const items = stateofficeDropdown.querySelectorAll('.autocomplete-item');
+            
+            switch(e.key) {
+                case 'ArrowDown':
+                    e.preventDefault();
+                    highlightedIndex = (highlightedIndex + 1) % items.length;
+                    updateHighlightedItem(items);
+                    break;
+                    
+                case 'ArrowUp':
+                    e.preventDefault();
+                    highlightedIndex = highlightedIndex <= 0 ? items.length - 1 : highlightedIndex - 1;
+                    updateHighlightedItem(items);
+                    break;
+                    
+                case 'Enter':
+                    e.preventDefault();
+                    if (highlightedIndex >= 0 && highlightedIndex < items.length) {
+                        selectStateOffice(items[highlightedIndex].textContent);
+                    }
+                    break;
+                    
+                case 'Escape':
+                    stateofficeDropdown.style.display = 'none';
+                    highlightedIndex = -1;
+                    break;
+            }
+        }
+        
+        // Update highlighted item in dropdown
+        function updateHighlightedItem(items) {
+            items.forEach((item, index) => {
+                if (index === highlightedIndex) {
+                    item.classList.add('highlighted');
+                    item.scrollIntoView({ block: 'nearest' });
+                } else {
+                    item.classList.remove('highlighted');
+                }
+            });
+        }
+        
+        // Show State Office dropdown
+        function showStateOfficeDropdown(offices, searchTerm) {
+            stateofficeDropdown.innerHTML = '';
+            
+            if (offices.length === 0) {
+                const noResults = document.createElement('div');
+                noResults.className = 'no-results';
+                noResults.textContent = `No state offices found matching "${searchTerm}"`;
+                stateofficeDropdown.appendChild(noResults);
+            } else {
+                offices.forEach(office => {
+                    const item = document.createElement('div');
+                    item.className = 'autocomplete-item';
+                    
+                    // Highlight matching text
+                    const lowerOffice = office.toLowerCase();
+                    const lowerSearch = searchTerm.toLowerCase();
+                    const matchIndex = lowerOffice.indexOf(lowerSearch);
+                    
+                    if (matchIndex >= 0) {
+                        const beforeMatch = office.substring(0, matchIndex);
+                        const match = office.substring(matchIndex, matchIndex + searchTerm.length);
+                        const afterMatch = office.substring(matchIndex + searchTerm.length);
+                        
+                        item.innerHTML = `
+                            <i class="fas fa-building"></i>
+                            ${beforeMatch}<strong>${match}</strong>${afterMatch}
+                        `;
+                    } else {
+                        item.innerHTML = `
+                            <i class="fas fa-building"></i>
+                            ${office}
+                        `;
+                    }
+                    
+                    item.addEventListener('click', () => {
+                        selectStateOffice(office);
+                    });
+                    
+                    stateofficeDropdown.appendChild(item);
+                });
+            }
+            
+            stateofficeDropdown.style.display = 'block';
+            highlightedIndex = -1;
+        }
+        
+        // Select a State Office from autocomplete
+        function selectStateOffice(office) {
+            stateofficeAutocomplete.value = office;
+            selectedStateOffice = office;
+            stateofficeDropdown.style.display = 'none';
+            clearStateOfficeBtn.style.display = 'block';
+            highlightedIndex = -1;
+            
+            // Show update effect and apply filters
+            showFilterUpdateEffect(stateofficeAutocomplete);
+            applyDataFiltersWithDebounce();
+        }
+        
+        // Clear State Office selection
+        function clearStateOfficeSelection() {
+            stateofficeAutocomplete.value = '';
+            selectedStateOffice = '';
+            clearStateOfficeBtn.style.display = 'none';
+            stateofficeDropdown.style.display = 'none';
+            highlightedIndex = -1;
+            
+            // Show update effect and apply filters
+            showFilterUpdateEffect(stateofficeAutocomplete);
+            applyDataFiltersWithDebounce();
+        }
+        
         // Clear all filters
         function clearAllFilters() {
             // Clear state office autocomplete
@@ -2441,7 +2472,7 @@
             applyDataFilters();
         }
         
-        // Apply filters to data with autocomplete support
+        // Apply filters to data with autocomplete support - FIXED with pagination reset
         function applyDataFilters() {
             if (allData.length === 0) return;
             
@@ -2496,6 +2527,9 @@
                 // Calculate totals for summary
                 calculateTotals();
                 
+                // Reset to first page when filters change
+                currentPage = 1;
+                
                 // Update pagination
                 updatePagination();
                 
@@ -2535,7 +2569,7 @@
             updateAISuggestion();
         }
         
-        // Update pagination
+        // Update pagination - FIXED
         function updatePagination() {
             totalPages = Math.ceil(filteredData.length / pageSize);
             
@@ -2553,29 +2587,52 @@
             updatePaginationButtons();
         }
         
-        // Update pagination button states
+        // Update pagination button states - FIXED
         function updatePaginationButtons() {
             prevPageBtn.disabled = currentPage <= 1;
             nextPageBtn.disabled = currentPage >= totalPages;
+            
+            // Add visual feedback when disabled
+            if (prevPageBtn.disabled) {
+                prevPageBtn.style.opacity = '0.6';
+                prevPageBtn.style.cursor = 'not-allowed';
+            } else {
+                prevPageBtn.style.opacity = '1';
+                prevPageBtn.style.cursor = 'pointer';
+            }
+            
+            if (nextPageBtn.disabled) {
+                nextPageBtn.style.opacity = '0.6';
+                nextPageBtn.style.cursor = 'not-allowed';
+            } else {
+                nextPageBtn.style.opacity = '1';
+                nextPageBtn.style.cursor = 'pointer';
+            }
         }
         
-        // Go to previous page
+        // Go to previous page - FIXED
         function goToPreviousPage() {
+            console.log('Previous button clicked', { currentPage, totalPages });
             if (currentPage > 1) {
                 currentPage--;
+                console.log('Going to page:', currentPage);
                 renderCurrentPage();
+                updatePagination();
             }
         }
         
-        // Go to next page
+        // Go to next page - FIXED
         function goToNextPage() {
+            console.log('Next button clicked', { currentPage, totalPages });
             if (currentPage < totalPages) {
                 currentPage++;
+                console.log('Going to page:', currentPage);
                 renderCurrentPage();
+                updatePagination();
             }
         }
         
-        // Render current page
+        // Render current page - FIXED
         function renderCurrentPage() {
             if (filteredData.length === 0) {
                 tableBody.innerHTML = `
@@ -2594,7 +2651,7 @@
             const endIndex = Math.min(startIndex + pageSize, filteredData.length);
             const pageData = filteredData.slice(startIndex, endIndex);
             
-            // Build table rows for current page - Will display only 5 rows
+            // Build table rows for current page
             let tableHTML = '';
             
             pageData.forEach(row => {
@@ -2619,8 +2676,10 @@
             
             tableBody.innerHTML = tableHTML;
             
-            // Update pagination controls
+            // Update page info
             pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+            
+            // Update pagination buttons
             updatePaginationButtons();
         }
         
@@ -3331,11 +3390,6 @@ Generated by Auto Lube House Smart Dashboard
             
             aiInsightText.innerHTML = 'Sample market data loaded. Upload your own Excel file to get intelligent market insights, trend analysis, and actionable recommendations based on your actual business data.';
         }
-        
-        // Load sample data on page load
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(loadSampleData, 500);
-        });
     </script>
 </body>
 </html>
