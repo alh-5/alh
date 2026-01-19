@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Primary Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SheetJS library for Excel file handling -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- jsPDF for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Magnetic wave background effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 40% 80%, rgba(212, 175, 55, 0.08) 0%, transparent 20%);
+            z-index: -1;
+            animation: waveMove 20s infinite linear;
+        }
+        
+        @keyframes waveMove {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(-10px, 10px) rotate(1deg);
+            }
+            50% {
+                transform: translate(0, 20px) rotate(0deg);
+            }
+            75% {
+                transform: translate(10px, 10px) rotate(-1deg);
+            }
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+        }
+        
+        /* ALH Spinning Logo */
+        .alh-logo-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .alh-logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #D4AF37, #FFD700, #D4AF37);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            color: #1a1a1a;
+            animation: spin 4s linear infinite;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .alh-logo:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.8);
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 5px 30px rgba(212, 175, 55, 0.3);
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+        
+        header p {
+            font-size: 1.05rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 25px;
+        }
+        
+        .left-panel {
+            flex: 1;
+            min-width: 350px;
+            padding-right: 25px;
+            border-right: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .right-panel {
+            flex: 2;
+            min-width: 500px;
+            padding-left: 25px;
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            color: #3498db;
+        }
+        
+        .import-section {
+            background-color: rgba(248, 250, 252, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 1px dashed #cbd5e1;
+        }
+        
+        .file-input-wrapper {
+            margin-bottom: 15px;
+        }
+        
+        .file-input-label {
+            display: inline-block;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            margin-bottom: 10px;
+            border: none;
+        }
+        
+        .file-input-label:hover {
+            background: linear-gradient(135deg, #2980b9, #3498db);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        #fileInput {
+            display: none;
+        }
+        
+        .file-info {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-top: 10px;
+        }
+        
+        .sample-file {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f1f5f9;
+            border-radius: 6px;
+        }
+        
+        .sample-file a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .sample-file a:hover {
+            text-decoration: underline;
+        }
+        
+        .sku-input-section {
+            margin-bottom: 25px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #475569;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: white;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .dual-input {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .dual-input .input-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 5px 0;
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn:hover {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #2980b9, #3498db);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-excel {
+            background: linear-gradient(135deg, #217346, #1a5c38);
+        }
+        
+        .btn-excel:hover {
+            background: linear-gradient(135deg, #1a5c38, #217346);
+            box-shadow: 0 5px 15px rgba(33, 115, 70, 0.3);
+        }
+        
+        .btn-pdf {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .btn-pdf:hover {
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        .btn-gold {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            color: #1a1a1a;
+        }
+        
+        .btn-gold:hover {
+            background: linear-gradient(135deg, #FFD700, #D4AF37);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+        
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .button-group .btn {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            font-size: 0.9rem;
+            background: white;
+        }
+        
+        .results-table th {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            text-align: left;
+            padding: 12px 10px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .results-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .results-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        
+        .results-table tr:hover {
+            background-color: #f1f5f9;
+        }
+        
+        .highlight {
+            background-color: #fff9e6 !important;
+            font-weight: 600;
+        }
+        
+        .order-badge {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+        
+        .invoice-badge {
+            display: inline-block;
+            background-color: #9b59b6;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+        
+        .imported-data {
+            margin-top: 30px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .imported-data table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        
+        .imported-data th {
+            background-color: #f1f5f9;
+            padding: 10px;
+            text-align: left;
+            font-weight: 600;
+            color: #475569;
+            border-bottom: 1px solid #cbd5e1;
+        }
+        
+        .imported-data td {
+            padding: 10px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #94a3b8;
+            font-style: italic;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            background-color: #fee;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .success-message {
+            color: #27ae60;
+            background-color: #effff4;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .instructions {
+            background-color: #f0f9ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #0369a1;
+            border-left: 4px solid #0ea5e9;
+        }
+        
+        .summary-section {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .summary-item {
+            flex: 1;
+            min-width: 150px;
+            margin: 5px;
+            padding: 10px;
+            text-align: center;
+            background-color: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+        
+        .summary-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+        
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            margin-top: 20px;
+            background: rgba(248, 250, 252, 0.9);
+        }
+        
+        .calculation-note {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        .orders-summary {
+            margin-top: 25px;
+            background-color: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* Golden accents */
+        .gold-accent {
+            border-color: #D4AF37;
+        }
+        
+        .gold-text {
+            color: #D4AF37;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .left-panel, .right-panel {
+                padding: 0;
+                border: none;
+            }
+            
+            .left-panel {
+                margin-bottom: 30px;
+                padding-bottom: 20px;
+                border-bottom: 1px solid #eaeaea;
+            }
+            
+            .summary-section {
+                flex-direction: column;
+            }
+            
+            .dual-input {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .results-table {
+                font-size: 0.8rem;
+            }
+            
+            .results-table th, .results-table td {
+                padding: 8px 5px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .alh-logo-container {
+                top: 10px;
+                right: 10px;
+                width: 40px;
+                height: 40px;
+            }
+            
+            .alh-logo {
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ALH Spinning Logo -->
+    <div class="alh-logo-container">
+        <div class="alh-logo" title="ALH Purchase System">
+            ALH
+        </div>
+    </div>
+    
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-boxes"></i> Primary Calculator</h1>
+            <p>Calculate Purchase in real-time with Order Tracking</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="import-section">
+                    <h2 class="section-title"><i class="fas fa-file-import"></i> Import SKU Data</h2>
+                    <div class="file-input-wrapper">
+                        <label for="fileInput" class="file-input-label">
+                            <i class="fas fa-file-excel"></i> Choose Excel File (.xlsx)
+                        </label>
+                        <input type="file" id="fileInput" accept=".xlsx, .xls">
+                        <div id="fileName" class="file-info"></div>
+                    </div>
+                    
+                    <button class="file-input-label" id="uploadBtn" onclick="window.location.href='https://alh-5.github.io/alh/Advance Stock/UOM.xlsx';">
+                        <i class="fas fa-chart-pie"></i> Download Sample
+                    </button>
+                    
+                    <div id="importError" class="error-message"></div>
+                    <div id="importSuccess" class="success-message"></div>
+                </div>
+                
+                <div class="sku-input-section">
+                    <h2 class="section-title"><i class="fas fa-calculator"></i> Enter SKU Details</h2>
+                    
+                    <div class="dual-input">
+                        <div class="input-group">
+                            <label for="invoiceNumber">Invoice Number *</label>
+                            <input type="text" id="invoiceNumber" placeholder="Enter SAP Invoice Number" value="">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="seedNumber">Seed Number *</label>
+                            <input type="text" id="seedNumber" placeholder="Enter Seed Number" value="">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="skuCode">SKU Code</label>
+                        <input type="text" id="skuCode" placeholder="Enter SKU code">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="quantity">Quantity</label>
+                        <input type="number" id="quantity" placeholder="Enter quantity" min="1" value="">
+                    </div>
+                    
+                    <div class="input-group" id="totalAmountContainer">
+                        <label for="totalAmount">Total Amount ($)</label>
+                        <input type="number" id="totalAmount" placeholder="Enter total amount" min="0.01" step="0.01" value="">
+                        <div class="calculation-note">Total Amount will be calculated as Per Case / Bucket / Barrel.</div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="priceOption">Price Calculation Method</label>
+                        <select id="priceOption">
+                            <option value="total">Enter Total Amount (Calculate Per Case)</option>
+                            <option value="perCase">Enter Per Case Amount (Calculate Total)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group" id="perCaseInputContainer" style="display: none;">
+                        <label for="perCaseAmount">Per Case Amount ($)</label>
+                        <input type="number" id="perCaseAmount" placeholder="Enter per case amount" min="0.01" step="0.01" value="0.00">
+                        <div class="calculation-note">Total Amount will be calculated as Per Case Amount × Quantity</div>
+                    </div>
+                    
+                    <div class="instructions">
+                        <p><i class="fas fa-info-circle"></i> <strong>Order Logic:</strong> Uses of Purchase calculator</p>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button id="addBtn" class="btn"><i class="fas fa-plus-circle"></i> Add to Results</button>
+                        <button id="clearBtn" class="btn btn-secondary"><i class="fas fa-trash-alt"></i> Clear All</button>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button id="exportBtn" class="btn btn-excel"><i class="fas fa-file-export"></i> Export to Excel</button>
+                        <button id="exportPdfBtn" class="btn btn-pdf"><i class="fas fa-file-pdf"></i> Export to PDF</button>
+                    </div>
+                    
+                    <div class="orders-summary">
+                        <h3 class="section-title"><i class="fas fa-clipboard-list"></i> Orders Summary</h3>
+                        <div id="ordersList">
+                            <p class="empty-message" style="padding: 10px;">No orders yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <h2 class="section-title"><i class="fas fa-list-alt"></i> Results Table</h2>
+                <div class="table-container">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Order #</th>
+                                <th>Invoice</th>
+                                <th>Seed</th>
+                                <th>SKU Code</th>
+                                <th>SKU Name</th>
+                                <th>Quantity</th>
+                                <th>UOM</th>
+                                <th>Total Liters</th>
+                                <th>Per Case ($)</th>
+                                <th>Total ($)</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsBody">
+                            <tr>
+                                <td colspan="11" class="empty-message">No results yet. Import SKU data and enter a SKU code to get started.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="summary-item">
+                        <div class="summary-label">Total Items</div>
+                        <div class="summary-value" id="totalItems">0</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Total Orders</div>
+                        <div class="summary-value" id="totalOrders">0</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Total Quantity</div>
+                        <div class="summary-value" id="totalQuantity">0</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Total Liters</div>
+                        <div class="summary-value" id="totalLiters">0.00</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Total Amount</div>
+                        <div class="summary-value" id="totalAmountSum">$0.00</div>
+                    </div>
+                </div>
+                
+                <div class="imported-data">
+                    <h2 class="section-title"><i class="fas fa-database"></i> Imported SKU Data</h2>
+                    <table id="importedDataTable">
+                        <thead>
+                            <tr>
+                                <th>SKU Code</th>
+                                <th>SKU Name</th>
+                                <th>UOM</th>
+                            </tr>
+                        </thead>
+                        <tbody id="importedDataBody">
+                            <tr>
+                                <td colspan="3" class="empty-message">No data imported yet. Upload an Excel file to see SKU data here.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>SKU Purchase system dbareh &copy; 2026 | Purchase Calculation</p>
+        </footer>
+    </div>
+
+    <script>
+        // Sample SKU data
+        const sampleSKUData = [
+            
+        ];
+        
+        let importedSKUs = [];
+        let results = [];
+        let orderCounter = {};
+        
+        // DOM elements
+        const fileInput = document.getElementById('fileInput');
+        const fileName = document.getElementById('fileName');
+        const invoiceNumberInput = document.getElementById('invoiceNumber');
+        const seedNumberInput = document.getElementById('seedNumber');
+        const skuCodeInput = document.getElementById('skuCode');
+        const quantityInput = document.getElementById('quantity');
+        const totalAmountInput = document.getElementById('totalAmount');
+        const priceOption = document.getElementById('priceOption');
+        const perCaseInputContainer = document.getElementById('perCaseInputContainer');
+        const perCaseAmountInput = document.getElementById('perCaseAmount');
+        const addBtn = document.getElementById('addBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
+        const resultsBody = document.getElementById('resultsBody');
+        const importedDataBody = document.getElementById('importedDataBody');
+        const importError = document.getElementById('importError');
+        const importSuccess = document.getElementById('importSuccess');
+        const downloadSampleLink = document.getElementById('downloadSample');
+        const ordersList = document.getElementById('ordersList');
+        const totalAmountContainer = document.getElementById('totalAmountContainer');
+        
+        // Summary elements
+        const totalItemsEl = document.getElementById('totalItems');
+        const totalOrdersEl = document.getElementById('totalOrders');
+        const totalQuantityEl = document.getElementById('totalQuantity');
+        const totalLitersEl = document.getElementById('totalLiters');
+        const totalAmountSumEl = document.getElementById('totalAmountSum');
+        
+        // Get order number for invoice+seed combination
+        function getOrderNumber(invoice, seed) {
+            const key = `${invoice}_${seed}`;
+            if (!orderCounter[key]) {
+                orderCounter[key] = 1;
+            } else {
+                orderCounter[key]++;
+            }
+            return orderCounter[key];
+        }
+        
+        // Reset order counter for a specific invoice+seed combination
+        function resetOrderCounter(invoice, seed) {
+            const key = `${invoice}_${seed}`;
+            orderCounter[key] = 0;
+        }
+        
+        // Toggle between total amount and per case amount input
+        priceOption.addEventListener('change', function() {
+            if (this.value === 'perCase') {
+                perCaseInputContainer.style.display = 'block';
+                totalAmountContainer.style.display = 'none';
+            } else {
+                perCaseInputContainer.style.display = 'none';
+                totalAmountContainer.style.display = 'block';
+            }
+        });
+        
+        // Clear quantity and total amount after adding SKU
+        function clearInputFields() {
+            quantityInput.value = "";
+            totalAmountInput.value = "";
+            perCaseAmountInput.value = "";
+            skuCodeInput.value = "";
+            skuCodeInput.focus();
+        }
+        
+        // Handle file import
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            fileName.textContent = `Selected: ${file.name} (${(file.size/1024).toFixed(2)} KB)`;
+            importError.style.display = 'none';
+            importSuccess.style.display = 'none';
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const data = new Uint8Array(event.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    
+                    // Get the first worksheet
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    // Convert to JSON
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+                    
+                    if (jsonData.length === 0) {
+                        throw new Error('The Excel file appears to be empty.');
+                    }
+                    
+                    const newSKUs = [];
+                    let startRow = 0;
+                    
+                    // Check if first row contains headers
+                    const firstRow = jsonData[0];
+                    if (firstRow && firstRow.length >= 3 && 
+                        (firstRow[0].toString().toLowerCase().includes('sku') || 
+                         firstRow[1].toString().toLowerCase().includes('name') ||
+                         firstRow[2].toString().toLowerCase().includes('uom'))) {
+                        startRow = 1; // Skip header row
+                    }
+                    
+                    // Process each row
+                    for (let i = startRow; i < jsonData.length; i++) {
+                        const row = jsonData[i];
+                        if (!row || row.length < 3) continue;
+                        
+                        const code = row[0] ? row[0].toString().trim() : '';
+                        const name = row[1] ? row[1].toString().trim() : '';
+                        const uomValue = row[2];
+                        
+                        // Handle uom value (could be string or number)
+                        let uom = 0;
+                        if (typeof uomValue === 'number') {
+                            uom = uomValue;
+                        } else if (typeof uomValue === 'string') {
+                            uom = parseFloat(uomValue.replace(/[^0-9.]/g, ''));
+                        }
+                        
+                        if (code && name && !isNaN(uom) && uom > 0) {
+                            newSKUs.push({code, name, uom});
+                        }
+                    }
+                    
+                    if (newSKUs.length === 0) {
+                        throw new Error('No valid SKU data found in the file. Please check the format (SKU Code, SKU Name, UOM columns required).');
+                    }
+                    
+                    importedSKUs = newSKUs;
+                    updateImportedDataTable();
+                    
+                    // Auto-select the first SKU in the input for convenience
+                    if (importedSKUs.length > 0) {
+                        skuCodeInput.value = '';
+                    }
+                    
+                    importSuccess.textContent = `Successfully imported ${newSKUs.length} SKU records from the Excel file.`;
+                    importSuccess.style.display = 'block';
+                    
+                } catch (error) {
+                    importError.textContent = `Error importing file: ${error.message}`;
+                    importError.style.display = 'block';
+                }
+            };
+            
+            reader.readAsArrayBuffer(file);
+        });
+        
+        // Update the imported data table
+        function updateImportedDataTable() {
+            if (importedSKUs.length === 0) {
+                importedDataBody.innerHTML = '<tr><td colspan="3" class="empty-message">No data imported yet. Upload an Excel file to see SKU data here.</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            importedSKUs.forEach(sku => {
+                html += `
+                <tr>
+                    <td>${sku.code}</td>
+                    <td>${sku.name}</td>
+                    <td>${sku.uom.toFixed(2)}</td>
+                </tr>
+                `;
+            });
+            
+            importedDataBody.innerHTML = html;
+        }
+        
+        // Update orders summary
+        function updateOrdersSummary() {
+            if (results.length === 0) {
+                ordersList.innerHTML = '<p class="empty-message" style="padding: 10px;">No orders yet</p>';
+                return;
+            }
+            
+            // Group results by invoice+seed combination
+            const orderGroups = {};
+            results.forEach(result => {
+                const key = `${result.invoice}_${result.seed}`;
+                if (!orderGroups[key]) {
+                    orderGroups[key] = {
+                        invoice: result.invoice,
+                        seed: result.seed,
+                        orderNumber: result.orderNumber,
+                        items: []
+                    };
+                }
+                if (!orderGroups[key].items.includes(result.code)) {
+                    orderGroups[key].items.push(result.code);
+                }
+            });
+            
+            let html = '';
+            Object.values(orderGroups).forEach(group => {
+                html += `
+                <div class="order-item">
+                    <div>
+                        <span class="order-badge">Order ${group.orderNumber}</span>
+                        <strong>${group.invoice}</strong> / ${group.seed}
+                    </div>
+                    <div>${group.items.length} SKUs</div>
+                </div>
+                `;
+            });
+            
+            ordersList.innerHTML = html;
+        }
+        
+        // Remove item from results
+        function removeResult(index) {
+            if (confirm('Are you sure you want to remove this item?')) {
+                results.splice(index, 1);
+                updateResultsTable();
+                updateSummary();
+                updateOrdersSummary();
+            }
+        }
+        
+        // Add SKU to results
+        addBtn.addEventListener('click', function() {
+            const invoice = invoiceNumberInput.value.trim();
+            const seed = seedNumberInput.value.trim();
+            const skuCode = skuCodeInput.value.trim();
+            const quantity = parseFloat(quantityInput.value);
+            
+            // Validation
+            if (!invoice) {
+                alert('Please enter an Invoice Number');
+                return;
+            }
+            
+            if (!seed) {
+                alert('Please enter a Seed Number');
+                return;
+            }
+            
+            if (!skuCode) {
+                alert('Please enter a SKU code');
+                return;
+            }
+            
+            if (isNaN(quantity) || quantity <= 0) {
+                alert('Please enter a valid quantity (greater than 0)');
+                return;
+            }
+            
+            // Find the SKU in imported data
+            const sku = importedSKUs.find(item => item.code.toUpperCase() === skuCode.toUpperCase());
+            
+            if (!sku) {
+                alert(`SKU code "${skuCode}" not found in imported data. Please check the code and try again.`);
+                return;
+            }
+            
+            // Get order number for this invoice+seed combination
+            const orderNumber = getOrderNumber(invoice, seed);
+            
+            // Calculate based on selected price option
+            let totalAmount, perCaseAmount;
+            
+            if (priceOption.value === 'total') {
+                totalAmount = parseFloat(totalAmountInput.value);
+                if (isNaN(totalAmount) || totalAmount <= 0) {
+                    alert('Please enter a valid total amount (greater than 0)');
+                    return;
+                }
+                perCaseAmount = totalAmount / quantity;
+            } else {
+                perCaseAmount = parseFloat(perCaseAmountInput.value);
+                if (isNaN(perCaseAmount) || perCaseAmount <= 0) {
+                    alert('Please enter a valid per case amount (greater than 0)');
+                    return;
+                }
+                totalAmount = perCaseAmount * quantity;
+            }
+            
+            // Calculate total liters
+            const totalLiters = sku.uom * quantity;
+            
+            // Add to results
+            const result = {
+                orderNumber: orderNumber,
+                invoice: invoice,
+                seed: seed,
+                code: sku.code,
+                name: sku.name,
+                quantity: quantity,
+                uom: sku.uom,
+                totalLiters: totalLiters,
+                perCaseAmount: perCaseAmount,
+                totalAmount: totalAmount,
+                id: Date.now() + Math.random() // Unique ID for removal
+            };
+            
+            results.push(result);
+            updateResultsTable();
+            updateSummary();
+            updateOrdersSummary();
+            
+            // Clear input fields for next entry
+            clearInputFields();
+        });
+        
+        // Update the results table
+        function updateResultsTable() {
+            if (results.length === 0) {
+                resultsBody.innerHTML = '<tr><td colspan="11" class="empty-message">No results yet. Import SKU data and enter a SKU code to get started.</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            results.forEach((result, index) => {
+                // Highlight the most recent entry
+                const highlightClass = index === results.length - 1 ? 'highlight' : '';
+                
+                html += `
+                <tr class="${highlightClass}" data-id="${result.id}">
+                    <td><span class="order-badge">${result.orderNumber}</span></td>
+                    <td><span class="invoice-badge">${result.invoice}</span></td>
+                    <td>${result.seed}</td>
+                    <td>${result.code}</td>
+                    <td>${result.name}</td>
+                    <td>${result.quantity}</td>
+                    <td>${result.uom.toFixed(2)}</td>
+                    <td>${result.totalLiters.toFixed(2)}</td>
+                    <td>$${result.perCaseAmount.toFixed(2)}</td>
+                    <td>$${result.totalAmount.toFixed(2)}</td>
+                    <td>
+                        <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.8rem;" onclick="removeResult(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                `;
+            });
+            
+            resultsBody.innerHTML = html;
+        }
+        
+        // Update the summary section
+        function updateSummary() {
+            const totalItems = results.length;
+            
+            // Count unique orders (based on invoice+seed+orderNumber combination)
+            const orderSet = new Set();
+            results.forEach(item => {
+                orderSet.add(`${item.invoice}_${item.seed}_${item.orderNumber}`);
+            });
+            const totalOrders = orderSet.size;
+            
+            const totalQuantity = results.reduce((sum, item) => sum + item.quantity, 0);
+            const totalLiters = results.reduce((sum, item) => sum + item.totalLiters, 0);
+            const totalAmount = results.reduce((sum, item) => sum + item.totalAmount, 0);
+            
+            totalItemsEl.textContent = totalItems;
+            totalOrdersEl.textContent = totalOrders;
+            totalQuantityEl.textContent = totalQuantity;
+            totalLitersEl.textContent = totalLiters.toFixed(2);
+            totalAmountSumEl.textContent = `$${totalAmount.toFixed(2)}`;
+        }
+        
+        // Clear all results
+        clearBtn.addEventListener('click', function() {
+            if (results.length === 0) {
+                alert('No results to clear.');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to clear all results? This will also reset order counters.')) {
+                results = [];
+                orderCounter = {};
+                updateResultsTable();
+                updateSummary();
+                updateOrdersSummary();
+            }
+        });
+        
+        // Export results to Excel
+        exportBtn.addEventListener('click', function() {
+            if (results.length === 0) {
+                alert('No results to export.');
+                return;
+            }
+            
+            // Prepare data for export
+            const exportData = [
+                ["Order #", "Invoice Number", "Seed Number", "SKU Code", "SKU Name", "Quantity", "UOM", "Total Liters", "Per Case Amount ($)", "Total Amount ($)"]
+            ];
+            
+            results.forEach(result => {
+                exportData.push([
+                    result.orderNumber,
+                    result.invoice,
+                    result.seed,
+                    result.code,
+                    result.name,
+                    result.quantity,
+                    result.uom,
+                    result.totalLiters,
+                    result.perCaseAmount,
+                    result.totalAmount
+                ]);
+            });
+            
+            // Add summary row
+            const totalQuantity = results.reduce((sum, item) => sum + item.quantity, 0);
+            const totalLiters = results.reduce((sum, item) => sum + item.totalLiters, 0);
+            const totalAmount = results.reduce((sum, item) => sum + item.totalAmount, 0);
+            
+            exportData.push(["", "", "", "", "", "", "", "", "", ""]);
+            exportData.push(["TOTALS", "", "", "", "", totalQuantity, "", totalLiters.toFixed(2), "", `$${totalAmount.toFixed(2)}`]);
+            
+            // Create worksheet
+            const ws = XLSX.utils.aoa_to_sheet(exportData);
+            
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "SKU Results");
+            
+            // Generate file and download
+            const wbout = XLSX.write(wb, {bookType: 'xlsx', type: 'binary'});
+            
+            function s2ab(s) {
+                const buf = new ArrayBuffer(s.length);
+                const view = new Uint8Array(buf);
+                for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+                return buf;
+            }
+            
+            const blob = new Blob([s2ab(wbout)], {type: 'application/octet-stream'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Purchase_sku_results_${new Date().toISOString().slice(0,10)}.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+        
+        // Export results to PDF
+        exportPdfBtn.addEventListener('click', function() {
+            if (results.length === 0) {
+                alert('No results to export.');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Add title
+            doc.setFontSize(20);
+            doc.setTextColor(44, 62, 80);
+            doc.text('Auto Lube House', 105, 15, {align: 'center'});
+            
+            // Add date
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 22, {align: 'center'});
+            
+            // Add invoice and seed info if available
+            if (results.length > 0) {
+                doc.setFontSize(12);
+                doc.setTextColor(44, 62, 80);
+                doc.text('Primary Purchase Calculator', 105, 30, {align: 'center'});
+            }
+            
+            // Prepare table data
+            const tableData = results.map(result => [
+                result.orderNumber,
+                result.invoice,
+                result.seed,
+                result.code,
+                result.name,
+                result.quantity.toString(),
+                result.uom.toFixed(2),
+                result.totalLiters.toFixed(2),
+                `$${result.perCaseAmount.toFixed(2)}`,
+                `$${result.totalAmount.toFixed(2)}`
+            ]);
+            
+            // Add table
+            doc.autoTable({
+                head: [['Order #', 'Invoice', 'Seed', 'SKU Code', 'SKU Name', 'Qty', 'UOM', 'Total Liters', 'Per Case ($)', 'Total ($)']],
+                body: tableData,
+                startY: 40,
+                theme: 'grid',
+                headStyles: {fillColor: [44, 62, 80]},
+                alternateRowStyles: {fillColor: [248, 250, 252]},
+                margin: {top: 40}
+            });
+            
+            // Add summary
+            const totalQuantity = results.reduce((sum, item) => sum + item.quantity, 0);
+            const totalLiters = results.reduce((sum, item) => sum + item.totalLiters, 0);
+            const totalAmount = results.reduce((sum, item) => sum + item.totalAmount, 0);
+            
+            let finalY = doc.lastAutoTable.finalY || 80;
+            
+            doc.setFontSize(12);
+            doc.setTextColor(44, 62, 80);
+            doc.text('Summary', 14, finalY + 15);
+            
+            doc.setFontSize(10);
+            doc.text(`Total Items: ${results.length}`, 14, finalY + 25);
+            doc.text(`Total Quantity: ${totalQuantity}`, 14, finalY + 30);
+            doc.text(`Total Liters: ${totalLiters.toFixed(2)}`, 14, finalY + 35);
+            doc.text(`Total Amount: $${totalAmount.toFixed(2)}`, 14, finalY + 40);
+            
+            // Add footer
+            doc.setFontSize(8);
+            doc.setTextColor(100, 100, 100);
+            doc.text('SKU Purchase System - dbareh © 2026', 105, doc.internal.pageSize.height - 10, {align: 'center'});
+            
+            // Save the PDF
+            doc.save(`Purchase_Report_${new Date().toISOString().slice(0,10)}.pdf`);
+        });
+        
+              
+        // Initialize with sample data on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            // Reset the sampleSKUData array to be empty initially
+            importedSKUs = [];
+            updateImportedDataTable();
+            
+            // Set focus to invoice number
+            invoiceNumberInput.focus();
+        });
+    </script>
+</body>
+</html>
