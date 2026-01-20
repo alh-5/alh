@@ -844,10 +844,7 @@
                 <span id="file-info" style="font-size: 12px; color: #666;">
                     No file selected.
                 </span>
-                <button class="file-btn" id="download-template" style="background-color: #f39c12;">
-                    <i class="fas fa-download"></i> Download Template
-                </button>
-				
+               				
 				<button class="file-btn" id="download-template" onclick="window.location.href='https://alh-5.github.io/alh/Challan_Pricelist/Challan_PriceList.xlsx';">
                         <i class="fas fa-chart-pie"></i> Challan_Price
             </div>
@@ -1710,19 +1707,7 @@
             console.log('Price list loaded:', priceListData);
         }
         
-        // Download template
-        document.getElementById('download-template').addEventListener('click', function() {
-            const templateData = [
-                
-            ];
-            
-            const ws = XLSX.utils.json_to_sheet(templateData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "PriceList");
-            XLSX.writeFile(wb, "Challan_PriceList.xlsx");
-            
-            showNotification("Template downloaded");
-        });
+        
         
         // Add item button
         document.getElementById('add-item-btn').addEventListener('click', function() {
