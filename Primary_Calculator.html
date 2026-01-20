@@ -1318,7 +1318,7 @@
             URL.revokeObjectURL(url);
         });
         
-        // Export results to PDF - FIXED WITH PROPER TEXT WRAPPING
+        // Export results to PDF - FIXED: Only SKU Name wraps, all other columns in single line
         exportPdfBtn.addEventListener('click', function() {
             if (results.length === 0) {
                 alert('No results to export.');
@@ -1352,7 +1352,7 @@
                 `$${result.totalAmount.toFixed(2)}`
             ]);
             
-            // Add table with proper column configuration for text wrapping
+            // Add table with optimized column widths
             doc.autoTable({
                 head: [['Order #', 'Invoice', 'Seed', 'SKU Code', 'SKU Name', 'Qty', 'UOM', 'Total Liters', 'Per Case ($)', 'Total ($)']],
                 body: tableData,
@@ -1363,36 +1363,74 @@
                     textColor: [255, 255, 255],
                     fontSize: 9,
                     fontStyle: 'bold',
-                    halign: 'center'
+                    halign: 'center',
+                    cellPadding: 2
                 },
                 bodyStyles: {
                     fontSize: 8,
-                    cellPadding: 3,
-                    overflow: 'linebreak',
+                    cellPadding: 2,
                     lineWidth: 0.1,
-                    lineColor: [200, 200, 200]
+                    lineColor: [200, 200, 200],
+                    cellWidth: 'wrap'
                 },
                 columnStyles: {
-                    0: { cellWidth: 20, halign: 'center' },  // Order #
-                    1: { cellWidth: 25, halign: 'center' },  // Invoice
-                    2: { cellWidth: 20, halign: 'center' },  // Seed
-                    3: { cellWidth: 30, halign: 'center' },  // SKU Code
+                    0: { 
+                        cellWidth: 15, 
+                        halign: 'center',
+                        valign: 'middle'
+                    },  // Order #
+                    1: { 
+                        cellWidth: 25, 
+                        halign: 'center',
+                        valign: 'middle'
+                    },  // Invoice
+                    2: { 
+                        cellWidth: 20, 
+                        halign: 'center',
+                        valign: 'middle'
+                    },  // Seed
+                    3: { 
+                        cellWidth: 30, 
+                        halign: 'center',
+                        valign: 'middle'
+                    },  // SKU Code
                     4: { 
-                        cellWidth: 55, // SKU Name - wider column for text wrapping
+                        cellWidth: 50, // SKU Name - wider column for text wrapping ONLY
                         halign: 'left',
                         valign: 'middle',
-                        fontStyle: 'normal'
+                        fontStyle: 'normal',
+                        overflow: 'linebreak' // Only SKU Name wraps
                     },
-                    5: { cellWidth: 20, halign: 'center' },  // Quantity
-                    6: { cellWidth: 25, halign: 'center' },  // UOM
-                    7: { cellWidth: 30, halign: 'center' },  // Total Liters
-                    8: { cellWidth: 30, halign: 'center' },  // Per Case ($)
-                    9: { cellWidth: 30, halign: 'center' }   // Total ($)
+                    5: { 
+                        cellWidth: 15, 
+                        halign: 'center',
+                        valign: 'middle'
+                    },  // Quantity
+                    6: { 
+                        cellWidth: 20, 
+                        halign: 'center',
+                        valign: 'middle'
+                    },  // UOM
+                    7: { 
+                        cellWidth: 25, 
+                        halign: 'center',
+                        valign: 'middle'
+                    },  // Total Liters
+                    8: { 
+                        cellWidth: 25, 
+                        halign: 'center',
+                        valign: 'middle'
+                    },  // Per Case ($)
+                    9: { 
+                        cellWidth: 25, 
+                        halign: 'center',
+                        valign: 'middle'
+                    }   // Total ($)
                 },
                 styles: {
-                    overflow: 'linebreak',
                     lineWidth: 0.1,
-                    lineColor: [200, 200, 200]
+                    lineColor: [200, 200, 200],
+                    fontSize: 8
                 },
                 alternateRowStyles: {
                     fillColor: [248, 250, 252]
