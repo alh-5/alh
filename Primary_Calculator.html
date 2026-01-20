@@ -1318,7 +1318,7 @@
             URL.revokeObjectURL(url);
         });
         
-        // Export results to PDF - FIXED MARGINS
+        // Export results to PDF - FIXED WITH PROPER TEXT WRAPPING
         exportPdfBtn.addEventListener('click', function() {
             if (results.length === 0) {
                 alert('No results to export.');
@@ -1326,10 +1326,10 @@
             }
             
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('landscape'); // Changed to landscape for better fit
+            const doc = new jsPDF('landscape');
             
             // Add title
-            doc.setFontSize(20);
+            doc.setFontSize(18);
             doc.setTextColor(44, 62, 80);
             doc.text('Auto Lube House - Purchase Calculator Report', 148, 15, {align: 'center'});
             
@@ -1338,13 +1338,13 @@
             doc.setTextColor(100, 100, 100);
             doc.text(`Generated on: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 148, 22, {align: 'center'});
             
-            // Prepare table data
+            // Prepare table data with full SKU names
             const tableData = results.map(result => [
-                result.orderNumber,
+                result.orderNumber.toString(),
                 result.invoice,
                 result.seed,
                 result.code,
-                result.name.substring(0, 20), // Limit name length
+                result.name, // Full name without truncation
                 result.quantity.toString(),
                 result.uom.toFixed(2),
                 result.totalLiters.toFixed(2),
@@ -1352,17 +1352,61 @@
                 `$${result.totalAmount.toFixed(2)}`
             ]);
             
-            // Add table with proper margins
+            // Add table with proper column configuration for text wrapping
             doc.autoTable({
                 head: [['Order #', 'Invoice', 'Seed', 'SKU Code', 'SKU Name', 'Qty', 'UOM', 'Total Liters', 'Per Case ($)', 'Total ($)']],
                 body: tableData,
                 startY: 30,
                 theme: 'grid',
-                headStyles: {fillColor: [44, 62, 80], textColor: [255, 255, 255], fontSize: 9},
-                bodyStyles: {fontSize: 8},
-                alternateRowStyles: {fillColor: [248, 250, 252]},
-                margin: {left: 10, right: 10, top: 30},
-                tableWidth: 'auto'
+                headStyles: {
+                    fillColor: [44, 62, 80],
+                    textColor: [255, 255, 255],
+                    fontSize: 9,
+                    fontStyle: 'bold',
+                    halign: 'center'
+                },
+                bodyStyles: {
+                    fontSize: 8,
+                    cellPadding: 3,
+                    overflow: 'linebreak',
+                    lineWidth: 0.1,
+                    lineColor: [200, 200, 200]
+                },
+                columnStyles: {
+                    0: { cellWidth: 20, halign: 'center' },  // Order #
+                    1: { cellWidth: 25, halign: 'center' },  // Invoice
+                    2: { cellWidth: 20, halign: 'center' },  // Seed
+                    3: { cellWidth: 30, halign: 'center' },  // SKU Code
+                    4: { 
+                        cellWidth: 55, // SKU Name - wider column for text wrapping
+                        halign: 'left',
+                        valign: 'middle',
+                        fontStyle: 'normal'
+                    },
+                    5: { cellWidth: 20, halign: 'center' },  // Quantity
+                    6: { cellWidth: 25, halign: 'center' },  // UOM
+                    7: { cellWidth: 30, halign: 'center' },  // Total Liters
+                    8: { cellWidth: 30, halign: 'center' },  // Per Case ($)
+                    9: { cellWidth: 30, halign: 'center' }   // Total ($)
+                },
+                styles: {
+                    overflow: 'linebreak',
+                    lineWidth: 0.1,
+                    lineColor: [200, 200, 200]
+                },
+                alternateRowStyles: {
+                    fillColor: [248, 250, 252]
+                },
+                margin: { left: 10, right: 10, top: 30 },
+                tableWidth: 'auto',
+                showHead: 'everyPage',
+                didDrawPage: function (data) {
+                    // Add page number
+                    const pageCount = doc.internal.getNumberOfPages();
+                    doc.setFontSize(8);
+                    doc.setTextColor(100, 100, 100);
+                    doc.text(`Page ${data.pageNumber} of ${pageCount}`, 148, doc.internal.pageSize.height - 10, {align: 'center'});
+                }
             });
             
             // Add summary
@@ -1372,8 +1416,8 @@
             
             let finalY = doc.lastAutoTable.finalY + 10 || 80;
             
-            // Ensure we don't go too close to page bottom
-            if (finalY > doc.internal.pageSize.height - 30) {
+            // Add a new page if we're too close to the bottom
+            if (finalY > doc.internal.pageSize.height - 40) {
                 doc.addPage();
                 finalY = 20;
             }
@@ -1383,15 +1427,24 @@
             doc.text('Summary', 10, finalY);
             
             doc.setFontSize(10);
-            doc.text(`Total Items: ${results.length}`, 10, finalY + 10);
-            doc.text(`Total Quantity: ${totalQuantity}`, 10, finalY + 15);
-            doc.text(`Total Liters: ${totalLiters.toFixed(2)}`, 10, finalY + 20);
-            doc.text(`Total Amount: $${totalAmount.toFixed(2)}`, 10, finalY + 25);
+            doc.text(`Total Items: ${results.length}`, 10, finalY + 8);
+            doc.text(`Total Quantity: ${totalQuantity}`, 10, finalY + 16);
+            doc.text(`Total Liters: ${totalLiters.toFixed(2)}`, 10, finalY + 24);
+            doc.text(`Total Amount: $${totalAmount.toFixed(2)}`, 10, finalY + 32);
+            
+            // Count unique orders
+            const orderSet = new Set();
+            results.forEach(item => {
+                orderSet.add(`${item.invoice}_${item.seed}_${item.orderNumber}`);
+            });
+            const totalOrders = orderSet.size;
+            
+            doc.text(`Total Orders: ${totalOrders}`, 120, finalY + 8);
             
             // Add footer
             doc.setFontSize(8);
             doc.setTextColor(100, 100, 100);
-            doc.text('SKU Purchase System - dbareh © 2026', 148, doc.internal.pageSize.height - 10, {align: 'center'});
+            doc.text('SKU Purchase System - dbareh © 2026', 148, doc.internal.pageSize.height - 20, {align: 'center'});
             
             // Save the PDF
             doc.save(`Purchase_Report_${new Date().toISOString().slice(0,10)}.pdf`);
