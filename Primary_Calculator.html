@@ -195,6 +195,8 @@
             font-weight: 500;
             margin-bottom: 10px;
             border: none;
+            width: 100%;
+            text-align: center;
         }
         
         .file-input-label:hover {
@@ -334,6 +336,15 @@
         .btn-gold:hover {
             background: linear-gradient(135deg, #FFD700, #D4AF37);
             box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+        
+        .btn-refresh {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        }
+        
+        .btn-refresh:hover {
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3);
         }
         
         .button-group {
@@ -547,6 +558,18 @@
             color: #D4AF37;
         }
         
+        /* Import buttons group */
+        .import-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .import-buttons .btn {
+            flex: 1;
+            min-width: 120px;
+        }
+        
         @media (max-width: 768px) {
             .main-content {
                 flex-direction: column;
@@ -596,6 +619,14 @@
                 height: 35px;
                 font-size: 14px;
             }
+            
+            .import-buttons {
+                flex-direction: column;
+            }
+            
+            .import-buttons .btn {
+                min-width: 100%;
+            }
         }
     </style>
 </head>
@@ -625,9 +656,15 @@
                         <div id="fileName" class="file-info"></div>
                     </div>
                     
-                    <button class="file-input-label" id="uploadBtn" onclick="window.location.href='https://alh-5.github.io/alh/Advance Stock/UOM.xlsx';">
-                        <i class="fas fa-chart-pie"></i> Download Sample
-                    </button>
+                    <div class="import-buttons">
+                        <button class="btn btn-secondary" id="uploadBtn" onclick="window.location.href='https://alh-5.github.io/alh/Advance Stock/UOM.xlsx';">
+                            <i class="fas fa-chart-pie"></i> Download Sample
+                        </button>
+                        
+                        <button class="btn btn-refresh" id="refreshBtn">
+                            <i class="fas fa-sync-alt"></i> Refresh SKU List
+                        </button>
+                    </div>
                     
                     <div id="importError" class="error-message"></div>
                     <div id="importSuccess" class="success-message"></div>
@@ -778,13 +815,12 @@
 
     <script>
         // Sample SKU data
-        const sampleSKUData = [
-            
-        ];
+        const sampleSKUData = [];
         
         let importedSKUs = [];
         let results = [];
         let orderCounter = {};
+        let currentFileData = null;
         
         // DOM elements
         const fileInput = document.getElementById('fileInput');
@@ -801,11 +837,11 @@
         const clearBtn = document.getElementById('clearBtn');
         const exportBtn = document.getElementById('exportBtn');
         const exportPdfBtn = document.getElementById('exportPdfBtn');
+        const refreshBtn = document.getElementById('refreshBtn');
         const resultsBody = document.getElementById('resultsBody');
         const importedDataBody = document.getElementById('importedDataBody');
         const importError = document.getElementById('importError');
         const importSuccess = document.getElementById('importSuccess');
-        const downloadSampleLink = document.getElementById('downloadSample');
         const ordersList = document.getElementById('ordersList');
         const totalAmountContainer = document.getElementById('totalAmountContainer');
         
@@ -827,12 +863,6 @@
             return orderCounter[key];
         }
         
-        // Reset order counter for a specific invoice+seed combination
-        function resetOrderCounter(invoice, seed) {
-            const key = `${invoice}_${seed}`;
-            orderCounter[key] = 0;
-        }
-        
         // Toggle between total amount and per case amount input
         priceOption.addEventListener('change', function() {
             if (this.value === 'perCase') {
@@ -850,7 +880,93 @@
             totalAmountInput.value = "";
             perCaseAmountInput.value = "";
             skuCodeInput.value = "";
+            
+            // Update placeholder based on available SKUs
+            if (importedSKUs.length > 0) {
+                skuCodeInput.placeholder = `Enter SKU code (${importedSKUs.length} SKUs available)`;
+            } else {
+                skuCodeInput.placeholder = "Enter SKU code";
+            }
+            
             skuCodeInput.focus();
+        }
+        
+        // Function to process file data
+        function processFileData(fileData) {
+            try {
+                const data = new Uint8Array(fileData);
+                const workbook = XLSX.read(data, {type: 'array'});
+                
+                // Get the first worksheet
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                
+                // Convert to JSON
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+                
+                if (jsonData.length === 0) {
+                    throw new Error('The Excel file appears to be empty.');
+                }
+                
+                const newSKUs = [];
+                let startRow = 0;
+                
+                // Check if first row contains headers
+                const firstRow = jsonData[0];
+                if (firstRow && firstRow.length >= 3 && 
+                    (firstRow[0].toString().toLowerCase().includes('sku') || 
+                     firstRow[1].toString().toLowerCase().includes('name') ||
+                     firstRow[2].toString().toLowerCase().includes('uom'))) {
+                    startRow = 1; // Skip header row
+                }
+                
+                // Process each row
+                for (let i = startRow; i < jsonData.length; i++) {
+                    const row = jsonData[i];
+                    if (!row || row.length < 3) continue;
+                    
+                    const code = row[0] ? row[0].toString().trim() : '';
+                    const name = row[1] ? row[1].toString().trim() : '';
+                    const uomValue = row[2];
+                    
+                    // Handle uom value (could be string or number)
+                    let uom = 0;
+                    if (typeof uomValue === 'number') {
+                        uom = uomValue;
+                    } else if (typeof uomValue === 'string') {
+                        uom = parseFloat(uomValue.replace(/[^0-9.]/g, ''));
+                    }
+                    
+                    if (code && name && !isNaN(uom) && uom > 0) {
+                        newSKUs.push({code, name, uom});
+                    }
+                }
+                
+                if (newSKUs.length === 0) {
+                    throw new Error('No valid SKU data found in the file. Please check the format (SKU Code, SKU Name, UOM columns required).');
+                }
+                
+                importedSKUs = newSKUs;
+                updateImportedDataTable();
+                clearInputFields();
+                
+                importSuccess.textContent = `Successfully imported ${newSKUs.length} SKU records from the Excel file.`;
+                importSuccess.style.display = 'block';
+                importError.style.display = 'none';
+                
+                // Show refresh button as active
+                refreshBtn.innerHTML = '<i class="fas fa-check-circle"></i> SKU List Loaded';
+                refreshBtn.style.background = 'linear-gradient(135deg, #2ecc71, #27ae60)';
+                setTimeout(() => {
+                    refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh SKU List';
+                    refreshBtn.style.background = '';
+                }, 2000);
+                
+            } catch (error) {
+                importError.textContent = `Error importing file: ${error.message}`;
+                importError.style.display = 'block';
+                importSuccess.style.display = 'none';
+            }
         }
         
         // Handle file import
@@ -864,77 +980,49 @@
             
             const reader = new FileReader();
             reader.onload = function(event) {
-                try {
-                    const data = new Uint8Array(event.target.result);
-                    const workbook = XLSX.read(data, {type: 'array'});
-                    
-                    // Get the first worksheet
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    
-                    // Convert to JSON
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
-                    
-                    if (jsonData.length === 0) {
-                        throw new Error('The Excel file appears to be empty.');
-                    }
-                    
-                    const newSKUs = [];
-                    let startRow = 0;
-                    
-                    // Check if first row contains headers
-                    const firstRow = jsonData[0];
-                    if (firstRow && firstRow.length >= 3 && 
-                        (firstRow[0].toString().toLowerCase().includes('sku') || 
-                         firstRow[1].toString().toLowerCase().includes('name') ||
-                         firstRow[2].toString().toLowerCase().includes('uom'))) {
-                        startRow = 1; // Skip header row
-                    }
-                    
-                    // Process each row
-                    for (let i = startRow; i < jsonData.length; i++) {
-                        const row = jsonData[i];
-                        if (!row || row.length < 3) continue;
-                        
-                        const code = row[0] ? row[0].toString().trim() : '';
-                        const name = row[1] ? row[1].toString().trim() : '';
-                        const uomValue = row[2];
-                        
-                        // Handle uom value (could be string or number)
-                        let uom = 0;
-                        if (typeof uomValue === 'number') {
-                            uom = uomValue;
-                        } else if (typeof uomValue === 'string') {
-                            uom = parseFloat(uomValue.replace(/[^0-9.]/g, ''));
-                        }
-                        
-                        if (code && name && !isNaN(uom) && uom > 0) {
-                            newSKUs.push({code, name, uom});
-                        }
-                    }
-                    
-                    if (newSKUs.length === 0) {
-                        throw new Error('No valid SKU data found in the file. Please check the format (SKU Code, SKU Name, UOM columns required).');
-                    }
-                    
-                    importedSKUs = newSKUs;
-                    updateImportedDataTable();
-                    
-                    // Auto-select the first SKU in the input for convenience
-                    if (importedSKUs.length > 0) {
-                        skuCodeInput.value = '';
-                    }
-                    
-                    importSuccess.textContent = `Successfully imported ${newSKUs.length} SKU records from the Excel file.`;
-                    importSuccess.style.display = 'block';
-                    
-                } catch (error) {
-                    importError.textContent = `Error importing file: ${error.message}`;
-                    importError.style.display = 'block';
-                }
+                currentFileData = event.target.result;
+                processFileData(currentFileData);
             };
             
             reader.readAsArrayBuffer(file);
+        });
+        
+        // Refresh button event listener
+        refreshBtn.addEventListener('click', function() {
+            if (!currentFileData) {
+                importError.textContent = 'No file loaded yet. Please import an Excel file first.';
+                importError.style.display = 'block';
+                return;
+            }
+            
+            // Show loading state
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+            refreshBtn.disabled = true;
+            
+            // Simulate processing delay
+            setTimeout(() => {
+                try {
+                    processFileData(currentFileData);
+                    importSuccess.textContent = `SKU list refreshed successfully. ${importedSKUs.length} records loaded.`;
+                    importSuccess.style.display = 'block';
+                    
+                    // Reset button state
+                    refreshBtn.innerHTML = '<i class="fas fa-check-circle"></i> Refreshed!';
+                    refreshBtn.style.background = 'linear-gradient(135deg, #2ecc71, #27ae60)';
+                    
+                    setTimeout(() => {
+                        refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh SKU List';
+                        refreshBtn.style.background = '';
+                        refreshBtn.disabled = false;
+                    }, 1500);
+                    
+                } catch (error) {
+                    importError.textContent = `Error refreshing SKU list: ${error.message}`;
+                    importError.style.display = 'block';
+                    refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh SKU List';
+                    refreshBtn.disabled = false;
+                }
+            }, 500);
         });
         
         // Update the imported data table
@@ -1230,7 +1318,7 @@
             URL.revokeObjectURL(url);
         });
         
-        // Export results to PDF
+        // Export results to PDF - FIXED MARGINS
         exportPdfBtn.addEventListener('click', function() {
             if (results.length === 0) {
                 alert('No results to export.');
@@ -1238,24 +1326,17 @@
             }
             
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            const doc = new jsPDF('landscape'); // Changed to landscape for better fit
             
             // Add title
             doc.setFontSize(20);
             doc.setTextColor(44, 62, 80);
-            doc.text('Auto Lube House', 105, 15, {align: 'center'});
+            doc.text('Auto Lube House - Purchase Calculator Report', 148, 15, {align: 'center'});
             
             // Add date
             doc.setFontSize(10);
             doc.setTextColor(100, 100, 100);
-            doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 22, {align: 'center'});
-            
-            // Add invoice and seed info if available
-            if (results.length > 0) {
-                doc.setFontSize(12);
-                doc.setTextColor(44, 62, 80);
-                doc.text('Primary Purchase Calculator', 105, 30, {align: 'center'});
-            }
+            doc.text(`Generated on: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 148, 22, {align: 'center'});
             
             // Prepare table data
             const tableData = results.map(result => [
@@ -1263,7 +1344,7 @@
                 result.invoice,
                 result.seed,
                 result.code,
-                result.name,
+                result.name.substring(0, 20), // Limit name length
                 result.quantity.toString(),
                 result.uom.toFixed(2),
                 result.totalLiters.toFixed(2),
@@ -1271,15 +1352,17 @@
                 `$${result.totalAmount.toFixed(2)}`
             ]);
             
-            // Add table
+            // Add table with proper margins
             doc.autoTable({
                 head: [['Order #', 'Invoice', 'Seed', 'SKU Code', 'SKU Name', 'Qty', 'UOM', 'Total Liters', 'Per Case ($)', 'Total ($)']],
                 body: tableData,
-                startY: 40,
+                startY: 30,
                 theme: 'grid',
-                headStyles: {fillColor: [44, 62, 80]},
+                headStyles: {fillColor: [44, 62, 80], textColor: [255, 255, 255], fontSize: 9},
+                bodyStyles: {fontSize: 8},
                 alternateRowStyles: {fillColor: [248, 250, 252]},
-                margin: {top: 40}
+                margin: {left: 10, right: 10, top: 30},
+                tableWidth: 'auto'
             });
             
             // Add summary
@@ -1287,36 +1370,45 @@
             const totalLiters = results.reduce((sum, item) => sum + item.totalLiters, 0);
             const totalAmount = results.reduce((sum, item) => sum + item.totalAmount, 0);
             
-            let finalY = doc.lastAutoTable.finalY || 80;
+            let finalY = doc.lastAutoTable.finalY + 10 || 80;
+            
+            // Ensure we don't go too close to page bottom
+            if (finalY > doc.internal.pageSize.height - 30) {
+                doc.addPage();
+                finalY = 20;
+            }
             
             doc.setFontSize(12);
             doc.setTextColor(44, 62, 80);
-            doc.text('Summary', 14, finalY + 15);
+            doc.text('Summary', 10, finalY);
             
             doc.setFontSize(10);
-            doc.text(`Total Items: ${results.length}`, 14, finalY + 25);
-            doc.text(`Total Quantity: ${totalQuantity}`, 14, finalY + 30);
-            doc.text(`Total Liters: ${totalLiters.toFixed(2)}`, 14, finalY + 35);
-            doc.text(`Total Amount: $${totalAmount.toFixed(2)}`, 14, finalY + 40);
+            doc.text(`Total Items: ${results.length}`, 10, finalY + 10);
+            doc.text(`Total Quantity: ${totalQuantity}`, 10, finalY + 15);
+            doc.text(`Total Liters: ${totalLiters.toFixed(2)}`, 10, finalY + 20);
+            doc.text(`Total Amount: $${totalAmount.toFixed(2)}`, 10, finalY + 25);
             
             // Add footer
             doc.setFontSize(8);
             doc.setTextColor(100, 100, 100);
-            doc.text('SKU Purchase System - dbareh © 2026', 105, doc.internal.pageSize.height - 10, {align: 'center'});
+            doc.text('SKU Purchase System - dbareh © 2026', 148, doc.internal.pageSize.height - 10, {align: 'center'});
             
             // Save the PDF
             doc.save(`Purchase_Report_${new Date().toISOString().slice(0,10)}.pdf`);
         });
         
-              
-        // Initialize with sample data on page load
+        // Initialize on page load
         window.addEventListener('DOMContentLoaded', function() {
-            // Reset the sampleSKUData array to be empty initially
             importedSKUs = [];
             updateImportedDataTable();
-            
-            // Set focus to invoice number
             invoiceNumberInput.focus();
+            
+            // Add keyboard shortcut for adding SKU (Ctrl + Enter)
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    addBtn.click();
+                }
+            });
         });
     </script>
 </body>
