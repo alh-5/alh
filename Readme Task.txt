@@ -1,7 +1,11 @@
 1. update Advance Stock,
+2. Update sales / purchase data (important)
 2. UOM.xlsx if require update it else no,
 
-3. Challan_price list and coutation share same import folder.
+3. Challan_price list and Qoutation share same import folder.
 
-4. Price list
-a. Profit Amount Folder utilise excel code folder.
+4. Profit Amount Folder utilise pricelist excel code folder.
+
+5. Price list pricelist excel code folder
+a. brlp.html
+b. smlp.html

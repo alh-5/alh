@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders & Stock Analyzer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-bg: #f8f9fa;
+            --dark-bg: #2c3e50;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+        }
+        
+        .header-section {
+            background: linear-gradient(135deg, var(--primary-color), #3a56d4);
+            color: white;
+            border-radius: 0 0 20px 20px;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.07);
+            transition: transform 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 2px solid #eef2f7;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 1.2rem 1.5rem;
+            font-weight: 600;
+        }
+        
+        .file-upload-area {
+            border: 2px dashed #bdc3c7;
+            border-radius: 12px;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+            background-color: #fdfdfe;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+        
+        .file-upload-area:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(67, 97, 238, 0.03);
+        }
+        
+        .file-upload-area.dragover {
+            border-color: var(--primary-color);
+            background-color: rgba(67, 97, 238, 0.08);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2f52e0;
+            border-color: #2f52e0;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+            border-color: var(--warning-color);
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .table-container {
+            max-height: 500px;
+            overflow-y: auto;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        table {
+            margin-bottom: 0;
+        }
+        
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .table th {
+            background-color: var(--dark-bg);
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-weight: 500;
+        }
+        
+        .table td {
+            padding: 0.9rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .availability-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+        
+        .available {
+            background-color: rgba(46, 204, 113, 0.15);
+            color: var(--success-color);
+        }
+        
+        .not-available {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: var(--danger-color);
+        }
+        
+        .customer-row {
+            background-color: rgba(67, 97, 238, 0.05);
+            font-weight: 600;
+        }
+        
+        .file-info {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 0.8rem;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .file-info i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+        
+        .instructions {
+            background-color: #fff9e6;
+            border-left: 4px solid var(--warning-color);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 1.5rem;
+        }
+        
+        .instructions h5 {
+            color: var(--warning-color);
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        
+        .spinner {
+            display: none;
+            margin: 1rem auto;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            border-top: 1px solid #ecf0f1;
+        }
+        
+        .stock-summary {
+            background-color: #e8f4fd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stock-summary h6 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .sku-consolidated {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .export-buttons {
+                flex-direction: column;
+            }
+            
+            .table-container {
+                max-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header-section">
+        <div class="container">
+            <h1 class="text-center"><i class="fas fa-file-excel me-2"></i>Orders & Stock Analyzer</h1>
+            <p class="text-center mb-0">Upload your Orders and Current Stock Excel files to analyze availability</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Instructions -->
+        <div class="instructions">
+            <h5><i class="fas fa-info-circle me-2"></i>Auto Lube House Stock Availability</h5>
+            
+        </div>
+        
+        <div class="row">
+            <!-- File Upload Section -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-file-upload me-2"></i> Upload Excel Files
+                    </div>
+                    <div class="card-body">
+					
+					<button class="file-info" id="upload-btn" onclick="window.location.href='https://alh-5.github.io/alh/Advance Stock/Current Stock.xlsx';">
+                        <i class="fas fa-folder-open me-2"></i> Download Current Stock
+                    </button>
+					
+					<br> </br>
+										
+                        <!-- Current Stock Upload -->
+                        <div class="mb-4">
+                            <h5>Current Stock File</h5>
+                            <div id="stockUploadArea" class="file-upload-area">
+                                <i class="fas fa-file-excel fa-3x mb-3" style="color: #2ecc71;"></i>
+                                <p class="mb-2">Drag & drop your <strong>Current Stock.xlsx</strong> file here</p>
+                                <p class="text-muted small mb-3">or click to browse</p>
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-folder-open me-2"></i> Select File
+                                </button>
+                                <input type="file" id="stockFile" accept=".xlsx, .xls" class="d-none">
+                            </div>
+                            <div id="stockFileInfo" class="file-info">
+                                <i class="fas fa-info-circle"></i> No file selected. Please upload Current Stock file with SKU Code, SKU Name, and Quantity columns.
+                            </div>
+                        </div>
+                        
+                        <!-- Orders Upload -->
+                        <div class="mb-4">
+                            <h5>Orders File</h5>
+                            <div id="ordersUploadArea" class="file-upload-area">
+                                <i class="fas fa-file-excel fa-3x mb-3" style="color: #e74c3c;"></i>
+                                <p class="mb-2">Drag & drop your <strong>Orders.xlsx</strong> file here</p>
+                                <p class="text-muted small mb-3">or click to browse</p>
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-folder-open me-2"></i> Select File
+                                </button>
+                                <input type="file" id="ordersFile" accept=".xlsx, .xls" class="d-none">
+                            </div>
+                            <div id="ordersFileInfo" class="file-info">
+                                <i class="fas fa-info-circle"></i> No file selected. Please upload Orders file with customerName, skuName, skuCode, and Pending Qnty columns.
+                            </div>
+                        </div>
+                        
+                        <!-- Process Button -->
+                        <div class="d-grid">
+                            <button id="processBtn" class="btn btn-success btn-lg" disabled>
+                                <i class="fas fa-calculator me-2"></i> Analyze Orders & Stock
+                            </button>
+                        </div>
+                        
+                        <!-- Spinner -->
+                        <div id="spinner" class="spinner text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Processing data...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Stock Summary Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-boxes me-2"></i> Consolidated Stock Summary
+                    </div>
+                    <div class="card-body">
+                        <div id="stockSummary" class="stock-summary">
+                            <p class="text-center text-muted mb-0">Import Current Stock file to see consolidated SKU quantities</p>
+                        </div>
+                        <div id="consolidationNote" class="sku-consolidated">
+                            <i class="fas fa-lightbulb text-warning me-1"></i> Note: Duplicate SKUs in Current Stock are automatically summed
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results Section -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-chart-bar me-2"></i> Analysis Results
+                        </div>
+                        <div id="resultsCount" class="badge bg-primary">No data</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table id="resultsTable" class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th>SKU Code</th>
+                                        <th>SKU Name</th>
+                                        <th>Order Qty</th>
+                                        <th>Stock Qty</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resultsBody">
+                                    <tr>
+                                        <td colspan="6" class="text-center py-5 text-muted">
+                                            <i class="fas fa-chart-line fa-2x mb-3"></i>
+                                            <p>Upload both Excel files and click "Analyze Orders & Stock" to see results</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Export Buttons -->
+                        <div class="export-buttons">
+                            <button id="exportExcelBtn" class="btn btn-success" disabled>
+                                <i class="fas fa-file-excel me-2"></i> Export to Excel
+                            </button>
+                            <button id="exportPdfBtn" class="btn btn-danger" disabled>
+                                <i class="fas fa-file-pdf me-2"></i> Export to PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Statistics Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-pie me-2"></i> Order Fulfillment Statistics
+                    </div>
+                    <div class="card-body">
+                        <div id="statsContainer" class="text-center py-3">
+                            <p class="text-muted">Process data to see fulfillment statistics</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>Excel Order & Stock Analyzer &copy; 2023 | Handles duplicate SKUs with auto-summation</p>
+        </div>
+    </div>
+
+    <script>
+        // Sample data structures
+        let stockData = [];
+        let consolidatedStockData = [];
+        let ordersData = [];
+        let resultsData = [];
+        
+        // DOM elements
+        const stockUploadArea = document.getElementById('stockUploadArea');
+        const ordersUploadArea = document.getElementById('ordersUploadArea');
+        const stockFileInput = document.getElementById('stockFile');
+        const ordersFileInput = document.getElementById('ordersFile');
+        const stockFileInfo = document.getElementById('stockFileInfo');
+        const ordersFileInfo = document.getElementById('ordersFileInfo');
+        const processBtn = document.getElementById('processBtn');
+        const exportExcelBtn = document.getElementById('exportExcelBtn');
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
+        const resultsBody = document.getElementById('resultsBody');
+        const resultsCount = document.getElementById('resultsCount');
+        const spinner = document.getElementById('spinner');
+        const stockSummary = document.getElementById('stockSummary');
+        const statsContainer = document.getElementById('statsContainer');
+        
+        // Event Listeners for file selection
+        stockUploadArea.addEventListener('click', () => stockFileInput.click());
+        ordersUploadArea.addEventListener('click', () => ordersFileInput.click());
+        
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            [stockUploadArea, ordersUploadArea].forEach(area => {
+                area.addEventListener(eventName, preventDefaults, false);
+            });
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            stockUploadArea.addEventListener(eventName, highlightStockArea, false);
+            ordersUploadArea.addEventListener(eventName, highlightOrdersArea, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            stockUploadArea.addEventListener(eventName, unhighlightStockArea, false);
+            ordersUploadArea.addEventListener(eventName, unhighlightOrdersArea, false);
+        });
+        
+        function highlightStockArea() {
+            stockUploadArea.classList.add('dragover');
+        }
+        
+        function unhighlightStockArea() {
+            stockUploadArea.classList.remove('dragover');
+        }
+        
+        function highlightOrdersArea() {
+            ordersUploadArea.classList.add('dragover');
+        }
+        
+        function unhighlightOrdersArea() {
+            ordersUploadArea.classList.remove('dragover');
+        }
+        
+        // Handle file drop
+        stockUploadArea.addEventListener('drop', handleStockDrop, false);
+        ordersUploadArea.addEventListener('drop', handleOrdersDrop, false);
+        
+        function handleStockDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                stockFileInput.files = files;
+                handleStockFile(files[0]);
+            }
+        }
+        
+        function handleOrdersDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                ordersFileInput.files = files;
+                handleOrdersFile(files[0]);
+            }
+        }
+        
+        // Handle file selection via input
+        stockFileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleStockFile(e.target.files[0]);
+            }
+        });
+        
+        ordersFileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleOrdersFile(e.target.files[0]);
+            }
+        });
+        
+        // Process stock file with consolidation of duplicate SKUs
+        function handleStockFile(file) {
+            stockFileInfo.innerHTML = `<i class="fas fa-check-circle"></i> <strong>${file.name}</strong> (${(file.size/1024).toFixed(1)} KB)`;
+            stockFileInfo.style.color = "#2ecc71";
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                
+                // Store raw stock data
+                stockData = jsonData.map(row => ({
+                    skuCode: row['SKU Code'] || row['skuCode'] || row['SKUCode'] || '',
+                    skuName: row['SKU Name'] || row['skuName'] || row['SKUName'] || '',
+                    quantity: parseInt(row['Quantity'] || row['quantity'] || 0) || 0
+                })).filter(item => item.skuCode && item.skuName);
+                
+                console.log("Raw stock data loaded:", stockData.length, "items");
+                
+                // Consolidate duplicate SKUs by summing quantities
+                consolidatedStockData = consolidateStockData(stockData);
+                
+                console.log("Consolidated stock data:", consolidatedStockData.length, "unique SKUs");
+                
+                // Update stock summary
+                updateStockSummary();
+                
+                checkFilesReady();
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        
+        // Consolidate duplicate SKUs by summing quantities
+        function consolidateStockData(rawStockData) {
+            const stockMap = {};
+            
+            rawStockData.forEach(item => {
+                const skuCode = String(item.skuCode).trim();
+                const skuName = String(item.skuName).trim();
+                const quantity = parseInt(item.quantity) || 0;
+                
+                if (skuCode) {
+                    if (!stockMap[skuCode]) {
+                        stockMap[skuCode] = {
+                            skuCode: skuCode,
+                            skuName: skuName,
+                            quantity: 0,
+                            occurrences: 0
+                        };
+                    }
+                    
+                    stockMap[skuCode].quantity += quantity;
+                    stockMap[skuCode].occurrences += 1;
+                    
+                    // If SKU name is empty in this row but we already have a name, keep it
+                    if (!skuName && stockMap[skuCode].skuName) {
+                        // Keep existing name
+                    } else if (skuName) {
+                        stockMap[skuCode].skuName = skuName;
+                    }
+                }
+            });
+            
+            // Convert map to array
+            return Object.values(stockMap);
+        }
+        
+        // Update stock summary display
+        function updateStockSummary() {
+            if (consolidatedStockData.length === 0) {
+                stockSummary.innerHTML = '<p class="text-center text-muted mb-0">Upload Current Stock file to see consolidated SKU quantities</p>';
+                return;
+            }
+            
+            let summaryHTML = '';
+            
+            // Show how many SKUs were consolidated
+            const consolidatedCount = stockData.length - consolidatedStockData.length;
+            
+            if (consolidatedCount > 0) {
+                summaryHTML += `<div class="alert alert-info mb-2">
+                    <i class="fas fa-compress-alt me-2"></i>
+                    <strong>${consolidatedCount} duplicate SKU(s) consolidated</strong> - Total ${consolidatedStockData.length} unique SKUs
+                </div>`;
+            }
+            
+            // Show top 10 SKUs by quantity
+            const sortedStock = [...consolidatedStockData].sort((a, b) => b.quantity - a.quantity);
+            const topSKUs = sortedStock.slice(0, 10);
+            
+            summaryHTML += `<h6>Top ${Math.min(10, sortedStock.length)} SKUs by Quantity:</h6>`;
+            summaryHTML += '<div class="row">';
+            
+            topSKUs.forEach(item => {
+                const occurrencesText = item.occurrences > 1 ? `<small class="text-muted"> (from ${item.occurrences} entries)</small>` : '';
+                summaryHTML += `
+                    <div class="col-6 mb-1">
+                        <span class="badge bg-primary me-1">${item.skuCode}</span>
+                        <span>${item.quantity} units${occurrencesText}</span>
+                    </div>
+                `;
+            });
+            
+            summaryHTML += '</div>';
+            
+            // Show total stock quantity
+            const totalQuantity = consolidatedStockData.reduce((sum, item) => sum + item.quantity, 0);
+            summaryHTML += `<div class="mt-2 pt-2 border-top">
+                <strong>Total Stock Quantity:</strong> ${totalQuantity} units across ${consolidatedStockData.length} unique SKUs
+            </div>`;
+            
+            stockSummary.innerHTML = summaryHTML;
+        }
+        
+        // Process orders file
+        function handleOrdersFile(file) {
+            ordersFileInfo.innerHTML = `<i class="fas fa-check-circle"></i> <strong>${file.name}</strong> (${(file.size/1024).toFixed(1)} KB)`;
+            ordersFileInfo.style.color = "#2ecc71";
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                
+                // Store orders data, filter out pending qty = 0
+                ordersData = jsonData.map(row => ({
+                    customerName: row['customerName'] || row['CustomerName'] || row['Customer Name'] || '',
+                    skuName: row['skuName'] || row['SkuName'] || row['SKU Name'] || '',
+                    skuCode: row['skuCode'] || row['SkuCode'] || row['SKU Code'] || '',
+                    pendingQty: parseInt(row['Pending Qnty'] || row['pendingQnty'] || row['PendingQnty'] || 0) || 0
+                })).filter(item => item.customerName && item.skuCode && item.skuName && item.pendingQty > 0);
+                
+                console.log("Orders data loaded:", ordersData.length, "items");
+                checkFilesReady();
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        
+        // Check if both files are ready
+        function checkFilesReady() {
+            if (stockData.length > 0 && ordersData.length > 0) {
+                processBtn.disabled = false;
+            }
+        }
+        
+        // Process the data when button is clicked
+        processBtn.addEventListener('click', processData);
+        
+        function processData() {
+            spinner.style.display = 'block';
+            processBtn.disabled = true;
+            
+            // Simulate processing time
+            setTimeout(() => {
+                // Clear previous results
+                resultsData = [];
+                
+                // Create a map for quick stock lookup by SKU code using CONSOLIDATED stock data
+                const stockMap = {};
+                consolidatedStockData.forEach(item => {
+                    stockMap[item.skuCode] = item;
+                });
+                
+                // Process each order
+                ordersData.forEach(order => {
+                    const stockItem = stockMap[order.skuCode];
+                    const stockQty = stockItem ? stockItem.quantity : 0;
+                    const isAvailable = stockQty >= order.pendingQty;
+                    
+                    resultsData.push({
+                        customerName: order.customerName,
+                        skuCode: order.skuCode,
+                        skuName: order.skuName,
+                        orderQty: order.pendingQty,
+                        stockQty: stockQty,
+                        status: isAvailable ? 'Available' : 'Not Available'
+                    });
+                });
+                
+                // Sort by customer name
+                resultsData.sort((a, b) => a.customerName.localeCompare(b.customerName));
+                
+                // Display results
+                displayResults();
+                
+                // Update statistics
+                updateStatistics();
+                
+                spinner.style.display = 'none';
+                processBtn.disabled = false;
+                exportExcelBtn.disabled = false;
+                exportPdfBtn.disabled = false;
+            }, 800);
+        }
+        
+        // Display results in table
+        function displayResults() {
+            resultsBody.innerHTML = '';
+            
+            if (resultsData.length === 0) {
+                resultsBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="fas fa-exclamation-circle fa-2x mb-3"></i>
+                            <p>No data to display. Please check your files and try again.</p>
+                        </td>
+                    </tr>
+                `;
+                resultsCount.textContent = "No data";
+                return;
+            }
+            
+            let currentCustomer = '';
+            
+            resultsData.forEach(item => {
+                // Add customer header row if customer changed
+                if (item.customerName !== currentCustomer) {
+                    currentCustomer = item.customerName;
+                    const customerRow = document.createElement('tr');
+                    customerRow.className = 'customer-row';
+                    customerRow.innerHTML = `
+                        <td colspan="6">
+                            <i class="fas fa-user me-2"></i> ${currentCustomer}
+                        </td>
+                    `;
+                    resultsBody.appendChild(customerRow);
+                }
+                
+                // Add data row
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td></td>
+                    <td>${item.skuCode}</td>
+                    <td>${item.skuName}</td>
+                    <td>${item.orderQty}</td>
+                    <td>${item.stockQty}</td>
+                    <td>
+                        <span class="availability-badge ${item.status === 'Available' ? 'available' : 'not-available'}">
+                            ${item.status === 'Available' ? '<i class="fas fa-check me-1"></i>' : '<i class="fas fa-times me-1"></i>'}
+                            ${item.status}
+                        </span>
+                    </td>
+                `;
+                resultsBody.appendChild(row);
+            });
+            
+            resultsCount.textContent = `${resultsData.length} items`;
+        }
+        
+        // Update statistics display
+        function updateStatistics() {
+            if (resultsData.length === 0) {
+                statsContainer.innerHTML = '<p class="text-muted">Process data to see fulfillment statistics</p>';
+                return;
+            }
+            
+            const availableCount = resultsData.filter(item => item.status === 'Available').length;
+            const notAvailableCount = resultsData.filter(item => item.status === 'Not Available').length;
+            const totalOrders = resultsData.length;
+            const fulfillmentRate = totalOrders > 0 ? Math.round((availableCount / totalOrders) * 100) : 0;
+            
+            // Calculate total ordered quantity vs available
+            const totalOrderQty = resultsData.reduce((sum, item) => sum + item.orderQty, 0);
+            const totalAvailableQty = resultsData
+                .filter(item => item.status === 'Available')
+                .reduce((sum, item) => sum + item.orderQty, 0);
+            
+            statsContainer.innerHTML = `
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <div class="display-6 text-success">${availableCount}</div>
+                        <div class="text-muted">Available Orders</div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="display-6 text-danger">${notAvailableCount}</div>
+                        <div class="text-muted">Not Available</div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-success" style="width: ${fulfillmentRate}%">${fulfillmentRate}%</div>
+                            <div class="progress-bar bg-danger" style="width: ${100 - fulfillmentRate}%">${100 - fulfillmentRate}%</div>
+                        </div>
+                        <div class="mt-2">Fulfillment Rate</div>
+                    </div>
+                    <div class="col-12">
+                        <div class="small text-muted">
+                            <i class="fas fa-box me-1"></i> ${totalAvailableQty} of ${totalOrderQty} units can be fulfilled
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Export to Excel
+        exportExcelBtn.addEventListener('click', exportToExcel);
+        
+        function exportToExcel() {
+            if (resultsData.length === 0) {
+                alert("No data to export. Please process data first.");
+                return;
+            }
+            
+            // Create worksheet for results
+            const wsData = [
+                ["Customer", "SKU Code", "SKU Name", "Order Quantity", "Stock Quantity", "Status"]
+            ];
+            
+            resultsData.forEach(item => {
+                wsData.push([
+                    item.customerName,
+                    item.skuCode,
+                    item.skuName,
+                    item.orderQty,
+                    item.stockQty,
+                    item.status
+                ]);
+            });
+            
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            
+            // Create worksheet for consolidated stock
+            const stockWsData = [
+                ["SKU Code", "SKU Name", "Total Quantity", "Source Entries"]
+            ];
+            
+            consolidatedStockData.forEach(item => {
+                stockWsData.push([
+                    item.skuCode,
+                    item.skuName,
+                    item.quantity,
+                    item.occurrences
+                ]);
+            });
+            
+            const stockWs = XLSX.utils.aoa_to_sheet(stockWsData);
+            
+            // Create workbook with multiple sheets
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Order Analysis");
+            XLSX.utils.book_append_sheet(wb, stockWs, "Consolidated Stock");
+            
+            // Export to file
+            XLSX.writeFile(wb, "Stock_Analysis_Results.xlsx");
+        }
+        
+        // Export to PDF
+        exportPdfBtn.addEventListener('click', exportToPDF);
+        
+        function exportToPDF() {
+            if (resultsData.length === 0) {
+                alert("No data to export. Please process data first.");
+                return;
+            }
+            
+            // Create PDF document
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Add title
+            doc.setFontSize(18);
+            doc.setTextColor(67, 97, 238);
+            doc.text("Stock Analysis Report", 14, 22);
+            
+            // Add date
+            doc.setFontSize(11);
+            doc.setTextColor(100, 100, 100);
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            doc.text(`Generated on: ${dateStr}`, 14, 32);
+            
+            // Add summary
+            const availableCount = resultsData.filter(item => item.status === 'Available').length;
+            const notAvailableCount = resultsData.filter(item => item.status === 'Not Available').length;
+            
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Total Orders: ${resultsData.length}`, 14, 45);
+            doc.text(`Available: ${availableCount}`, 14, 52);
+            doc.text(`Not Available: ${notAvailableCount}`, 14, 59);
+            
+            // Add note about consolidation
+            doc.setFontSize(10);
+            doc.setTextColor(120, 120, 120);
+            doc.text("Note: Stock quantities are consolidated (duplicate SKUs are summed)", 14, 66);
+            
+            // Prepare table data
+            const tableData = resultsData.map(item => [
+                item.customerName,
+                item.skuCode,
+                item.skuName,
+                item.orderQty.toString(),
+                item.stockQty.toString(),
+                item.status
+            ]);
+            
+            // Add table
+            doc.autoTable({
+                head: [['Customer', 'SKU Code', 'SKU Name', 'Order Qty', 'Stock Qty', 'Status']],
+                body: tableData,
+                startY: 72,
+                theme: 'striped',
+                headStyles: { fillColor: [44, 62, 80] },
+                columnStyles: {
+                    0: { cellWidth: 30 },
+                    1: { cellWidth: 25 },
+                    2: { cellWidth: 40 },
+                    3: { cellWidth: 25 },
+                    4: { cellWidth: 25 },
+                    5: { cellWidth: 30 }
+                },
+                didDrawCell: function(data) {
+                    // Highlight status cells
+                    if (data.column.index === 5 && data.cell.raw === 'Available') {
+                        doc.setTextColor(46, 204, 113);
+                    } else if (data.column.index === 5 && data.cell.raw === 'Not Available') {
+                        doc.setTextColor(231, 76, 60);
+                    } else {
+                        doc.setTextColor(0, 0, 0);
+                    }
+                }
+            });
+            
+            // Save the PDF
+            doc.save("Stock_Analysis_Report.pdf");
+        }
+        
+        // Load sample data for demonstration
+        function loadSampleData() {
+            // Sample stock data WITH DUPLICATE SKUs
+            stockData = [
+                
+            ];
+            
+            // Consolidate the sample data
+            consolidatedStockData = consolidateStockData(stockData);
+            
+            // Sample orders data
+            ordersData = [
+                
+            ];
+            
+            // Update file info displays
+            stockFileInfo.innerHTML = `<i class="fas fa-check-circle"></i> <strong>Please Import Stock Data</strong> to Loaded`;
+            stockFileInfo.style.color = "#2ecc71";
+            
+            ordersFileInfo.innerHTML = `<i class="fas fa-check-circle"></i> <strong>Please Import Orders Data</strong> to Loaded`;
+            ordersFileInfo.style.color = "#2ecc71";
+            
+            // Update stock summary
+            updateStockSummary();
+            
+            // Enable process button
+            processBtn.disabled = false;
+            
+            console.log("Sample data loaded with duplicate SKUs for consolidation");
+        }
+        
+        // Load sample data on page load for demonstration
+        document.addEventListener('DOMContentLoaded', loadSampleData);
+    </script>
+</body>
+</html>

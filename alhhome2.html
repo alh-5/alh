@@ -1191,20 +1191,11 @@
                             <i class="fas fa-clipboard-list"></i>
                             Quotation
                         </button>
-                        <button class="tab-btn" data-tab="profit">
+                        <button class="tab-btn" data-tab="OrdersAvailability">
                             <i class="fas fa-calculator"></i>
-                            Profit Calculator
+                            Orders Availability
                         </button>
-                        <button class="tab-btn" data-tab="Pricelist"onclick="window.location.href='smlp.html';">
-                            <i class="fas fa-calculator"></i>
-                            Pricelist
-                        </button>
-						
-						<button class="tab-btn" data-tab="Sales & Purchase Analys"onclick="window.location.href='salfy.html';">
-                            <i class="fas fa-calculator"></i>
-                            Sales & Purchase Analys
-                        </button>
-
+                       
 
                     </div>
                 </div>
@@ -1273,24 +1264,24 @@
                         </div>
                     </div>
                     
-                    <div class="tab-content" id="profit-tab">
-                        <h2 class="tab-title"><i class="fas fa-calculator"></i> Profit Calculator & Analytics</h2>
-                        <p class="tab-desc">Make informed business decisions with our comprehensive profit calculation and analytics tools. Track margins, analyze sales data, and optimize pricing strategies. Visualize your business performance with interactive dashboards and reports that help you identify opportunities for growth and efficiency improvements.</p>
+                    <div class="tab-content" id="OrdersAvailability-tab">
+                        <h2 class="tab-title"><i class="fas fa-calculator"></i> Orders Availability</h2>
+                        <p class="tab-desc">Make informed business decisions with our comprehensive Orders Availability tools. Track Orders, analyze Availability, and optimize business performance with interactive dashboards and reports that help you identify Stocks and efficiency improvements.</p>
                         
                         <ul class="feature-list">
-                            <li><i class="fas fa-check-circle"></i> Calculate profit margins on individual products and services</li>
-                            <li><i class="fas fa-check-circle"></i> Sales analytics with visual charts and reports</li>
-                            <li><i class="fas fa-check-circle"></i> Expense tracking and overhead cost allocation</li>
+                            <li><i class="fas fa-check-circle"></i> Calculate Availability margins on individual products</li>
+                            <li><i class="fas fa-check-circle"></i> Sales Order analytics with visual reports</li>
+                            <li><i class="fas fa-check-circle"></i> Availability tracking</li>
                             <li><i class="fas fa-check-circle"></i> Performance comparison across time periods</li>
-                            <li><i class="fas fa-check-circle"></i> What-if analysis for pricing and discount strategies</li>
+                            <li><i class="fas fa-check-circle"></i> Analysis for Stock Available and Not Available strategies</li>
                         </ul>
                         
                         <div class="website-link-container">
-                            <a href="Profit Amount/alhprofit.html" target="_blank" class="website-link">
+                            <a href="ordersavailablity.html" target="_blank" class="website-link">
                                 <i class="fas fa-external-link-alt"></i>
-                                Open Profit Calculator Website
+                                Open Orders Availability Website
                             </a>
-                            <p class="link-note">Click to access financial analysis dashboard</p>
+                            <p class="link-note">Click to access Orders Availability dashboard</p>
                         </div>
                     </div>
 
@@ -1380,6 +1371,7 @@
                 const siteName = this.textContent.includes('Challan') ? 'Challan Invoice' :
                                 this.textContent.includes('PrimaryCalculator') ? 'Primary Calculator' :
                                 this.textContent.includes('Quotation') ? 'Quotation Invoice' :
+								this.textContent.includes('OrdersAvailability') ? 'Orders Availability' :
                                 'Profit Calculator';
                 
                 // Only show alert for demo purposes - in real use, remove this
