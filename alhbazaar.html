@@ -5,83 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bazaar Orders</title>
     <style>
-        /* Magnetic Wave Golden Background */
-        body {
-            background: linear-gradient(135deg, #f9f295 0%, #f0c419 25%, #f9f295 50%, #f0c419 75%, #f9f295 100%);
-            background-size: 400% 400%;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-            animation: magneticWave 15s ease-in-out infinite;
-        }
-        
-        /* Magnetic wave animation */
-        @keyframes magneticWave {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-        
-        /* Add subtle gold particles for magnetic effect */
-        body::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.1) 1px, transparent 2px),
-                radial-gradient(circle at 60% 70%, rgba(218, 165, 32, 0.1) 1px, transparent 2px),
-                radial-gradient(circle at 40% 80%, rgba(255, 215, 0, 0.1) 1px, transparent 2px),
-                radial-gradient(circle at 80% 20%, rgba(218, 165, 32, 0.1) 1px, transparent 2px),
-                radial-gradient(circle at 30% 50%, rgba(255, 215, 0, 0.1) 1px, transparent 2px);
-            background-size: 300px 300px, 400px 400px, 500px 500px, 600px 600px, 700px 700px;
-            pointer-events: none;
-            z-index: -1;
-            opacity: 0.6;
-        }
-        
-        /* Add golden wave lines */
-        body::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                repeating-linear-gradient(
-                    45deg,
-                    transparent,
-                    transparent 10px,
-                    rgba(255, 215, 0, 0.05) 10px,
-                    rgba(255, 215, 0, 0.05) 20px
-                ),
-                repeating-linear-gradient(
-                    -45deg,
-                    transparent,
-                    transparent 10px,
-                    rgba(218, 165, 32, 0.05) 10px,
-                    rgba(218, 165, 32, 0.05) 20px
-                );
-            pointer-events: none;
-            z-index: -1;
-        }
-        
-        /* Rest of your existing CSS styles remain the same */
+        /* All your existing CSS styles remain the same */
         * {
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 20px;
+            color: #333;
         }
         
         .container {
@@ -90,80 +24,33 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 20px;
-            position: relative;
-            z-index: 1;
         }
         
         .panel {
-            background-color: rgba(255, 255, 255, 0.95);
+            background-color: white;
             border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             padding: 25px;
-            backdrop-filter: blur(5px);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .panel:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 215, 0, 0.5);
         }
         
         h1 {
             color: #2c3e50;
             text-align: center;
             margin-bottom: 30px;
+            border-bottom: 2px solid #3498db;
             padding-bottom: 10px;
             grid-column: 1 / -1;
-            background: linear-gradient(90deg, #2c3e50, #8B7355, #2c3e50);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            background-size: 200% auto;
-            animation: textShine 3s ease-in-out infinite alternate;
-            font-weight: 800;
-            letter-spacing: 1px;
-        }
-        
-        @keyframes textShine {
-            0% {
-                background-position: 0% center;
-            }
-            100% {
-                background-position: 100% center;
-            }
         }
         
         h2 {
             color: #2c3e50;
             margin-top: 0;
             padding-bottom: 10px;
-            border-bottom: 2px solid #f0c419;
-            position: relative;
-        }
-        
-        h2::after {
-            content: "";
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 60px;
-            height: 2px;
-            background: #f0c419;
-            animation: expandLine 2s ease-in-out infinite alternate;
-        }
-        
-        @keyframes expandLine {
-            0% {
-                width: 60px;
-            }
-            100% {
-                width: 120px;
-            }
+            border-bottom: 1px solid #eee;
         }
         
         .form-group {
             margin-bottom: 20px;
-            position: relative;
         }
         
         label {
@@ -171,41 +58,31 @@
             margin-bottom: 8px;
             font-weight: 600;
             color: #2c3e50;
-            font-size: 15px;
         }
         
         input, select {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
             font-size: 16px;
-            transition: all 0.3s;
-            background-color: rgba(255, 255, 255, 0.9);
+            transition: border 0.3s;
         }
         
         input:focus, select:focus {
-            border-color: #f0c419;
+            border-color: #3498db;
             outline: none;
-            box-shadow: 0 0 10px rgba(240, 196, 25, 0.4);
-            background-color: white;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
         }
         
         .area-container, .sku-code-container, .uom-container {
-            background: linear-gradient(135deg, rgba(240, 196, 25, 0.1), rgba(255, 215, 0, 0.2));
+            background-color: #f8f9fa;
             padding: 12px;
-            border-radius: 8px;
-            border: 2px solid rgba(240, 196, 25, 0.3);
+            border-radius: 5px;
+            border: 1px solid #ddd;
             font-family: monospace;
             font-weight: bold;
             color: #2c3e50;
-            transition: all 0.3s;
-        }
-        
-        .area-container:hover, .sku-code-container:hover, .uom-container:hover {
-            border-color: rgba(240, 196, 25, 0.7);
-            background: linear-gradient(135deg, rgba(240, 196, 25, 0.2), rgba(255, 215, 0, 0.3));
-            transform: translateY(-2px);
         }
         
         .buttons {
@@ -217,152 +94,96 @@
         button {
             padding: 12px 25px;
             border: none;
-            border-radius: 8px;
+            border-radius: 5px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        button::before {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-        
-        button:hover::before {
-            width: 300px;
-            height: 300px;
         }
         
         .submit-btn {
-            background: linear-gradient(135deg, #3498db, #2980b9);
+            background-color: #3498db;
             color: white;
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
         }
         
         .submit-btn:hover {
-            background: linear-gradient(135deg, #2980b9, #1f639e);
-            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.5);
-            transform: translateY(-3px);
+            background-color: #2980b9;
         }
         
         .submit-btn:disabled {
-            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            background-color: #95a5a6;
             cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
         }
         
         .add-btn {
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            background-color: #2ecc71;
             color: white;
             width: 100%;
             margin-top: 10px;
-            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
         }
         
         .add-btn:hover {
-            background: linear-gradient(135deg, #27ae60, #219653);
-            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.5);
-            transform: translateY(-3px);
+            background-color: #27ae60;
         }
         
         .info-text {
             color: #7f8c8d;
             font-size: 14px;
             margin-top: 5px;
-            padding-left: 8px;
-            border-left: 3px solid #f0c419;
-            background-color: rgba(240, 196, 25, 0.05);
-            padding: 8px 12px;
-            border-radius: 4px;
         }
         
         .success-message {
-            background: linear-gradient(135deg, rgba(212, 237, 218, 0.95), rgba(195, 230, 203, 0.95));
+            background-color: #d4edda;
             color: #155724;
             padding: 12px;
-            border-radius: 8px;
+            border-radius: 5px;
             margin-top: 20px;
             display: none;
-            border-left: 5px solid #28a745;
-            animation: slideIn 0.5s ease-out;
         }
         
         .error-message {
-            background: linear-gradient(135deg, rgba(248, 215, 218, 0.95), rgba(241, 195, 199, 0.95));
+            background-color: #f8d7da;
             color: #721c24;
             padding: 12px;
-            border-radius: 8px;
+            border-radius: 5px;
             margin-top: 20px;
             display: none;
-            border-left: 5px solid #dc3545;
-            animation: slideIn 0.5s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
         
         .sku-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
         
         .sku-table th, .sku-table td {
             padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid #eaeaea;
+            border-bottom: 1px solid #ddd;
         }
         
         .sku-table th {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            background-color: #f8f9fa;
             font-weight: 600;
             color: #2c3e50;
-            border-bottom: 2px solid #f0c419;
         }
         
         .sku-table tr:hover {
-            background-color: rgba(240, 196, 25, 0.05);
+            background-color: #f5f5f5;
         }
         
         .delete-btn {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            background-color: #e74c3c;
             color: white;
             border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
+            padding: 6px 12px;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
-            transition: all 0.3s;
-            box-shadow: 0 3px 8px rgba(231, 76, 60, 0.3);
         }
         
         .delete-btn:hover {
-            background: linear-gradient(135deg, #c0392b, #a93226);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 12px rgba(231, 76, 60, 0.4);
+            background-color: #c0392b;
         }
         
         .search-box {
@@ -380,88 +201,71 @@
         }
         
         .plus-btn {
-            background: linear-gradient(135deg, #3498db, #2980b9);
+            background-color: #3498db;
             color: white;
             border: none;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 20px auto;
+            margin-top: 10px;
             transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
         }
         
         .plus-btn:hover {
-            background: linear-gradient(135deg, #2980b9, #1f639e);
-            transform: scale(1.1) rotate(90deg);
-            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.5);
+            background-color: #2980b9;
+            transform: scale(1.05);
         }
         
         .product-entry {
-            border: 2px solid rgba(240, 196, 25, 0.3);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 249, 250, 0.9));
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
             position: relative;
-            transition: all 0.3s;
-        }
-        
-        .product-entry:hover {
-            border-color: rgba(240, 196, 25, 0.7);
-            box-shadow: 0 8px 20px rgba(240, 196, 25, 0.15);
-            transform: translateY(-3px);
         }
         
         .product-entry:first-child {
             border-color: #3498db;
-            background: linear-gradient(135deg, rgba(52, 152, 219, 0.05), rgba(255, 255, 255, 0.9));
         }
         
         .remove-product-btn {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            top: 10px;
+            right: 10px;
+            background-color: #e74c3c;
             color: white;
             border: none;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            border-radius: 4px;
+            width: 30px;
+            height: 30px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
-            font-weight: bold;
-            transition: all 0.3s;
-            box-shadow: 0 3px 8px rgba(231, 76, 60, 0.3);
+            font-size: 16px;
         }
         
         .remove-product-btn:hover {
-            background: linear-gradient(135deg, #c0392b, #a93226);
-            transform: scale(1.1);
-            box-shadow: 0 5px 12px rgba(231, 76, 60, 0.4);
+            background-color: #c0392b;
         }
         
         .entry-count {
             display: inline-block;
-            background: linear-gradient(135deg, #3498db, #2980b9);
+            background-color: #3498db;
             color: white;
             border-radius: 50%;
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             text-align: center;
-            line-height: 28px;
+            line-height: 24px;
             font-size: 14px;
-            font-weight: bold;
-            margin-right: 15px;
-            box-shadow: 0 3px 8px rgba(52, 152, 219, 0.3);
+            margin-right: 10px;
         }
         
         .delete-all-container {
@@ -469,26 +273,23 @@
             justify-content: flex-end;
             margin-top: 20px;
             padding-top: 15px;
-            border-top: 2px dashed rgba(240, 196, 25, 0.3);
+            border-top: 1px solid #eee;
         }
         
         .delete-all-btn {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            background-color: #e74c3c;
             color: white;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 8px;
+            border-radius: 5px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
         }
         
         .delete-all-btn:hover {
-            background: linear-gradient(135deg, #c0392b, #a93226);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+            background-color: #c0392b;
         }
         
         .modal {
@@ -498,133 +299,81 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.5);
             z-index: 1000;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(5px);
         }
         
         .modal-content {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 249, 250, 0.98));
+            background-color: white;
             padding: 30px;
-            border-radius: 15px;
+            border-radius: 10px;
             max-width: 500px;
             width: 90%;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(240, 196, 25, 0.5);
-            border: 2px solid rgba(240, 196, 25, 0.5);
-            animation: modalAppear 0.4s ease-out;
-        }
-        
-        @keyframes modalAppear {
-            from {
-                opacity: 0;
-                transform: scale(0.8) translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
         
         .modal-buttons {
             display: flex;
             justify-content: flex-end;
-            gap: 15px;
-            margin-top: 25px;
+            gap: 10px;
+            margin-top: 20px;
         }
         
         .modal-cancel-btn {
-            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            background-color: #95a5a6;
             color: white;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s;
         }
         
         .modal-cancel-btn:hover {
-            background: linear-gradient(135deg, #7f8c8d, #6c7b7d);
-            transform: translateY(-2px);
+            background-color: #7f8c8d;
         }
         
         .modal-delete-btn {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            background-color: #e74c3c;
             color: white;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s;
         }
         
         .modal-delete-btn:hover {
-            background: linear-gradient(135deg, #c0392b, #a93226);
-            transform: translateY(-2px);
+            background-color: #c0392b;
         }
         
         /* New styles for toggle button and hidden storage */
         .toggle-storage-btn {
-            background: linear-gradient(135deg, #f0c419, #d4af37);
-            color: #2c3e50;
-            padding: 14px 28px;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
             border: none;
-            border-radius: 50px;
+            border-radius: 5px;
             font-size: 16px;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
             margin-bottom: 20px;
-            transition: all 0.4s;
+            transition: all 0.3s;
             display: block;
             margin-left: auto;
             margin-right: auto;
-            box-shadow: 0 6px 20px rgba(240, 196, 25, 0.4);
-            letter-spacing: 1px;
-            text-transform: uppercase;
         }
         
         .toggle-storage-btn:hover {
-            background: linear-gradient(135deg, #d4af37, #b8941f);
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 10px 25px rgba(240, 196, 25, 0.6);
-            letter-spacing: 1.5px;
+            background-color: #2980b9;
         }
         
         .storage-container {
             display: none;
-            animation: slideDown 0.5s ease-out;
-        }
-        
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
         
         .storage-container.visible {
             display: block;
-        }
-        
-        /* Magnetic field lines effect on storage container */
-        .storage-container.visible::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 20%, rgba(240, 196, 25, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(240, 196, 25, 0.1) 0%, transparent 50%);
-            border-radius: 10px;
-            pointer-events: none;
-            z-index: -1;
         }
         
         @media (max-width: 768px) {
@@ -648,19 +397,6 @@
             .delete-all-container {
                 justify-content: center;
             }
-            
-            body {
-                padding: 10px;
-            }
-            
-            .panel {
-                padding: 20px;
-            }
-            
-            .toggle-storage-btn {
-                width: 100%;
-                padding: 12px;
-            }
         }
     </style>
 </head>
@@ -673,27 +409,30 @@
             
             <form id="skuForm">
                 <!-- Replaced SAP Code with Area -->
-                <div class="form-group">
+				<div class="form-group">
                     <label for="customerName">Customer Name</label>
                     <input type="text" id="customerName" placeholder="Type customer name" list="customerSuggestions" required>
                     <datalist id="customerSuggestions"></datalist>
                     <div class="info-text">Area will be auto-filled when customer is selected</div>
                 </div>
-                
+				
+				
                 <div class="form-group">
                     <label for="area">Area</label>
                     <div class="area-container" id="areaDisplay"></div>
-                    <input type="text" id="area" value="">
+                    <input type="tsxt" id="area" value="">
                 </div>
+                
+                
                 
                 <!-- Added Group dropdown here -->
                 <div class="form-group">
                     <label for="customerGroup">Group</label>
                     <select id="customerGroup" required>
                         <option value="">Select Group</option>
-                        <option value="FRANKY">FRANKY</option>
-                        <option value="KYRPAD">KYRPAD</option>
+                        <option value="BAZAAR">BAZAAR</option>
                         <option value="OEM">OEM</option>
+                        <option value="OTHERS">OTHERS</option>
                     </select>
                 </div>
                 
@@ -849,7 +588,6 @@
             
             // Customer data - replaced SAP codes with areas
             const customerData = [
-			
 			
 { name: "A THONGNI AUTOMOBILE", area: "UPPER SHILLONG SHILLONG" },
 { name: "AB Motor 8TH MILE", area: "8th Mile, Jaintia JAINTIA" },
@@ -1060,6 +798,7 @@
 { name: "ROYAL AUTOMOBILE", area: "MOOKHU JAINTIA" },
 { name: "Royal Automobile", area: "Moowakhu JAINTIA" },
 { name: "RR AUTOMOBILE", area: "MOOWAKHU JAINTIA" },
+{ name: "RN MOTOR", area: "NONGTHYMMAI SHILLONG" },
 { name: "RS Automobile", area: "Mawlai Nongkwar SHILLONG" },
 { name: "RS AUTOMOBILE", area: "11 THADSNING JAINTIA" },
 { name: "Saha Motor", area: "Laststop 2 WAY ROAD SHILLONG" },
@@ -1110,13 +849,13 @@
 { name: "Yoomitre Automobile", area: "Madanrting SHILLONG" }
 
 
+
             ];
             
-            // Load initial data if empty
+             // Load initial data if empty
             if (skuStorage.length === 0) {
-                skuStorage = [
-				
-				
+skuStorage = [
+
 { name: "SERVO PRIDE 40 - 20x1L - HDPE", code:"1404184", uom:20},
 { name: "SERVO PRIDE 40 - 4x5L - HDPE", code:"1404234", uom:20},
 { name: "SERVO GEAR HP 90-40X1/2L-HDPE", code:"2502174", uom:20},
@@ -1257,11 +996,12 @@
 { name: "HP RACER FUTUR-X 10W50 (1 Ltr) ", code: "3781300", uom: 1},
 { name: "HP WB Grease (12 X 1Kg) ", code: "284078", uom: 12},
 { name: "HP WB Grease (1 X 18Kg) ", code: "284104", uom: 18}
-					
-					
+
+
                 ];
                 saveSkuStorage();
-            }
+				}
+				
             
             // Initialize customer suggestions
             updateCustomerSuggestions();
