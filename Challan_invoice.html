@@ -160,12 +160,12 @@
         }
         
         .editable:hover {
-            background-color: #0FF00;
+            background-color: #f0f8ff;
         }
         
         .editable:focus {
             outline: 2px solid #3498db;
-            background-color: #0FF00;
+            background-color: #f0f8ff;
         }
         
         .table-container {
@@ -202,14 +202,14 @@
         
         /* Updated Column widths for 14 columns */
         th:nth-child(1) { width: 4%; }   /* SL No */
-        th:nth-child(2) { width: 21%; }  /* SKU Name */
-        th:nth-child(3) { width: 7%; }   /* SKU # */
+        th:nth-child(2) { width: 20%; }  /* SKU Name */
+        th:nth-child(3) { width: 6%; }   /* SKU # */
         th:nth-child(4) { width: 6%; }   /* MRP */
-        th:nth-child(5) { width: 7%; }   /* Qnty (Ltrs/Kg) */
+        th:nth-child(5) { width: 5%; }   /* Qnty (Ltrs/Kg) */
         th:nth-child(6) { width: 5%; }   /* Qnty */
         th:nth-child(7) { width: 8%; }   /* Rate */
         th:nth-child(8) { width: 7%; }   /* Net Total */
-        th:nth-child(9) { width: 5%; }   /* Disc (₹) */
+        th:nth-child(9) { width: 6%; }   /* Disc (₹) */
         th:nth-child(10) { width: 7%; }  /* Total Disc (₹) */
         th:nth-child(11) { width: 7%; }  /* Taxable Value */
         th:nth-child(12) { width: 6%; }  /* GST 18% */
@@ -234,22 +234,24 @@
             overflow-wrap: break-word;
             vertical-align: middle;
         }
-		
-		.sku-name-input {
+        
+        /* FIXED: SKU Name input with proper text wrapping */
+        .sku-name-input {
             width: 100%;
             padding: 5px 8px;
             border: 1px solid #ddd;
             border-radius: 3px;
             font-size: 11px;
-            white-space: normal !important; /* Allow text to wrap */
+            white-space: pre-wrap !important; /* Allow text to wrap */
             word-wrap: break-word !important; /* Break long words */
             overflow-wrap: break-word !important; /* Modern version of word-wrap */
             height: auto !important; /* Let height adjust */
             min-height: 30px; /* Minimum height */
-           resize: vertical; /* Allow user to resize vertically if needed */
+            resize: vertical; /* Allow user to resize vertically if needed */
+            line-height: 1.3; /* Better line spacing */
+            overflow-y: auto; /* Show scrollbar if needed */
+            max-height: 80px; /* Maximum height before scrollbar */
         }
-		
-		
         
         .sku-input, .rate-input {
             width: 100%;
@@ -467,6 +469,15 @@
         
         .import-btn:hover {
             background-color: #27ae60;
+        }
+        
+        .export-btn {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .export-btn:hover {
+            background-color: #d68910;
         }
         
         button i {
@@ -862,9 +873,10 @@
                 <span id="file-info" style="font-size: 12px; color: #666;">
                     No file selected.
                 </span>
-               				
-				<button class="file-btn" id="download-template" onclick="window.location.href='https://alh-5.github.io/alh/Challan_Pricelist/Challan_PriceList.xlsx';">
-                        <i class="fas fa-chart-pie"></i> Challan_Price
+                
+                <button class="file-btn" id="download-template" onclick="window.location.href='https://alh-5.github.io/alh/Challan_Pricelist/Challan_PriceList.xlsx';">
+                    <i class="fas fa-chart-pie"></i> Challan_Price
+                </button>
             </div>
         </div>
         
@@ -989,6 +1001,9 @@
                 </button>
             </div>
             <div class="action-buttons">
+                <button class="export-btn" id="export-excel-btn">
+                    <i class="fas fa-file-excel"></i> Export to Excel
+                </button>
                 <button class="print-btn" onclick="printChallan()">
                     <i class="fas fa-print"></i> Print Challan
                 </button>
@@ -1026,7 +1041,7 @@
             newRow.innerHTML = `
                 <td class="text-center">${slNo}</td>
                 <td>
-                    <input type="text" class="sku-name-input" placeholder="Type SKU Name" data-row="${slNo}" data-rowid="${rowId}" autocomplete="off">
+                    <textarea class="sku-name-input" placeholder="Type SKU Name" data-row="${slNo}" data-rowid="${rowId}" autocomplete="off" rows="2"></textarea>
                 </td>
                 <td>
                     <input type="text" class="sku-input" placeholder="Type SKU #" data-row="${slNo}" data-rowid="${rowId}" autocomplete="off">
@@ -1080,7 +1095,7 @@
             
             skuInput.addEventListener('keydown', handleSkuKeydown);
             
-            // SKU Name input events
+            // SKU Name textarea events
             skuNameInput.addEventListener('input', function(e) {
                 clearTimeout(debounceTimer);
                 debounceTimer = setTimeout(() => {
@@ -1095,6 +1110,12 @@
             });
             
             skuNameInput.addEventListener('keydown', handleSkuKeydown);
+            
+            // Auto-resize textarea
+            skuNameInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
             
             // Quantity, rate and discount events
             qntyInput.addEventListener('input', calculateRowTotal);
@@ -1332,6 +1353,12 @@
             }
             
             document.getElementById('sku-search').style.display = 'none';
+            
+            // Auto-resize textarea
+            if (skuNameInput.value) {
+                skuNameInput.style.height = 'auto';
+                skuNameInput.style.height = (skuNameInput.scrollHeight) + 'px';
+            }
             
             // Fill row data from SKU
             fillRowDataFromSku(rowIndex, sku);
@@ -1725,7 +1752,128 @@
             console.log('Price list loaded:', priceListData);
         }
         
-        
+        // NEW FUNCTION: Export to Excel
+        function exportToExcel() {
+            try {
+                // Create workbook
+                const wb = XLSX.utils.book_new();
+                
+                // Prepare data for export
+                const exportData = [];
+                
+                // Add header information
+                exportData.push(['AUTO LUBE HOUSE INVOICE']);
+                exportData.push([]);
+                exportData.push(['Invoice No:', document.querySelector('.challan-details div:nth-child(2) span').textContent]);
+                exportData.push(['Date:', document.querySelector('.challan-details div:nth-child(3) span').textContent]);
+                exportData.push([]);
+                
+                // Add customer information
+                exportData.push(['BILL TO:']);
+                const billToText = document.querySelector('.bill-to').innerText;
+                billToText.split('\n').forEach(line => {
+                    if (line.trim()) exportData.push([line.trim()]);
+                });
+                
+                exportData.push([]);
+                exportData.push(['SHIP TO:']);
+                const shipToText = document.querySelector('.ship-to').innerText;
+                shipToText.split('\n').forEach(line => {
+                    if (line.trim()) exportData.push([line.trim()]);
+                });
+                
+                exportData.push([]);
+                exportData.push([]);
+                
+                // Add table headers
+                const headers = [
+                    'SL No', 'SKU Name', 'SKU #', 'MRP', 'Qnty (Ltrs/Kg)', 
+                    'Qnty', 'Rate', 'Net Total', 'Disc (₹)', 'Total Disc (₹)', 
+                    'Taxable Value', 'GST 18%', 'Net Amt'
+                ];
+                exportData.push(headers);
+                
+                // Add items data
+                document.querySelectorAll('#items-table tr').forEach((row, index) => {
+                    const rowData = [];
+                    rowData.push(index + 1);
+                    rowData.push(row.querySelector('.sku-name-input').value);
+                    rowData.push(row.querySelector('.sku-input').value);
+                    rowData.push(row.querySelector('.mrp').textContent.replace('₹', ''));
+                    rowData.push(row.querySelector('.total-qnty-unit').textContent);
+                    rowData.push(row.querySelector('.qnty').value);
+                    rowData.push(row.querySelector('.rate-input').value);
+                    rowData.push(row.querySelector('.net-total').textContent.replace('₹', ''));
+                    rowData.push(row.querySelector('.discount-input').value);
+                    rowData.push(row.querySelector('.total-discount').textContent.replace('₹', ''));
+                    rowData.push(row.querySelector('.taxable-value').textContent.replace('₹', ''));
+                    rowData.push(row.querySelector('.gst').textContent.replace('₹', ''));
+                    rowData.push(row.querySelector('.net-amt').textContent.replace('₹', ''));
+                    exportData.push(rowData);
+                });
+                
+                exportData.push([]);
+                exportData.push([]);
+                
+                // Add totals
+                exportData.push(['Subtotal:', document.getElementById('subtotal').textContent.replace('₹', '')]);
+                exportData.push(['Total Discount:', document.getElementById('total-discount').textContent.replace('-₹', '-')]);
+                exportData.push(['Taxable Value:', document.getElementById('taxable-value').textContent.replace('₹', '')]);
+                exportData.push(['CGST (9%):', document.getElementById('cgst').textContent.replace('₹', '')]);
+                exportData.push(['SGST/UTGST (9%):', document.getElementById('sgst').textContent.replace('₹', '')]);
+                exportData.push(['Shipping Charges:', document.getElementById('shipping-charges').textContent.replace('₹', '')]);
+                exportData.push(['Round Off:', document.getElementById('round-off').textContent.replace('₹', '')]);
+                exportData.push(['TOTAL AMOUNT:', document.getElementById('final-total').textContent.replace('₹', '')]);
+                exportData.push(['Amount in Words:', document.getElementById('amount-words').textContent]);
+                
+                exportData.push([]);
+                exportData.push([]);
+                
+                // Add footer information
+                exportData.push(['Payment Information:']);
+                exportData.push(['Account Name: Auto Lube House']);
+                exportData.push(['Bank: Kotak Mahindra Bank']);
+                exportData.push(['Account No: 7350335349']);
+                exportData.push(['IFSC: KKBK0000340']);
+                
+                // Create worksheet
+                const ws = XLSX.utils.aoa_to_sheet(exportData);
+                
+                // Set column widths
+                const wscols = [
+                    {wch: 8},   // SL No
+                    {wch: 40},  // SKU Name (wider for text wrapping)
+                    {wch: 12},  // SKU #
+                    {wch: 10},  // MRP
+                    {wch: 15},  // Qnty (Ltrs/Kg)
+                    {wch: 8},   // Qnty
+                    {wch: 10},  // Rate
+                    {wch: 12},  // Net Total
+                    {wch: 10},  // Disc (₹)
+                    {wch: 15},  // Total Disc (₹)
+                    {wch: 15},  // Taxable Value
+                    {wch: 12},  // GST 18%
+                    {wch: 12},  // Net Amt
+                ];
+                ws['!cols'] = wscols;
+                
+                // Add worksheet to workbook
+                XLSX.utils.book_append_sheet(wb, ws, "Invoice");
+                
+                // Generate filename with invoice number and date
+                const invoiceNo = document.querySelector('.challan-details div:nth-child(2) span').textContent || 'ALH-INVOICE';
+                const date = document.querySelector('.challan-details div:nth-child(3) span').textContent || new Date().toISOString().slice(0, 10);
+                const filename = `${invoiceNo}_${date}.xlsx`;
+                
+                // Save file
+                XLSX.writeFile(wb, filename);
+                
+                showNotification('Invoice exported to Excel successfully');
+            } catch (error) {
+                console.error('Export error:', error);
+                showNotification('Error exporting to Excel: ' + error.message, 'error');
+            }
+        }
         
         // Add item button
         document.getElementById('add-item-btn').addEventListener('click', function() {
@@ -1801,6 +1949,9 @@
             }
         });
         
+        // Export to Excel button
+        document.getElementById('export-excel-btn').addEventListener('click', exportToExcel);
+        
         // Shipping charges
         document.getElementById('shipping-charges').addEventListener('input', calculateOverallTotals);
         document.getElementById('shipping-charges').addEventListener('blur', calculateOverallTotals);
@@ -1832,7 +1983,30 @@
         window.addEventListener('DOMContentLoaded', function() {
             // Sample price list data
             priceListData = {
-                
+                "MOBIL1": {
+                    name: "Mobil Super 3000 X1 5W-30 (1L)",
+                    mrp: 950,
+                    unitQty: 1,
+                    unit: "Ltr",
+                    rate: 850,
+                    discount: 25
+                },
+                "CAST1": {
+                    name: "Castrol MAGNATEC 5W-30 (1L)",
+                    mrp: 920,
+                    unitQty: 1,
+                    unit: "Ltr",
+                    rate: 820,
+                    discount: 20
+                },
+                "SHELL1": {
+                    name: "Shell HELIX HX7 10W-40 (1L)",
+                    mrp: 850,
+                    unitQty: 1,
+                    unit: "Ltr",
+                    rate: 780,
+                    discount: 15
+                }
             };
             
             try {
