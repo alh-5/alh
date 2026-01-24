@@ -205,16 +205,86 @@
         th:nth-child(2) { width: 20%; }  /* SKU Name */
         th:nth-child(3) { width: 6%; }   /* SKU # */
         th:nth-child(4) { width: 6%; }   /* MRP */
-        th:nth-child(5) { width: 5%; }   /* Qnty (Ltrs/Kg) */
-        th:nth-child(6) { width: 5%; }   /* Qnty */
-        th:nth-child(7) { width: 8%; }   /* Rate */
-        th:nth-child(8) { width: 7%; }   /* Net Total */
-        th:nth-child(9) { width: 6%; }   /* Disc (₹) */
-        th:nth-child(10) { width: 7%; }  /* Total Disc (₹) */
-        th:nth-child(11) { width: 7%; }  /* Taxable Value */
-        th:nth-child(12) { width: 6%; }  /* GST 18% */
-        th:nth-child(13) { width: 7%; }  /* Net Amt */
-        th:nth-child(14) { width: 4%; }  /* Del */
+        th:nth-child(5) { width: 7%; }   /* Qnty (Ltrs/Kg) */
+        th:nth-child(6) { width: 4%; }   /* Qnty */
+        th:nth-child(7) { width: 9%; }   /* Rate */
+        th:nth-child(8) { width: 9%; }   /* Net Total */
+        th:nth-child(9) { width: 7%; }   /* Disc (₹) */
+        th:nth-child(10) { width: 9%; }  /* Total Disc (₹) */
+        th:nth-child(11) { width: 9%; }  /* Taxable Value */
+        th:nth-child(12) { width: 9%; }  /* GST 18% */
+        th:nth-child(13) { width: 9%; }  /* Net Amt */
+        th:nth-child(14) { width: 3%; }  /* Del */
+        
+        /* CENTER ALIGNMENT FOR SPECIFIC COLUMNS */
+        /* Qnty (Column 6) */
+        th:nth-child(6), 
+        td:nth-child(6),
+        tfoot td:nth-child(6) {
+            text-align: center !important;
+        }
+        
+        /* Rate (Column 7) */
+        th:nth-child(7), 
+        td:nth-child(7),
+        tfoot td:nth-child(7) {
+            text-align: center !important;
+        }
+        
+        /* Net Total (Column 8) */
+        th:nth-child(8), 
+        td:nth-child(8),
+        tfoot td:nth-child(8) {
+            text-align: center !important;
+        }
+        
+        /* Disc (Column 9) */
+        th:nth-child(9), 
+        td:nth-child(9),
+        tfoot td:nth-child(9) {
+            text-align: center !important;
+        }
+        
+        /* Total Disc (Column 10) */
+        th:nth-child(10), 
+        td:nth-child(10),
+        tfoot td:nth-child(10) {
+            text-align: center !important;
+        }
+        
+        /* Taxable Value (Column 11) */
+        th:nth-child(11), 
+        td:nth-child(11),
+        tfoot td:nth-child(11) {
+            text-align: center !important;
+        }
+        
+        /* GST 18% (Column 12) */
+        th:nth-child(12), 
+        td:nth-child(12),
+        tfoot td:nth-child(12) {
+            text-align: center !important;
+        }
+        
+        /* Net Amt (Column 13) */
+        th:nth-child(13), 
+        td:nth-child(13),
+        tfoot td:nth-child(13) {
+            text-align: center !important;
+        }
+        
+        /* Also align MRP and Qnty (Ltrs/Kg) */
+        th:nth-child(4), 
+        td:nth-child(4),
+        tfoot td:nth-child(4) {
+            text-align: center !important;
+        }
+        
+        th:nth-child(5), 
+        td:nth-child(5),
+        tfoot td:nth-child(5) {
+            text-align: center !important;
+        }
         
         tbody tr {
             border-bottom: 1px solid #eaeaea;
@@ -242,15 +312,15 @@
             border: 1px solid #ddd;
             border-radius: 3px;
             font-size: 11px;
-            white-space: pre-wrap !important; /* Allow text to wrap */
-            word-wrap: break-word !important; /* Break long words */
-            overflow-wrap: break-word !important; /* Modern version of word-wrap */
-            height: auto !important; /* Let height adjust */
-            min-height: 30px; /* Minimum height */
-            resize: vertical; /* Allow user to resize vertically if needed */
-            line-height: 1.3; /* Better line spacing */
-            overflow-y: auto; /* Show scrollbar if needed */
-            max-height: 80px; /* Maximum height before scrollbar */
+            white-space: pre-wrap !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            height: auto !important;
+            min-height: 30px;
+            resize: vertical;
+            line-height: 1.3;
+            overflow-y: auto;
+            max-height: 80px;
         }
         
         .sku-input, .rate-input {
@@ -259,6 +329,7 @@
             border: 1px solid #ddd;
             border-radius: 3px;
             font-size: 11px;
+            text-align: center;
         }
         
         .sku-input:focus, .sku-name-input:focus, .rate-input:focus {
@@ -285,6 +356,7 @@
             padding: 4px 6px;
             border: 1px solid #eee;
             border-radius: 3px;
+            text-align: center !important;
         }
         
         .text-right {
@@ -292,7 +364,11 @@
         }
         
         .text-center {
-            text-align: center;
+            text-align: center !important;
+        }
+        
+        .text-left {
+            text-align: left !important;
         }
         
         .discount-input {
@@ -301,7 +377,7 @@
             border: 1px solid #ddd;
             border-radius: 3px;
             font-size: 11px;
-            text-align: right;
+            text-align: center;
         }
         
         .discount-input:focus {
@@ -354,17 +430,17 @@
             padding-bottom: 6px;
             border-bottom: 1px dashed #ddd;
             font-size: 11px;
-            white-space: nowrap !important; /* Prevent line breaks */
-            overflow: hidden !important; /* Hide overflow */
-            text-overflow: ellipsis !important; /* Show ... if text is too long */
-            min-width: 100%; /* Ensure it takes full width */
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            min-width: 100%;
         }
         
         .total-row.amount-words {
-           white-space: normal !important; /* Allow wrapping for amount words */
+           white-space: normal !important;
            word-wrap: break-word !important;
            overflow-wrap: break-word !important;
-           display: block !important; /* Change to block layout */
+           display: block !important;
         }
         
         .total-row.amount-words {
@@ -666,6 +742,13 @@
                 font-weight: bold !important;
                 color: white !important;
                 border: 1px solid #3a506b !important;
+                text-align: center !important;
+            }
+            
+            th:first-child,
+            th:nth-child(2),
+            th:nth-child(3) {
+                text-align: left !important;
             }
             
             th:last-child {
@@ -678,6 +761,13 @@
                 border: 1px solid #ddd !important;
                 page-break-inside: avoid;
                 break-inside: avoid;
+                text-align: center !important;
+            }
+            
+            td:first-child,
+            td:nth-child(2),
+            td:nth-child(3) {
+                text-align: left !important;
             }
             
             td:last-child {
@@ -697,11 +787,26 @@
                 print-color-adjust: exact !important;
             }
             
-            .sku-input, .sku-name-input, .rate-input, .editable-cell, .discount-input {
+            tfoot td {
+                text-align: center !important;
+            }
+            
+            tfoot td:first-child,
+            tfoot td:nth-child(2),
+            tfoot td:nth-child(3) {
+                text-align: left !important;
+            }
+            
+            .sku-input, .sku-name-input, .rate-input, .th:nth-child(6), .discount-input {
                 border: none !important;
                 background: transparent !important;
                 padding: 0 !important;
                 font-size: 8pt !important;
+                text-align: Left !important;
+            }
+            
+            .sku-name-input {
+                text-align: left !important;
             }
             
             .delete-btn {
@@ -901,20 +1006,20 @@
             <table>
                 <thead>
                     <tr>
-                        <th>SL No</th>
-                        <th>SKU Name</th>
-                        <th>SKU #</th>
-                        <th>MRP</th>
-                        <th>Qnty (Ltrs/Kg)</th>
-                        <th>Qnty</th>
-                        <th>Rate</th>
-                        <th>Net Total</th>
-                        <th>Disc (₹)</th>
-                        <th>Total Disc (₹)</th>
-                        <th>Taxable Value</th>
-                        <th>GST 18%</th>
-                        <th>Net Amt</th>
-                        <th class="screen-only">Del</th>
+                        <th class="text-center">SL No</th>
+                        <th class="text-left">SKU Name</th>
+                        <th class="text-left">SKU #</th>
+                        <th class="text-center">MRP</th>
+                        <th class="text-center">Qnty (Ltrs/Kg)</th>
+                        <th class="text-center">Qnty</th>
+                        <th class="text-center">Rate</th>
+                        <th class="text-center">Net Total</th>
+                        <th class="text-center">Disc (₹)</th>
+                        <th class="text-center">Total Disc (₹)</th>
+                        <th class="text-center">Taxable Value</th>
+                        <th class="text-center">GST 18%</th>
+                        <th class="text-center">Net Amt</th>
+                        <th class="text-center screen-only">Del</th>
                     </tr>
                 </thead>
                 <tbody id="items-table">
@@ -1040,28 +1145,28 @@
             
             newRow.innerHTML = `
                 <td class="text-center">${slNo}</td>
-                <td>
+                <td class="text-left">
                     <textarea class="sku-name-input" placeholder="Type SKU Name" data-row="${slNo}" data-rowid="${rowId}" autocomplete="off" rows="2"></textarea>
                 </td>
-                <td>
+                <td class="text-left">
                     <input type="text" class="sku-input" placeholder="Type SKU #" data-row="${slNo}" data-rowid="${rowId}" autocomplete="off">
                 </td>
-                <td class="text-right non-editable mrp">₹0.00</td>
-                <td class="text-right non-editable total-qnty-unit">-</td>
-                <td class="text-right">
-                    <input type="number" class="editable-cell qnty" value="0" min="0" step="1" data-row="${slNo}" data-rowid="${rowId}">
+                <td class="text-center non-editable mrp">₹0.00</td>
+                <td class="text-center non-editable total-qnty-unit">-</td>
+                <td class="text-Left">
+                    <input type="number" class="editable-cell qnty" value="0" min="0" step="1" data-row="${slNo}" data-rowid="${rowId}" style="text-align: Left;">
                 </td>
-                <td class="text-right">
-                    <input type="number" class="rate-input" value="0" min="0" step="0.01" data-row="${slNo}" data-rowid="${rowId}" placeholder="0.00">
+                <td class="text-center">
+                    <input type="number" class="rate-input" value="0" min="0" step="0.01" data-row="${slNo}" data-rowid="${rowId}" placeholder="0.00" style="text-align: center;">
                 </td>
-                <td class="text-right non-editable net-total">₹0.00</td>
-                <td class="text-right">
-                    <input type="text" class="discount-input" value="0" data-row="${slNo}" data-rowid="${rowId}" placeholder="0 or 0%">
+                <td class="text-center non-editable net-total">₹0.00</td>
+                <td class="text-center">
+                    <input type="text" class="discount-input" value="0" data-row="${slNo}" data-rowid="${rowId}" placeholder="0 or 0%" style="text-align: center;">
                 </td>
-                <td class="text-right non-editable total-discount">₹0.00</td>
-                <td class="text-right non-editable taxable-value">₹0.00</td>
-                <td class="text-right non-editable gst">₹0.00</td>
-                <td class="text-right non-editable net-amt">₹0.00</td>
+                <td class="text-center non-editable total-discount">₹0.00</td>
+                <td class="text-center non-editable taxable-value">₹0.00</td>
+                <td class="text-center non-editable gst">₹0.00</td>
+                <td class="text-center non-editable net-amt">₹0.00</td>
                 <td class="text-center screen-only">
                     <button class="delete-btn" data-rowid="${rowId}" title="Delete this item">
                         <i class="fas fa-trash-alt"></i>
@@ -1146,15 +1251,15 @@
             tfoot.innerHTML = `
                 <tr>
                     <td colspan="4" class="text-center"><strong>TOTAL</strong></td>
-                    <td class="text-right" id="total-qnty-unit-foot">-</td>
-                    <td class="text-right" id="total-qnty-foot">0</td>
-                    <td class="text-right">-</td>
-                    <td class="text-right" id="total-net-total-foot">₹0.00</td>
-                    <td class="text-right">-</td>
-                    <td class="text-right" id="total-disc-foot">₹0.00</td>
-                    <td class="text-right" id="total-taxable-foot">₹0.00</td>
-                    <td class="text-right" id="total-gst-foot">₹0.00</td>
-                    <td class="text-right" id="total-net-amt-foot">₹0.00</td>
+                    <td class="text-center" id="total-qnty-unit-foot">-</td>
+                    <td class="text-center" id="total-qnty-foot">0</td>
+                    <td class="text-center">-</td>
+                    <td class="text-center" id="total-net-total-foot">₹0.00</td>
+                    <td class="text-center">-</td>
+                    <td class="text-center" id="total-disc-foot">₹0.00</td>
+                    <td class="text-center" id="total-taxable-foot">₹0.00</td>
+                    <td class="text-center" id="total-gst-foot">₹0.00</td>
+                    <td class="text-center" id="total-net-amt-foot">₹0.00</td>
                     <td></td>
                 </tr>
             `;
@@ -1971,8 +2076,8 @@
         // Set print date
         document.getElementById('print-date').textContent = new Date().toLocaleDateString('en-IN', {
             day: '2-digit',
-            month: 'short',
-            year: 'numeric'
+                month: 'short',
+                year: 'numeric'
         });
         
         // Initialize
