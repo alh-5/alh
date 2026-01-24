@@ -202,7 +202,7 @@
         
         /* Updated Column widths for 14 columns */
         th:nth-child(1) { width: 4%; }   /* SL No */
-        th:nth-child(2) { width: 18%; }  /* SKU Name */
+        th:nth-child(2) { width: 21%; }  /* SKU Name */
         th:nth-child(3) { width: 7%; }   /* SKU # */
         th:nth-child(4) { width: 6%; }   /* MRP */
         th:nth-child(5) { width: 7%; }   /* Qnty (Ltrs/Kg) */
@@ -214,7 +214,7 @@
         th:nth-child(11) { width: 7%; }  /* Taxable Value */
         th:nth-child(12) { width: 6%; }  /* GST 18% */
         th:nth-child(13) { width: 7%; }  /* Net Amt */
-        th:nth-child(14) { width: 4%; }  /* Delete */
+        th:nth-child(14) { width: 4%; }  /* Del */
         
         tbody tr {
             border-bottom: 1px solid #eaeaea;
@@ -234,8 +234,24 @@
             overflow-wrap: break-word;
             vertical-align: middle;
         }
+		
+		.sku-name-input {
+            width: 100%;
+            padding: 5px 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 11px;
+            white-space: normal !important; /* Allow text to wrap */
+            word-wrap: break-word !important; /* Break long words */
+            overflow-wrap: break-word !important; /* Modern version of word-wrap */
+            height: auto !important; /* Let height adjust */
+            min-height: 30px; /* Minimum height */
+           resize: vertical; /* Allow user to resize vertically if needed */
+        }
+		
+		
         
-        .sku-input, .sku-name-input, .rate-input {
+        .sku-input, .rate-input {
             width: 100%;
             padding: 5px 8px;
             border: 1px solid #ddd;
@@ -336,15 +352,17 @@
             padding-bottom: 6px;
             border-bottom: 1px dashed #ddd;
             font-size: 11px;
+            white-space: nowrap !important; /* Prevent line breaks */
+            overflow: hidden !important; /* Hide overflow */
+            text-overflow: ellipsis !important; /* Show ... if text is too long */
+            min-width: 100%; /* Ensure it takes full width */
         }
         
-        .total-row.final {
-            font-weight: 700;
-            font-size: 13px;
-            color: #2c3e50;
-            border-bottom: 2px solid #2c3e50;
-            margin-top: 8px;
-            padding-top: 8px;
+        .total-row.amount-words {
+           white-space: normal !important; /* Allow wrapping for amount words */
+           word-wrap: break-word !important;
+           overflow-wrap: break-word !important;
+           display: block !important; /* Change to block layout */
         }
         
         .total-row.amount-words {
@@ -826,9 +844,9 @@
             </div>
             <div class="challan-details">
                 <h2 contenteditable="False" class="editable">Invoice</h2>
-                <div><strong>Challan No:</strong> <span contenteditable="true" class="editable"></span></div>
+                <div><strong>Challan No:</strong> <span contenteditable="true" class="editable">ALH-</span></div>
                 <div><strong>Date:</strong> <span contenteditable="true" class="editable"></span></div>
-                <div><strong>Reference:</strong> <span contenteditable="true" class="editable"></span></div>
+                <div><strong>Reference:</strong> <span contenteditable="true" class="editable">Challan Invoice</span></div>
             </div>
         </div>
         
@@ -853,17 +871,17 @@
         <div class="client-info">
             <div class="bill-to info-section">
                 <h3>Bill To</h3>
-                <p contenteditable="true" class="editable"><strong>Customer Name</strong></p>
-                <p contenteditable="true" class="editable">Address: </p>
-                <p contenteditable="true" class="editable">Phone No: </p>
-                <p contenteditable="true" class="editable">GSTIN: </p>
+                <p contenteditable="true" class="editable"><strong>Customer Name:&nbsp;</strong></p>
+                <p contenteditable="true" class="editable">Address:&nbsp;</p>
+                <p contenteditable="true" class="editable">Phone No:&nbsp;</p>
+                <p contenteditable="true" class="editable">GSTIN:&nbsp;</p>
             </div>
             <div class="ship-to info-section">
                 <h3>Ship To</h3>
-                <p contenteditable="true" class="editable"><strong>Shipping Name</strong></p>
-                <p contenteditable="true" class="editable">Address: </p>
-                <p contenteditable="true" class="editable">Phone No: </p>
-                <p contenteditable="true" class="editable">Contact: </p>
+                <p contenteditable="true" class="editable"><strong>Shipping Name:&nbsp;</strong></p>
+                <p contenteditable="true" class="editable">Address:&nbsp;</p>
+                <p contenteditable="true" class="editable">Phone No:&nbsp;</p>
+                <p contenteditable="true" class="editable">Contact:&nbsp;</p>
             </div>
         </div>
         
@@ -884,7 +902,7 @@
                         <th>Taxable Value</th>
                         <th>GST 18%</th>
                         <th>Net Amt</th>
-                        <th class="screen-only">Delete</th>
+                        <th class="screen-only">Del</th>
                     </tr>
                 </thead>
                 <tbody id="items-table">
@@ -1610,7 +1628,7 @@
                 }
             }
             
-            return words.trim() + ' Rupees Only';
+            return words.trim() + ' ';
         }
         
         // Show notification
