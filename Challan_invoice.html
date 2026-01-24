@@ -160,12 +160,12 @@
         }
         
         .editable:hover {
-            background-color: #f0f8ff;
+            background-color: #0000;
         }
         
         .editable:focus {
             outline: 2px solid #3498db;
-            background-color: #f0f8ff;
+            background-color: #0000;
         }
         
         .table-container {
@@ -961,7 +961,7 @@
             <div class="challan-details">
                 <h2 contenteditable="False" class="editable">Invoice</h2>
                 <div><strong>Challan No:</strong> <span contenteditable="true" class="editable">ALH-</span></div>
-                <div><strong>Date:</strong> <span contenteditable="true" class="editable"></span></div>
+                <div><strong>Date:</strong> <span contenteditable="true" class="editable" id="date-field"></span></div>
                 <div><strong>Reference:</strong> <span contenteditable="true" class="editable">Challan Invoice</span></div>
             </div>
         </div>
@@ -988,14 +988,14 @@
         <div class="client-info">
             <div class="bill-to info-section">
                 <h3>Bill To</h3>
-                <p contenteditable="true" class="editable"><strong>Customer Name:&nbsp;</strong></p>
+                <p contenteditable="true" class="editable"><strong>Customer Name:<strong>&nbsp;</strong></strong></p>
                 <p contenteditable="true" class="editable">Address:&nbsp;</p>
                 <p contenteditable="true" class="editable">Phone No:&nbsp;</p>
                 <p contenteditable="true" class="editable">GSTIN:&nbsp;</p>
             </div>
             <div class="ship-to info-section">
                 <h3>Ship To</h3>
-                <p contenteditable="true" class="editable"><strong>Shipping Name:&nbsp;</strong></p>
+                <p contenteditable="true" class="editable"><strong>Shipping Name<strong>&nbsp;</strong></strong></p>
                 <p contenteditable="true" class="editable">Address:&nbsp;</p>
                 <p contenteditable="true" class="editable">Phone No:&nbsp;</p>
                 <p contenteditable="true" class="editable">Contact:&nbsp;</p>
@@ -2162,6 +2162,27 @@
                 }
             }
         });
+		
+		//Nabynta ka Tarik
+		document.addEventListener('DOMContentLoaded', function() {
+    const dateSpan = document.getElementById('date-field');
+    const now = new Date();
+    
+    // Format options
+    const options = { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        weekday: 'short' // Optional: add day of week
+    };
+    
+    // Set the date
+   dateSpan.textContent = now.toLocaleDateString('en-GB', options);
+    
+    // OR use a simpler format:
+    // dateSpan.textContent = now.toLocaleDateString();
+});
+
     </script>
 </body>
 </html>
