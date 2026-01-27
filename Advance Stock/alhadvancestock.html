@@ -16,6 +16,8 @@
             --order: #9b59b6;
             --uom: #1abc9c;
             --mapping: #e67e22;
+            --ro: #e74c3c;
+            --bazaar: #3498db;
         }
 
         * {
@@ -64,6 +66,81 @@
             padding: 30px;
             display: grid;
             gap: 30px;
+        }
+
+        /* Template Download Section */
+        .template-download-section {
+            margin-bottom: 20px;
+        }
+
+        .template-download-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: 1px solid #e0e0e0;
+            overflow: hidden;
+        }
+
+        .template-download-header {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .template-download-header h3 {
+            font-size: 1.2rem;
+        }
+
+        .template-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 20px;
+            justify-content: center;
+        }
+
+        .template-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            min-width: 180px;
+            justify-content: center;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .template-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .template-btn.uom-btn {
+            background: linear-gradient(135deg, var(--uom), #16a085);
+            color: white;
+        }
+
+        .template-btn.ro-btn {
+            background: linear-gradient(135deg, var(--ro), #c0392b);
+            color: white;
+        }
+
+        .template-btn.bazaar-btn {
+            background: linear-gradient(135deg, var(--bazaar), #2980b9);
+            color: white;
+        }
+
+        .template-btn i {
+            font-size: 1.1rem;
         }
 
         .card {
@@ -191,6 +268,27 @@
             border-radius: 4px;
             font-size: 0.75rem;
             border: 1px solid #e0e0e0;
+        }
+
+        .download-btn {
+            margin-top: 8px;
+            padding: 6px 12px;
+            background: var(--uom);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .download-btn:hover {
+            background: #148f77;
         }
 
         .controls {
@@ -685,6 +783,16 @@
                 grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             }
             
+            .template-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .template-btn {
+                width: 100%;
+                min-width: auto;
+            }
+            
             .btn {
                 width: 100%;
                 min-width: auto;
@@ -713,6 +821,27 @@
         </div>
 
         <div class="main-content">
+            <!-- Template Download Section -->
+            <div class="template-download-section">
+                <div class="template-download-card">
+                    <div class="template-download-header">
+                        <i class="fas fa-download"></i>
+                        <h3>Download Files</h3>
+                    </div>
+                    <div class="template-buttons">
+                        <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTbNbnyjUNDjhYoRtaO_CS76zmYFhlVii5U9B3monkgWvQe1DLapRSd_LPxNigKekRAnJyvPs6jRUxS/pub?output=xlsx" class="template-btn ro-btn" target="_blank">
+                            <i class="fas fa-file-excel"></i> Download RO Requirement
+                        </a>
+                        <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQXzOaktr9KUZFyptM_hBblGuPuZAYiFCBuDEWy07Ph-CZPjTghFxw_PKlgtz-X815VSWGLiHDKHayn/pub?output=xlsx" class="template-btn bazaar-btn" target="_blank">
+                            <i class="fas fa-file-excel"></i> Download Bazaar Requirement
+                        </a>
+						<a href="https://alh-5.github.io/alh/Advance Stock/UOM.xlsx" class="template-btn uom-btn" target="_blank">
+                            <i class="fas fa-file-excel"></i> Download UOM
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-header">
                     <i class="fas fa-file-upload"></i>
