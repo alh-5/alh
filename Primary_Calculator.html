@@ -570,6 +570,81 @@
             min-width: 120px;
         }
         
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .modal-header h3 {
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #64748b;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        
+        .column-mapping {
+            margin-bottom: 20px;
+        }
+        
+        .mapping-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: #f8fafc;
+            border-radius: 6px;
+        }
+        
+        .mapping-label {
+            flex: 1;
+            font-weight: 600;
+            color: #475569;
+        }
+        
+        .mapping-select {
+            flex: 2;
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+        }
+        
         @media (max-width: 768px) {
             .main-content {
                 flex-direction: column;
@@ -627,6 +702,11 @@
             .import-buttons .btn {
                 min-width: 100%;
             }
+            
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
         }
     </style>
 </head>
@@ -650,7 +730,7 @@
                     <h2 class="section-title"><i class="fas fa-file-import"></i> Import SKU Data</h2>
                     <div class="file-input-wrapper">
                         <label for="fileInput" class="file-input-label">
-                            <i class="fas fa-file-excel"></i> Choose Excel File (.xlsx)
+                            <i class="fas fa-file-excel"></i> Choose UOM File
                         </label>
                         <input type="file" id="fileInput" accept=".xlsx, .xls">
                         <div id="fileName" class="file-info"></div>
@@ -658,7 +738,11 @@
                     
                     <div class="import-buttons">
                         <button class="btn btn-secondary" id="uploadBtn" onclick="window.location.href='https://alh-5.github.io/alh/Advance Stock/UOM.xlsx';">
-                            <i class="fas fa-chart-pie"></i> Download Sample
+                            <i class="fas fa-chart-pie"></i> Download UOM
+                        </button>
+                        
+                        <button class="btn btn-gold" id="importResultsBtn">
+                            <i class="fas fa-file-import"></i> Import Purchase
                         </button>
                         
                         <button class="btn btn-refresh" id="refreshBtn">
@@ -722,6 +806,11 @@
                     <div class="button-group">
                         <button id="addBtn" class="btn"><i class="fas fa-plus-circle"></i> Add to Results</button>
                         <button id="clearBtn" class="btn btn-secondary"><i class="fas fa-trash-alt"></i> Clear All</button>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button id="saveDataBtn" class="btn btn-gold"><i class="fas fa-save"></i> Save Data</button>
+                        <button id="loadDataBtn" class="btn btn-secondary"><i class="fas fa-folder-open"></i> Load Data</button>
                     </div>
                     
                     <div class="button-group">
@@ -813,6 +902,36 @@
         </footer>
     </div>
 
+    <!-- Import Results Modal -->
+    <div id="importResultsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-import"></i> Import Not Received Data</h3>
+                <button class="close-modal" onclick="closeImportModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="file-input-wrapper">
+                    <label for="resultsFileInput" class="file-input-label">
+                        <i class="fas fa-file-excel"></i> Choose Not Received Data
+                    </label>
+                    <input type="file" id="resultsFileInput" accept=".xlsx, .xls" style="display: none;">
+                    <div id="resultsFileName" class="file-info"></div>
+                </div>
+                
+                <div class="instructions">
+                    <p><i class="fas fa-info-circle"></i> File should contain columns: Order #, Invoice, Seed, SKU Code, SKU Name, Quantity, UOM, Total Liters, Per Case ($), Total ($)</p>
+                </div>
+                
+                <div id="importResultsError" class="error-message"></div>
+                <div id="importResultsSuccess" class="success-message"></div>
+            </div>
+            <div class="button-group">
+                <button class="btn" onclick="processResultsFile()"><i class="fas fa-upload"></i> Import</button>
+                <button class="btn btn-secondary" onclick="closeImportModal()"><i class="fas fa-times"></i> Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Sample SKU data
         const sampleSKUData = [];
@@ -825,6 +944,8 @@
         // DOM elements
         const fileInput = document.getElementById('fileInput');
         const fileName = document.getElementById('fileName');
+        const resultsFileInput = document.getElementById('resultsFileInput');
+        const resultsFileName = document.getElementById('resultsFileName');
         const invoiceNumberInput = document.getElementById('invoiceNumber');
         const seedNumberInput = document.getElementById('seedNumber');
         const skuCodeInput = document.getElementById('skuCode');
@@ -838,12 +959,18 @@
         const exportBtn = document.getElementById('exportBtn');
         const exportPdfBtn = document.getElementById('exportPdfBtn');
         const refreshBtn = document.getElementById('refreshBtn');
+        const importResultsBtn = document.getElementById('importResultsBtn');
+        const saveDataBtn = document.getElementById('saveDataBtn');
+        const loadDataBtn = document.getElementById('loadDataBtn');
         const resultsBody = document.getElementById('resultsBody');
         const importedDataBody = document.getElementById('importedDataBody');
         const importError = document.getElementById('importError');
         const importSuccess = document.getElementById('importSuccess');
         const ordersList = document.getElementById('ordersList');
         const totalAmountContainer = document.getElementById('totalAmountContainer');
+        const importResultsModal = document.getElementById('importResultsModal');
+        const importResultsError = document.getElementById('importResultsError');
+        const importResultsSuccess = document.getElementById('importResultsSuccess');
         
         // Summary elements
         const totalItemsEl = document.getElementById('totalItems');
@@ -851,6 +978,13 @@
         const totalQuantityEl = document.getElementById('totalQuantity');
         const totalLitersEl = document.getElementById('totalLiters');
         const totalAmountSumEl = document.getElementById('totalAmountSum');
+        
+        // Local Storage Keys
+        const STORAGE_KEYS = {
+            SKU_DATA: 'purchase_calculator_sku_data',
+            RESULTS_DATA: 'purchase_calculator_results',
+            ORDER_COUNTER: 'purchase_calculator_order_counter'
+        };
         
         // Get order number for invoice+seed combination
         function getOrderNumber(invoice, seed) {
@@ -950,6 +1084,9 @@
                 updateImportedDataTable();
                 clearInputFields();
                 
+                // Save to localStorage
+                saveSKUDataToStorage();
+                
                 importSuccess.textContent = `Successfully imported ${newSKUs.length} SKU records from the Excel file.`;
                 importSuccess.style.display = 'block';
                 importError.style.display = 'none';
@@ -985,6 +1122,92 @@
             };
             
             reader.readAsArrayBuffer(file);
+        });
+        
+        // Save SKU data to localStorage
+        function saveSKUDataToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEYS.SKU_DATA, JSON.stringify(importedSKUs));
+                console.log('SKU data saved to localStorage');
+            } catch (error) {
+                console.error('Error saving SKU data:', error);
+            }
+        }
+        
+        // Save results data to localStorage
+        function saveResultsToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEYS.RESULTS_DATA, JSON.stringify(results));
+                localStorage.setItem(STORAGE_KEYS.ORDER_COUNTER, JSON.stringify(orderCounter));
+                console.log('Results data saved to localStorage');
+            } catch (error) {
+                console.error('Error saving results data:', error);
+            }
+        }
+        
+        // Load data from localStorage
+        function loadDataFromStorage() {
+            try {
+                // Load SKU data
+                const savedSKUData = localStorage.getItem(STORAGE_KEYS.SKU_DATA);
+                if (savedSKUData) {
+                    importedSKUs = JSON.parse(savedSKUData);
+                    updateImportedDataTable();
+                    console.log('SKU data loaded from localStorage');
+                }
+                
+                // Load results data
+                const savedResults = localStorage.getItem(STORAGE_KEYS.RESULTS_DATA);
+                const savedOrderCounter = localStorage.getItem(STORAGE_KEYS.ORDER_COUNTER);
+                
+                if (savedResults) {
+                    results = JSON.parse(savedResults);
+                    if (savedOrderCounter) {
+                        orderCounter = JSON.parse(savedOrderCounter);
+                    }
+                    updateResultsTable();
+                    updateSummary();
+                    updateOrdersSummary();
+                    console.log('Results data loaded from localStorage');
+                }
+            } catch (error) {
+                console.error('Error loading data from localStorage:', error);
+            }
+        }
+        
+        // Save Data button click
+        saveDataBtn.addEventListener('click', function() {
+            saveSKUDataToStorage();
+            saveResultsToStorage();
+            
+            // Show success message
+            const successMsg = document.createElement('div');
+            successMsg.className = 'success-message';
+            successMsg.textContent = 'All data saved successfully! It will be available next time you open the application.';
+            successMsg.style.display = 'block';
+            
+            saveDataBtn.parentNode.insertBefore(successMsg, saveDataBtn.nextSibling);
+            
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
+        });
+        
+        // Load Data button click
+        loadDataBtn.addEventListener('click', function() {
+            loadDataFromStorage();
+            
+            // Show success message
+            const successMsg = document.createElement('div');
+            successMsg.className = 'success-message';
+            successMsg.textContent = `Data loaded successfully! ${results.length} results and ${importedSKUs.length} SKUs loaded.`;
+            successMsg.style.display = 'block';
+            
+            loadDataBtn.parentNode.insertBefore(successMsg, loadDataBtn.nextSibling);
+            
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
         });
         
         // Refresh button event listener
@@ -1093,6 +1316,7 @@
                 updateResultsTable();
                 updateSummary();
                 updateOrdersSummary();
+                saveResultsToStorage();
             }
         }
         
@@ -1177,6 +1401,9 @@
             updateSummary();
             updateOrdersSummary();
             
+            // Save to localStorage
+            saveResultsToStorage();
+            
             // Clear input fields for next entry
             clearInputFields();
         });
@@ -1252,8 +1479,149 @@
                 updateResultsTable();
                 updateSummary();
                 updateOrdersSummary();
+                saveResultsToStorage();
             }
         });
+        
+        // Import Results button click
+        importResultsBtn.addEventListener('click', function() {
+            openImportModal();
+        });
+        
+        // Open import modal
+        function openImportModal() {
+            importResultsModal.style.display = 'block';
+            resultsFileName.textContent = '';
+            importResultsError.style.display = 'none';
+            importResultsSuccess.style.display = 'none';
+        }
+        
+        // Close import modal
+        function closeImportModal() {
+            importResultsModal.style.display = 'none';
+            resultsFileInput.value = '';
+        }
+        
+        // Handle results file input
+        resultsFileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            resultsFileName.textContent = `Selected: ${file.name} (${(file.size/1024).toFixed(2)} KB)`;
+        });
+        
+        // Process results file
+        function processResultsFile() {
+            const file = resultsFileInput.files[0];
+            if (!file) {
+                importResultsError.textContent = 'Please select a file first.';
+                importResultsError.style.display = 'block';
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const data = new Uint8Array(event.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    // Convert to JSON with headers
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+                    
+                    if (jsonData.length < 2) {
+                        throw new Error('The file does not contain enough data.');
+                    }
+                    
+                    // Get headers from first row
+                    const headers = jsonData[0];
+                    
+                    // Find column indices
+                    const orderIndex = headers.findIndex(h => h.toString().toLowerCase().includes('order'));
+                    const invoiceIndex = headers.findIndex(h => h.toString().toLowerCase().includes('invoice'));
+                    const seedIndex = headers.findIndex(h => h.toString().toLowerCase().includes('seed'));
+                    const skuCodeIndex = headers.findIndex(h => h.toString().toLowerCase().includes('sku') && h.toString().toLowerCase().includes('code'));
+                    const skuNameIndex = headers.findIndex(h => h.toString().toLowerCase().includes('sku') && h.toString().toLowerCase().includes('name'));
+                    const quantityIndex = headers.findIndex(h => h.toString().toLowerCase().includes('quantity'));
+                    const uomIndex = headers.findIndex(h => h.toString().toLowerCase().includes('uom'));
+                    const totalLitersIndex = headers.findIndex(h => h.toString().toLowerCase().includes('total') && h.toString().toLowerCase().includes('liters'));
+                    const perCaseIndex = headers.findIndex(h => h.toString().toLowerCase().includes('per') && h.toString().toLowerCase().includes('case'));
+                    const totalIndex = headers.findIndex(h => h.toString().toLowerCase().includes('total') && !h.toString().toLowerCase().includes('liters'));
+                    
+                    // Process each data row
+                    let importedCount = 0;
+                    for (let i = 1; i < jsonData.length; i++) {
+                        const row = jsonData[i];
+                        if (!row || row.length === 0) continue;
+                        
+                        // Extract data based on column indices
+                        const orderNumber = orderIndex >= 0 ? parseInt(row[orderIndex]) || 1 : 1;
+                        const invoice = invoiceIndex >= 0 ? String(row[invoiceIndex] || '').trim() : '';
+                        const seed = seedIndex >= 0 ? String(row[seedIndex] || '').trim() : '';
+                        const code = skuCodeIndex >= 0 ? String(row[skuCodeIndex] || '').trim() : '';
+                        const name = skuNameIndex >= 0 ? String(row[skuNameIndex] || '').trim() : '';
+                        const quantity = quantityIndex >= 0 ? parseFloat(row[quantityIndex]) || 1 : 1;
+                        const uom = uomIndex >= 0 ? parseFloat(row[uomIndex]) || 0 : 0;
+                        const totalLiters = totalLitersIndex >= 0 ? parseFloat(row[totalLitersIndex]) || 0 : (uom * quantity);
+                        const perCaseAmount = perCaseIndex >= 0 ? parseFloat(String(row[perCaseIndex]).replace(/[^0-9.]/g, '')) || 0 : 0;
+                        const totalAmount = totalIndex >= 0 ? parseFloat(String(row[totalIndex]).replace(/[^0-9.]/g, '')) || 0 : (perCaseAmount * quantity);
+                        
+                        if (!invoice || !seed || !code) {
+                            continue; // Skip invalid rows
+                        }
+                        
+                        // Update order counter
+                        const key = `${invoice}_${seed}`;
+                        if (!orderCounter[key] || orderNumber > orderCounter[key]) {
+                            orderCounter[key] = orderNumber;
+                        }
+                        
+                        // Add to results
+                        const result = {
+                            orderNumber: orderNumber,
+                            invoice: invoice,
+                            seed: seed,
+                            code: code,
+                            name: name,
+                            quantity: quantity,
+                            uom: uom,
+                            totalLiters: totalLiters,
+                            perCaseAmount: perCaseAmount,
+                            totalAmount: totalAmount,
+                            id: Date.now() + Math.random()
+                        };
+                        
+                        results.push(result);
+                        importedCount++;
+                    }
+                    
+                    if (importedCount > 0) {
+                        updateResultsTable();
+                        updateSummary();
+                        updateOrdersSummary();
+                        saveResultsToStorage();
+                        
+                        importResultsSuccess.textContent = `Successfully imported ${importedCount} results from the Excel file.`;
+                        importResultsSuccess.style.display = 'block';
+                        importResultsError.style.display = 'none';
+                        
+                        setTimeout(() => {
+                            closeImportModal();
+                        }, 2000);
+                    } else {
+                        throw new Error('No valid results found in the file.');
+                    }
+                    
+                } catch (error) {
+                    importResultsError.textContent = `Error importing results: ${error.message}`;
+                    importResultsError.style.display = 'block';
+                    importResultsSuccess.style.display = 'none';
+                }
+            };
+            
+            reader.readAsArrayBuffer(file);
+        }
         
         // Export results to Excel
         exportBtn.addEventListener('click', function() {
@@ -1318,7 +1686,7 @@
             URL.revokeObjectURL(url);
         });
         
-        // Export results to PDF - FIXED: Only SKU Name wraps, all other columns in single line
+        // Export results to PDF - PORTRAIT MODE WITH MAXIMIZED SPACE
         exportPdfBtn.addEventListener('click', function() {
             if (results.length === 0) {
                 alert('No results to export.');
@@ -1326,25 +1694,33 @@
             }
             
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('landscape');
+            const doc = new jsPDF('p', 'mm', 'a4');
             
-            // Add title
+            // Calculate dimensions
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            
+            // Use almost full page width (5mm margins on each side)
+            const margin = 3; // Minimal margin for readability
+            const contentWidth = pageWidth - (margin * 2);
+            
+            // Title at the very top
             doc.setFontSize(18);
             doc.setTextColor(44, 62, 80);
-            doc.text('Auto Lube House - Purchase Calculator Report', 148, 15, {align: 'center'});
+            doc.text('AUTO LUBE HOUSE - NOT RECEIVED PURCHASE REPORT', pageWidth / 2, margin + 5, {align: 'center'});
             
-            // Add date
-            doc.setFontSize(10);
+            // Date and time
+            doc.setFontSize(9);
             doc.setTextColor(100, 100, 100);
-            doc.text(`Generated on: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 148, 22, {align: 'center'});
+            doc.text(`Generated: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, pageWidth / 2, margin + 11, {align: 'center'});
             
-            // Prepare table data with full SKU names
+            // Prepare table data
             const tableData = results.map(result => [
                 result.orderNumber.toString(),
                 result.invoice,
                 result.seed,
                 result.code,
-                result.name, // Full name without truncation
+                result.name,
                 result.quantity.toString(),
                 result.uom.toFixed(2),
                 result.totalLiters.toFixed(2),
@@ -1352,137 +1728,178 @@
                 `$${result.totalAmount.toFixed(2)}`
             ]);
             
-            // Add table with optimized column widths
+            // Start table position (right after title)
+            const startY = margin + 15;
+            
+            // Calculate column widths based on content
+            const columnWidths = [
+                10,  // Order # (10mm)
+                20,  // Invoice (20mm)
+                15,  // Seed (15mm)
+                20,  // SKU Code (20mm)
+                40,  // SKU Name (40mm - widest for text)
+                12,  // Quantity (12mm)
+                12,  // UOM (12mm)
+                18,  // Total Liters (18mm)
+                18,  // Per Case ($) (18mm)
+                18   // Total ($) (18mm)
+            ];
+            
+            // Adjust if total width exceeds contentWidth
+            const totalWidth = columnWidths.reduce((sum, width) => sum + width, 0);
+            if (totalWidth > contentWidth) {
+                const scaleFactor = contentWidth / totalWidth;
+                columnWidths.forEach((width, index) => {
+                    columnWidths[index] = Math.floor(width * scaleFactor);
+                });
+            }
+            
+            // Create table
             doc.autoTable({
                 head: [['Order #', 'Invoice', 'Seed', 'SKU Code', 'SKU Name', 'Qty', 'UOM', 'Total Liters', 'Per Case ($)', 'Total ($)']],
                 body: tableData,
-                startY: 30,
+                startY: startY,
                 theme: 'grid',
                 headStyles: {
                     fillColor: [44, 62, 80],
                     textColor: [255, 255, 255],
-                    fontSize: 9,
+                    fontSize: 7,
                     fontStyle: 'bold',
                     halign: 'center',
-                    cellPadding: 2
+                    cellPadding: 1.5,
+                    minCellHeight: 5
                 },
                 bodyStyles: {
-                    fontSize: 8,
-                    cellPadding: 2,
+                    fontSize: 6.5,
+                    cellPadding: 1.5,
                     lineWidth: 0.1,
                     lineColor: [200, 200, 200],
-                    cellWidth: 'wrap'
+                    minCellHeight: 5,
+                    overflow: 'linebreak'
                 },
                 columnStyles: {
                     0: { 
-                        cellWidth: 15, 
-                        halign: 'center',
-                        valign: 'middle'
-                    },  // Order #
+                        cellWidth: columnWidths[0],
+                        halign: 'center'
+                    },
                     1: { 
-                        cellWidth: 25, 
-                        halign: 'center',
-                        valign: 'middle'
-                    },  // Invoice
+                        cellWidth: columnWidths[1],
+                        halign: 'center'
+                    },
                     2: { 
-                        cellWidth: 20, 
-                        halign: 'center',
-                        valign: 'middle'
-                    },  // Seed
+                        cellWidth: columnWidths[2],
+                        halign: 'center'
+                    },
                     3: { 
-                        cellWidth: 30, 
-                        halign: 'center',
-                        valign: 'middle'
-                    },  // SKU Code
+                        cellWidth: columnWidths[3],
+                        halign: 'center'
+                    },
                     4: { 
-                        cellWidth: 50, // SKU Name - wider column for text wrapping ONLY
+                        cellWidth: columnWidths[4],
                         halign: 'left',
-                        valign: 'middle',
-                        fontStyle: 'normal',
-                        overflow: 'linebreak' // Only SKU Name wraps
+                        fontStyle: 'normal'
                     },
                     5: { 
-                        cellWidth: 15, 
-                        halign: 'center',
-                        valign: 'middle'
-                    },  // Quantity
+                        cellWidth: columnWidths[5],
+                        halign: 'center'
+                    },
                     6: { 
-                        cellWidth: 20, 
-                        halign: 'center',
-                        valign: 'middle'
-                    },  // UOM
+                        cellWidth: columnWidths[6],
+                        halign: 'center'
+                    },
                     7: { 
-                        cellWidth: 25, 
-                        halign: 'center',
-                        valign: 'middle'
-                    },  // Total Liters
+                        cellWidth: columnWidths[7],
+                        halign: 'center'
+                    },
                     8: { 
-                        cellWidth: 25, 
-                        halign: 'center',
-                        valign: 'middle'
-                    },  // Per Case ($)
+                        cellWidth: columnWidths[8],
+                        halign: 'center'
+                    },
                     9: { 
-                        cellWidth: 25, 
-                        halign: 'center',
-                        valign: 'middle'
-                    }   // Total ($)
+                        cellWidth: columnWidths[9],
+                        halign: 'center'
+                    }
                 },
                 styles: {
                     lineWidth: 0.1,
                     lineColor: [200, 200, 200],
-                    fontSize: 8
+                    fontSize: 6.5,
+                    cellPadding: 1.5
                 },
                 alternateRowStyles: {
                     fillColor: [248, 250, 252]
                 },
-                margin: { left: 10, right: 10, top: 30 },
-                tableWidth: 'auto',
+                margin: { 
+                    left: margin, 
+                    right: margin, 
+                    top: startY,
+                    bottom: margin
+                },
+                tableWidth: contentWidth,
                 showHead: 'everyPage',
                 didDrawPage: function (data) {
                     // Add page number
                     const pageCount = doc.internal.getNumberOfPages();
-                    doc.setFontSize(8);
+                    doc.setFontSize(7);
                     doc.setTextColor(100, 100, 100);
-                    doc.text(`Page ${data.pageNumber} of ${pageCount}`, 148, doc.internal.pageSize.height - 10, {align: 'center'});
+                    doc.text(`Page ${data.pageNumber} of ${pageCount}`, pageWidth / 2, pageHeight - margin, {align: 'center'});
                 }
             });
             
-            // Add summary
-            const totalQuantity = results.reduce((sum, item) => sum + item.quantity, 0);
-            const totalLiters = results.reduce((sum, item) => sum + item.totalLiters, 0);
-            const totalAmount = results.reduce((sum, item) => sum + item.totalAmount, 0);
+            // Calculate final Y position
+            let finalY = doc.lastAutoTable.finalY || startY + 30;
             
-            let finalY = doc.lastAutoTable.finalY + 10 || 80;
-            
-            // Add a new page if we're too close to the bottom
-            if (finalY > doc.internal.pageSize.height - 40) {
-                doc.addPage();
-                finalY = 20;
+            // Add summary section if there's space
+            if (finalY < pageHeight - 30) {
+                doc.setFontSize(9);
+                doc.setTextColor(44, 62, 80);
+                
+                // Draw a separator line
+                doc.setDrawColor(212, 175, 55);
+                doc.setLineWidth(0.5);
+                doc.line(margin, finalY + 5, pageWidth - margin, finalY + 5);
+                
+                finalY += 10;
+                
+                // Summary data
+                const totalItems = results.length;
+                const totalQuantity = results.reduce((sum, item) => sum + item.quantity, 0);
+                const totalLiters = results.reduce((sum, item) => sum + item.totalLiters, 0);
+                const totalAmount = results.reduce((sum, item) => sum + item.totalAmount, 0);
+                
+                // Count unique orders
+                const orderSet = new Set();
+                results.forEach(item => {
+                    orderSet.add(`${item.invoice}_${item.seed}_${item.orderNumber}`);
+                });
+                const totalOrders = orderSet.size;
+                
+                // Summary box
+                doc.setFillColor(248, 250, 252);
+                doc.rect(margin, finalY, pageWidth - (margin * 2), 20, 'F');
+                doc.setDrawColor(212, 175, 55);
+                doc.setLineWidth(0.3);
+                doc.rect(margin, finalY, pageWidth - (margin * 2), 20);
+                
+                // Summary text
+                doc.setFontSize(10);
+                doc.setTextColor(44, 62, 80);
+                doc.text('SUMMARY', margin + 5, finalY + 7);
+                
+                doc.setFontSize(8);
+                doc.text(`Total Items: ${totalItems}`, margin + 5, finalY + 14);
+                doc.text(`Total Orders: ${totalOrders}`, margin + 5, finalY + 19);
+                
+                doc.text(`Total Quantity: ${totalQuantity}`, margin + 60, finalY + 14);
+                doc.text(`Total Liters: ${totalLiters.toFixed(2)}`, margin + 60, finalY + 19);
+                
+                doc.text(`Total Amount: $${totalAmount.toFixed(2)}`, margin + 130, finalY + 16);
             }
             
-            doc.setFontSize(12);
-            doc.setTextColor(44, 62, 80);
-            doc.text('Summary', 10, finalY);
-            
-            doc.setFontSize(10);
-            doc.text(`Total Items: ${results.length}`, 10, finalY + 8);
-            doc.text(`Total Quantity: ${totalQuantity}`, 10, finalY + 16);
-            doc.text(`Total Liters: ${totalLiters.toFixed(2)}`, 10, finalY + 24);
-            doc.text(`Total Amount: $${totalAmount.toFixed(2)}`, 10, finalY + 32);
-            
-            // Count unique orders
-            const orderSet = new Set();
-            results.forEach(item => {
-                orderSet.add(`${item.invoice}_${item.seed}_${item.orderNumber}`);
-            });
-            const totalOrders = orderSet.size;
-            
-            doc.text(`Total Orders: ${totalOrders}`, 120, finalY + 8);
-            
-            // Add footer
-            doc.setFontSize(8);
+            // Add footer at the very bottom
+            doc.setFontSize(7);
             doc.setTextColor(100, 100, 100);
-            doc.text('SKU Purchase System - dbareh © 2026', 148, doc.internal.pageSize.height - 20, {align: 'center'});
+            doc.text('SKU Purchase System - dbareh © 2026', pageWidth / 2, pageHeight - margin / 2, {align: 'center'});
             
             // Save the PDF
             doc.save(`Purchase_Report_${new Date().toISOString().slice(0,10)}.pdf`);
@@ -1490,15 +1907,42 @@
         
         // Initialize on page load
         window.addEventListener('DOMContentLoaded', function() {
-            importedSKUs = [];
-            updateImportedDataTable();
+            // Load data from localStorage automatically
+            loadDataFromStorage();
+            
+            // Focus on first input field
             invoiceNumberInput.focus();
+            
+            // Set up click events for import modal
+            document.getElementById('importResultsBtn').addEventListener('click', openImportModal);
+            document.querySelector('.close-modal').addEventListener('click', closeImportModal);
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === importResultsModal) {
+                    closeImportModal();
+                }
+            });
             
             // Add keyboard shortcut for adding SKU (Ctrl + Enter)
             document.addEventListener('keydown', function(e) {
                 if (e.ctrlKey && e.key === 'Enter') {
                     addBtn.click();
                 }
+            });
+            
+            // Initialize imported SKUs if none loaded
+            if (importedSKUs.length === 0) {
+                importedSKUs = [];
+                updateImportedDataTable();
+            }
+            
+            // Update SKU placeholder
+            skuCodeInput.placeholder = `Enter SKU code (${importedSKUs.length} SKUs available)`;
+            
+            // Set up results file input click
+            document.querySelector('[for="resultsFileInput"]').addEventListener('click', function() {
+                resultsFileInput.click();
             });
         });
     </script>
