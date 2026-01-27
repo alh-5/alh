@@ -177,46 +177,110 @@
             color: #7f8c8d;
         }
 
-        .instructions {
-            background-color: #fef9e7;
-            border-left: 4px solid #f1c40f;
-            padding: 15px;
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
-            border-radius: 4px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
         }
 
-        .instructions h3 {
-            color: #d35400;
-            margin-bottom: 10px;
+        .modal-header h2 {
+            color: #2c3e50;
         }
 
-        .instructions ol {
-            margin-left: 20px;
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #7f8c8d;
         }
 
-        .instructions li {
-            margin-bottom: 8px;
+        .close-modal:hover {
+            color: #e74c3c;
         }
 
-        .data-format {
+        .mapping-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            background-color: white;
+        }
+
+        .sample-data-preview {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .preview-table {
+            font-size: 12px;
+            width: 100%;
+        }
+
+        .preview-table th {
+            background-color: #95a5a6;
+            padding: 8px;
+            font-size: 11px;
+        }
+
+        .preview-table td {
+            padding: 6px;
+            font-size: 11px;
+        }
+
+        .mapping-info {
             background-color: #e8f4fc;
-            border-left: 4px solid #3498db;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-        }
-
-        .data-format h3 {
-            color: #2980b9;
-            margin-bottom: 10px;
-        }
-
-        .data-format ul {
-            margin-left: 20px;
-        }
-
-        .data-format li {
-            margin-bottom: 5px;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 14px;
         }
 
         @media (max-width: 768px) {
@@ -234,23 +298,27 @@
                 flex-wrap: wrap;
                 justify-content: center;
             }
+            
+            .modal-content {
+                margin: 10% auto;
+                width: 95%;
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Order Profit Calculator</h1>
-        
-       
-        
+ 
         <div class="upload-section">
             <div class="upload-box">
                 <h3>Import Order Data</h3>
-                <p>Upload XLSX file with Sku Code, Sku Name, Quantity</p>
-                <input type="file" id="orderFile" accept=".xlsx, .xls">
+                <p>Upload XLSX/CSV file with your order data</p>
+                <input type="file" id="orderFile" accept=".xlsx, .xls, .csv">
                 <div class="button-group">
                     <button onclick="importOrderData()">Import Orders</button>
-                    <button class="sample-btn" onclick="downloadSampleOrder()">Download Sample Order XLSX</button>
+                    <button class="sample-btn" onclick="downloadSampleOrder()">Download Sample XLSX</button>
                 </div>
             </div>
             
@@ -275,6 +343,49 @@
             </div>
         </div>
         
+        <!-- Mapping Modal -->
+        <div id="mappingModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Map Your Columns</h2>
+                    <button class="close-modal" onclick="closeMappingModal()">&times;</button>
+                </div>
+                
+                <div class="mapping-info">
+                    <p><strong>Note:</strong> Please map your columns exactly as:<br>
+                    1. <strong>SKU Code</strong> - for SKU codes<br>
+                    2. <strong>SKU Name</strong> - for SKU names<br>
+                    3. <strong>QUANTITY</strong> - for quantities<br>
+                    Duplicate SKUs will be automatically summed.</p>
+                </div>
+                
+                <div class="mapping-form">
+                    <div class="form-group">
+                        <label for="skuCodeSelect">Select SKU Code Column:</label>
+                        <select id="skuCodeSelect"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="skuNameSelect">Select SKU Name Column:</label>
+                        <select id="skuNameSelect"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantitySelect">Select QUANTITY Column:</label>
+                        <select id="quantitySelect"></select>
+                    </div>
+                    
+                    <div class="sample-data-preview">
+                        <h4>Data Preview (First 5 rows):</h4>
+                        <table id="dataPreview" class="preview-table"></table>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button onclick="applyMapping()" style="flex: 1;">Apply Mapping</button>
+                        <button onclick="closeMappingModal()" style="background-color: #95a5a6; flex: 1;">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div style="text-align: center; margin: 20px 0;">
             <button class="calculate-btn" onclick="calculateProfit()">Calculate Profit</button>
         </div>
@@ -284,7 +395,11 @@
         <div class="summary" id="summarySection" style="display: none;">
             <div class="summary-item">
                 <div class="summary-value" id="totalOrders">0</div>
-                <div class="summary-label">Total Orders</div>
+                <div class="summary-label">Total SKUs</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value" id="totalQuantity">0</div>
+                <div class="summary-label">Total Quantity</div>
             </div>
             <div class="summary-item">
                 <div class="summary-value" id="totalSales">$0.00</div>
@@ -311,14 +426,17 @@
         let salesData = [];
         let purchaseData = [];
         let profitData = [];
+        let rawOrderData = [];
+        let fileColumns = [];
+        let currentFileData = null;
 
         // Sample data for download
         const sampleOrderData = [
-            { "Sku Code": "SKU-001", "Sku Name": "SERVO PRIDE 40 - 20x1L - HDPE", Quantity: 1 },
-            { "Sku Code": "SKU-002", "Sku Name": "SERVO PRIDE 40 - 4x5L - HDPE", Quantity: 3 },
-            { "Sku Code": "SKU-003", "Sku Name": "SERVO GEAR HP 90-40X1/2L-HDPE", Quantity: 2 },
-            { "Sku Code": "SKU-004", "Sku Name": "SERVO GEAR HP 90-20X1L-HDPE", Quantity: 1 },
-            { "Sku Code": "SKU-005", "Sku Name": "SERVO GEAR HP 90 - 4x5L - HDPE", Quantity: 5 }
+            { "SKU Code": "SKU-001", "SKU Name": "SERVO PRIDE 40 - 20x1L - HDPE", "QUANTITY": 1 },
+            { "SKU Code": "SKU-002", "SKU Name": "SERVO PRIDE 40 - 4x5L - HDPE", "QUANTITY": 3 },
+            { "SKU Code": "SKU-003", "SKU Name": "SERVO GEAR HP 90-40X1/2L-HDPE", "QUANTITY": 2 },
+            { "SKU Code": "SKU-004", "SKU Name": "SERVO GEAR HP 90-20X1L-HDPE", "QUANTITY": 1 },
+            { "SKU Code": "SKU-005", "SKU Name": "SERVO GEAR HP 90 - 4x5L - HDPE", "QUANTITY": 5 }
         ];
 
         const sampleSalesData = [
@@ -344,20 +462,6 @@
             XLSX.writeFile(wb, "sample_order_data.xlsx");
         }
 
-        function downloadSampleSales() {
-            const ws = XLSX.utils.json_to_sheet(sampleSalesData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Sales");
-            XLSX.writeFile(wb, "sample_sales_data.xlsx");
-        }
-
-        function downloadSamplePurchase() {
-            const ws = XLSX.utils.json_to_sheet(samplePurchaseData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Purchases");
-            XLSX.writeFile(wb, "sample_purchase_data.xlsx");
-        }
-
         function importOrderData() {
             const fileInput = document.getElementById('orderFile');
             if (fileInput.files.length === 0) {
@@ -370,25 +474,94 @@
             
             reader.onload = function(e) {
                 try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, {type: 'array'});
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    orderData = XLSX.utils.sheet_to_json(worksheet);
+                    let data, workbook, firstSheetName, worksheet;
                     
-                    // Validate order data format
-                    if (orderData.length > 0) {
-                        const firstRow = orderData[0];
-                        if (!firstRow.hasOwnProperty('Sku Code') || !firstRow.hasOwnProperty('Sku Name') || !firstRow.hasOwnProperty('Quantity')) {
-                            alert('Invalid order data format. Please use the sample format with Sku Code, Sku Name, and Quantity columns.');
-                            orderData = [];
+                    // Check if file is CSV or Excel
+                    if (file.name.toLowerCase().endsWith('.csv')) {
+                        // Handle CSV file
+                        const csvText = e.target.result;
+                        const lines = csvText.split('\n').filter(line => line.trim() !== '');
+                        
+                        if (lines.length === 0) {
+                            alert('The file appears to be empty.');
                             return;
+                        }
+                        
+                        // Parse CSV headers
+                        const headers = lines[0].split(',').map(header => header.trim());
+                        fileColumns = headers;
+                        
+                        // Parse CSV data
+                        rawOrderData = [];
+                        for (let i = 1; i < lines.length; i++) {
+                            if (lines[i].trim() === '') continue;
+                            
+                            const values = lines[i].split(',');
+                            const row = {};
+                            headers.forEach((header, index) => {
+                                if (index < values.length) {
+                                    row[header] = values[index] ? values[index].trim() : '';
+                                } else {
+                                    row[header] = '';
+                                }
+                            });
+                            
+                            rawOrderData.push(row);
+                        }
+                    } else {
+                        // Handle Excel file
+                        const dataArray = new Uint8Array(e.target.result);
+                        workbook = XLSX.read(dataArray, {type: 'array'});
+                        firstSheetName = workbook.SheetNames[0];
+                        worksheet = workbook.Sheets[firstSheetName];
+                        
+                        // Get all data as array of arrays
+                        const allData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+                        
+                        if (allData.length === 0) {
+                            alert('The file appears to be empty.');
+                            return;
+                        }
+                        
+                        // Extract headers (first row)
+                        fileColumns = allData[0].map(col => col ? String(col).trim() : '');
+                        
+                        // Extract data rows
+                        rawOrderData = [];
+                        for (let i = 1; i < allData.length; i++) {
+                            if (allData[i].length === 0 || allData[i].every(cell => cell === null || cell === '' || cell === undefined)) {
+                                continue;
+                            }
+                            
+                            const row = {};
+                            fileColumns.forEach((col, index) => {
+                                if (col && col.trim() !== '') {
+                                    const cellValue = allData[i][index];
+                                    row[col] = cellValue !== null && cellValue !== undefined ? String(cellValue) : '';
+                                }
+                            });
+                            
+                            rawOrderData.push(row);
                         }
                     }
                     
-                    alert(`Successfully imported ${orderData.length} order records.`);
+                    if (rawOrderData.length === 0) {
+                        alert('No data found in the file.');
+                        return;
+                    }
+                    
+                    // Store the data for mapping
+                    currentFileData = {
+                        columns: fileColumns,
+                        data: rawOrderData
+                    };
+                    
+                    // Show mapping interface
+                    showMappingInterface();
+                    
                 } catch (error) {
                     alert('Error reading order file: ' + error.message);
+                    console.error(error);
                 }
             };
             
@@ -396,7 +569,268 @@
                 alert('Error reading file. Please try again.');
             };
             
-            reader.readAsArrayBuffer(file);
+            // Read based on file type
+            if (file.name.toLowerCase().endsWith('.csv')) {
+                reader.readAsText(file);
+            } else {
+                reader.readAsArrayBuffer(file);
+            }
+        }
+
+        function showMappingInterface() {
+            const modal = document.getElementById('mappingModal');
+            const skuCodeSelect = document.getElementById('skuCodeSelect');
+            const skuNameSelect = document.getElementById('skuNameSelect');
+            const quantitySelect = document.getElementById('quantitySelect');
+            const dataPreview = document.getElementById('dataPreview');
+            
+            // Clear previous options
+            skuCodeSelect.innerHTML = '';
+            skuNameSelect.innerHTML = '';
+            quantitySelect.innerHTML = '';
+            
+            // Add options for each column
+            fileColumns.forEach(column => {
+                if (column && column.trim() !== '') {
+                    const option = document.createElement('option');
+                    option.value = column;
+                    option.textContent = column;
+                    
+                    skuCodeSelect.appendChild(option.cloneNode(true));
+                    skuNameSelect.appendChild(option.cloneNode(true));
+                    quantitySelect.appendChild(option.cloneNode(true));
+                }
+            });
+            
+            // Add empty option
+            const emptyOption = document.createElement('option');
+            emptyOption.value = '';
+            emptyOption.textContent = '-- Select Column --';
+            
+            skuCodeSelect.insertBefore(emptyOption.cloneNode(true), skuCodeSelect.firstChild);
+            skuNameSelect.insertBefore(emptyOption.cloneNode(true), skuNameSelect.firstChild);
+            quantitySelect.insertBefore(emptyOption.cloneNode(true), quantitySelect.firstChild);
+            
+            // Auto-select based on exact column names
+            autoSelectColumns();
+            
+            // Show data preview
+            showDataPreview();
+            
+            // Show modal
+            modal.style.display = 'block';
+        }
+
+        function autoSelectColumns() {
+            const skuCodeSelect = document.getElementById('skuCodeSelect');
+            const skuNameSelect = document.getElementById('skuNameSelect');
+            const quantitySelect = document.getElementById('quantitySelect');
+            
+            // Look for exact column names first
+            const skuCodeExact = ['SKU Code', 'Sku Code', 'SKU', 'Product Code', 'Item Code'];
+            const skuNameExact = ['SKU Name', 'Sku Name', 'Product Name', 'Item Name', 'Description'];
+            const quantityExact = ['QUANTITY', 'Quantity', 'QTY', 'Qty', 'Amount'];
+            
+            // Reset values
+            skuCodeSelect.value = '';
+            skuNameSelect.value = '';
+            quantitySelect.value = '';
+            
+            // Try exact matches first
+            fileColumns.forEach(column => {
+                const colTrimmed = column.trim();
+                
+                // Check for SKU Code
+                if (skuCodeExact.includes(colTrimmed)) {
+                    skuCodeSelect.value = column;
+                }
+                
+                // Check for SKU Name
+                if (skuNameExact.includes(colTrimmed)) {
+                    skuNameSelect.value = column;
+                }
+                
+                // Check for Quantity
+                if (quantityExact.includes(colTrimmed)) {
+                    quantitySelect.value = column;
+                }
+            });
+            
+            // If still not selected, try case-insensitive contains
+            if (!skuCodeSelect.value) {
+                for (let column of fileColumns) {
+                    const colLower = column.toLowerCase();
+                    if (colLower.includes('sku') && colLower.includes('code') || 
+                        colLower === 'sku code' || 
+                        colLower === 'sku' || 
+                        colLower === 'code') {
+                        skuCodeSelect.value = column;
+                        break;
+                    }
+                }
+            }
+            
+            if (!skuNameSelect.value) {
+                for (let column of fileColumns) {
+                    const colLower = column.toLowerCase();
+                    if ((colLower.includes('sku') && colLower.includes('name')) || 
+                        colLower === 'sku name' || 
+                        colLower === 'product name' || 
+                        colLower === 'description') {
+                        skuNameSelect.value = column;
+                        break;
+                    }
+                }
+            }
+            
+            if (!quantitySelect.value) {
+                for (let column of fileColumns) {
+                    const colLower = column.toLowerCase();
+                    if (colLower.includes('quantity') || 
+                        colLower === 'qty' || 
+                        colLower.includes('amount') || 
+                        colLower.includes('qty')) {
+                        quantitySelect.value = column;
+                        break;
+                    }
+                }
+            }
+            
+            // Final fallback - pick first available columns
+            if (!skuCodeSelect.value && fileColumns.length > 0) {
+                skuCodeSelect.value = fileColumns[0];
+            }
+            if (!skuNameSelect.value && fileColumns.length > 1) {
+                skuNameSelect.value = fileColumns[1];
+            } else if (!skuNameSelect.value && fileColumns.length > 0) {
+                skuNameSelect.value = fileColumns[0];
+            }
+            if (!quantitySelect.value && fileColumns.length > 2) {
+                quantitySelect.value = fileColumns[2];
+            } else if (!quantitySelect.value && fileColumns.length > 1) {
+                quantitySelect.value = fileColumns[1];
+            }
+        }
+
+        function showDataPreview() {
+            const dataPreview = document.getElementById('dataPreview');
+            dataPreview.innerHTML = '';
+            
+            if (!currentFileData || currentFileData.data.length === 0) return;
+            
+            // Create header row
+            const headerRow = document.createElement('tr');
+            fileColumns.forEach(column => {
+                const th = document.createElement('th');
+                th.textContent = column;
+                th.title = column;
+                headerRow.appendChild(th);
+            });
+            dataPreview.appendChild(headerRow);
+            
+            // Create data rows (show first 5 rows)
+            const rowsToShow = Math.min(5, currentFileData.data.length);
+            for (let i = 0; i < rowsToShow; i++) {
+                const row = currentFileData.data[i];
+                const tr = document.createElement('tr');
+                
+                fileColumns.forEach(column => {
+                    const td = document.createElement('td');
+                    const value = row[column];
+                    td.textContent = value !== undefined && value !== null ? String(value) : '';
+                    td.title = value !== undefined && value !== null ? String(value) : '';
+                    tr.appendChild(td);
+                });
+                
+                dataPreview.appendChild(tr);
+            }
+        }
+
+        function applyMapping() {
+            const skuCodeColumn = document.getElementById('skuCodeSelect').value;
+            const skuNameColumn = document.getElementById('skuNameSelect').value;
+            const quantityColumn = document.getElementById('quantitySelect').value;
+            
+            // Validate selections
+            if (!skuCodeColumn || !skuNameColumn || !quantityColumn) {
+                alert('Please select all required columns.');
+                return;
+            }
+            
+            // Transform data based on mapping and sum duplicate SKUs
+            const skuMap = new Map();
+            
+            currentFileData.data.forEach(row => {
+                const skuCode = row[skuCodeColumn];
+                const skuName = row[skuNameColumn];
+                let quantity = row[quantityColumn];
+                
+                // Skip rows with empty SKU code
+                if (!skuCode || String(skuCode).trim() === '') {
+                    return;
+                }
+                
+                // Clean and standardize SKU code
+                const cleanSkuCode = String(skuCode).trim().toUpperCase();
+                const cleanSkuName = skuName ? String(skuName).trim() : '';
+                
+                // Parse quantity
+                let quantityNum = 0;
+                if (quantity !== undefined && quantity !== null && quantity !== '') {
+                    // Remove any non-numeric characters except decimal point and minus
+                    const cleanQuantity = String(quantity).replace(/[^\d.-]/g, '');
+                    quantityNum = parseFloat(cleanQuantity);
+                    if (isNaN(quantityNum) || quantityNum < 0) {
+                        quantityNum = 0;
+                    }
+                }
+                
+                // Sum quantities for duplicate SKUs
+                if (skuMap.has(cleanSkuCode)) {
+                    const existing = skuMap.get(cleanSkuCode);
+                    existing.quantity += quantityNum;
+                    // Use the first SKU name we encounter
+                    if (!existing.skuName && cleanSkuName) {
+                        existing.skuName = cleanSkuName;
+                    }
+                } else {
+                    skuMap.set(cleanSkuCode, {
+                        skuCode: cleanSkuCode,
+                        skuName: cleanSkuName,
+                        quantity: quantityNum
+                    });
+                }
+            });
+            
+            // Convert map to array
+            orderData = Array.from(skuMap.values()).map(item => ({
+                'Sku Code': item.skuCode,
+                'Sku Name': item.skuName,
+                'Quantity': item.quantity
+            }));
+            
+            // Sort by SKU code
+            orderData.sort((a, b) => a['Sku Code'].localeCompare(b['Sku Code']));
+            
+            // Show success message with summary
+            const totalSkus = orderData.length;
+            const totalQuantity = orderData.reduce((sum, item) => sum + item.Quantity, 0);
+            
+            if (totalSkus === 0) {
+                alert('No valid order data found after mapping. Please check your column selections.');
+            } else {
+                const originalRows = currentFileData.data.length;
+                alert(`Successfully imported ${originalRows} rows.\n` +
+                      `Consolidated into ${totalSkus} unique SKUs.\n` +
+                      `Total quantity: ${totalQuantity}\n` +
+                      `Duplicate SKUs have been summed.`);
+            }
+            
+            closeMappingModal();
+        }
+
+        function closeMappingModal() {
+            document.getElementById('mappingModal').style.display = 'none';
         }
 
         function importSalesData() {
@@ -415,21 +849,44 @@
                     const workbook = XLSX.read(data, {type: 'array'});
                     const firstSheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[firstSheetName];
-                    salesData = XLSX.utils.sheet_to_json(worksheet);
                     
-                    // Validate sales data format
-                    if (salesData.length > 0) {
-                        const firstRow = salesData[0];
-                        if (!firstRow.hasOwnProperty('Sku Code') || !firstRow.hasOwnProperty('SalesAmount')) {
-                            alert('Invalid sales data format. Please use the sample format with Sku Code and SalesAmount columns.');
-                            salesData = [];
-                            return;
-                        }
+                    // Read all data
+                    const allData = XLSX.utils.sheet_to_json(worksheet);
+                    
+                    if (allData.length === 0) {
+                        alert('The file appears to be empty.');
+                        return;
                     }
                     
+                    // Process sales data
+                    salesData = [];
+                    allData.forEach(row => {
+                        // Try to find SKU Code column (case insensitive)
+                        const skuCodeKey = Object.keys(row).find(key => 
+                            key.toLowerCase().includes('sku') || key.toLowerCase().includes('code'));
+                        
+                        // Try to find SalesAmount column
+                        const salesAmountKey = Object.keys(row).find(key => 
+                            key.toLowerCase().includes('sales') || key.toLowerCase().includes('amount'));
+                        
+                        if (skuCodeKey && salesAmountKey) {
+                            const skuCode = row[skuCodeKey];
+                            const salesAmount = parseFloat(row[salesAmountKey]) || 0;
+                            
+                            if (skuCode && String(skuCode).trim() !== '') {
+                                salesData.push({
+                                    'Sku Code': String(skuCode).trim().toUpperCase(),
+                                    'SalesAmount': salesAmount
+                                });
+                            }
+                        }
+                    });
+                    
                     alert(`Successfully imported ${salesData.length} sales records.`);
+                    
                 } catch (error) {
                     alert('Error reading sales file: ' + error.message);
+                    console.error(error);
                 }
             };
             
@@ -456,21 +913,44 @@
                     const workbook = XLSX.read(data, {type: 'array'});
                     const firstSheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[firstSheetName];
-                    purchaseData = XLSX.utils.sheet_to_json(worksheet);
                     
-                    // Validate purchase data format
-                    if (purchaseData.length > 0) {
-                        const firstRow = purchaseData[0];
-                        if (!firstRow.hasOwnProperty('Sku Code') || !firstRow.hasOwnProperty('PurchaseAmount')) {
-                            alert('Invalid purchase data format. Please use the sample format with Sku Code and PurchaseAmount columns.');
-                            purchaseData = [];
-                            return;
-                        }
+                    // Read all data
+                    const allData = XLSX.utils.sheet_to_json(worksheet);
+                    
+                    if (allData.length === 0) {
+                        alert('The file appears to be empty.');
+                        return;
                     }
                     
+                    // Process purchase data
+                    purchaseData = [];
+                    allData.forEach(row => {
+                        // Try to find SKU Code column (case insensitive)
+                        const skuCodeKey = Object.keys(row).find(key => 
+                            key.toLowerCase().includes('sku') || key.toLowerCase().includes('code'));
+                        
+                        // Try to find PurchaseAmount column
+                        const purchaseAmountKey = Object.keys(row).find(key => 
+                            key.toLowerCase().includes('purchase') || key.toLowerCase().includes('cost') || key.toLowerCase().includes('amount'));
+                        
+                        if (skuCodeKey && purchaseAmountKey) {
+                            const skuCode = row[skuCodeKey];
+                            const purchaseAmount = parseFloat(row[purchaseAmountKey]) || 0;
+                            
+                            if (skuCode && String(skuCode).trim() !== '') {
+                                purchaseData.push({
+                                    'Sku Code': String(skuCode).trim().toUpperCase(),
+                                    'PurchaseAmount': purchaseAmount
+                                });
+                            }
+                        }
+                    });
+                    
                     alert(`Successfully imported ${purchaseData.length} purchase records.`);
+                    
                 } catch (error) {
                     alert('Error reading purchase file: ' + error.message);
+                    console.error(error);
                 }
             };
             
@@ -573,6 +1053,8 @@
                         value = `<span class="${profitClass}">$${value.toFixed(2)}</span>`;
                     } else if (typeof value === 'number' && (header === 'SalesAmount' || header === 'PurchaseAmount')) {
                         value = `$${value.toFixed(2)}`;
+                    } else if (header === 'Quantity') {
+                        value = Number(value).toFixed(0);
                     }
                     
                     tableHTML += `<td>${value}</td>`;
@@ -586,12 +1068,14 @@
         }
 
         function updateSummary() {
-            const totalOrders = profitData.length;
+            const totalSkus = profitData.length;
+            const totalQuantity = profitData.reduce((sum, row) => sum + (row.Quantity || 0), 0);
             const totalSales = profitData.reduce((sum, row) => sum + (row.SalesAmount * row.Quantity || 0), 0);
             const totalPurchases = profitData.reduce((sum, row) => sum + (row.PurchaseAmount * row.Quantity || 0), 0);
             const totalProfit = profitData.reduce((sum, row) => sum + (row.TotalProfit || 0), 0);
             
-            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('totalOrders').textContent = totalSkus;
+            document.getElementById('totalQuantity').textContent = totalQuantity;
             document.getElementById('totalSales').textContent = `$${totalSales.toFixed(2)}`;
             document.getElementById('totalPurchases').textContent = `$${totalPurchases.toFixed(2)}`;
             document.getElementById('totalProfit').textContent = `$${totalProfit.toFixed(2)}`;
@@ -621,6 +1105,8 @@
                     let value = row[header];
                     if (typeof value === 'number' && (header === 'SalesAmount' || header === 'PurchaseAmount' || header === 'ProfitPerCase' || header === 'TotalProfit')) {
                         return `$${value.toFixed(2)}`;
+                    } else if (header === 'Quantity') {
+                        return value.toFixed(0);
                     }
                     return value;
                 });
@@ -636,15 +1122,18 @@
             });
             
             // Add summary
+            const totalSkus = profitData.length;
+            const totalQuantity = profitData.reduce((sum, row) => sum + (row.Quantity || 0), 0);
             const totalSales = profitData.reduce((sum, row) => sum + (row.SalesAmount * row.Quantity || 0), 0);
             const totalPurchases = profitData.reduce((sum, row) => sum + (row.PurchaseAmount * row.Quantity || 0), 0);
             const totalProfit = profitData.reduce((sum, row) => sum + (row.TotalProfit || 0), 0);
             
             const finalY = doc.lastAutoTable.finalY || 100;
-            doc.text(`Total Orders: ${profitData.length}`, 14, finalY + 10);
-            doc.text(`Total Sales: $${totalSales.toFixed(2)}`, 14, finalY + 20);
-            doc.text(`Total Purchases: $${totalPurchases.toFixed(2)}`, 14, finalY + 30);
-            doc.text(`Total Profit: $${totalProfit.toFixed(2)}`, 14, finalY + 40);
+            doc.text(`Total SKUs: ${totalSkus}`, 14, finalY + 10);
+            doc.text(`Total Quantity: ${totalQuantity}`, 14, finalY + 20);
+            doc.text(`Total Sales: $${totalSales.toFixed(2)}`, 14, finalY + 30);
+            doc.text(`Total Purchases: $${totalPurchases.toFixed(2)}`, 14, finalY + 40);
+            doc.text(`Total Profit: $${totalProfit.toFixed(2)}`, 14, finalY + 50);
             
             // Save the PDF
             doc.save('order_profit_report.pdf');
@@ -670,6 +1159,8 @@
                     let value = row[header];
                     if (typeof value === 'number' && (header === 'SalesAmount' || header === 'PurchaseAmount' || header === 'ProfitPerCase' || header === 'TotalProfit')) {
                         return value.toFixed(2);
+                    } else if (header === 'Quantity') {
+                        return Number(value);
                     }
                     return value;
                 });
@@ -684,6 +1175,14 @@
             
             // Save the file
             XLSX.writeFile(wb, 'order_profit_report.xlsx');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('mappingModal');
+            if (event.target === modal) {
+                closeMappingModal();
+            }
         }
     </script>
 </body>
