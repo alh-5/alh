@@ -265,6 +265,16 @@
             box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
         }
         
+        .quadruple-input {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .quadruple-input .input-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        
         .dual-input {
             display: flex;
             gap: 15px;
@@ -409,6 +419,28 @@
         .invoice-badge {
             display: inline-block;
             background-color: #9b59b6;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+        
+        .date-badge {
+            display: inline-block;
+            background-color: #2ecc71;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+        
+        .location-badge {
+            display: inline-block;
+            background-color: #e67e22;
             color: white;
             padding: 4px 8px;
             border-radius: 4px;
@@ -665,7 +697,7 @@
                 flex-direction: column;
             }
             
-            .dual-input {
+            .quadruple-input, .dual-input {
                 flex-direction: column;
                 gap: 20px;
             }
@@ -757,7 +789,22 @@
                 <div class="sku-input-section">
                     <h2 class="section-title"><i class="fas fa-calculator"></i> Enter SKU Details</h2>
                     
-                    <div class="dual-input">
+                    <div class="quadruple-input">
+                        <div class="input-group">
+                            <label for="dateInput">Date *</label>
+                            <input type="date" id="dateInput" value="">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="locationInput">Location *</label>
+                            <select id="locationInput">
+                                <option value="">Select Location</option>
+                                <option value="Guwahati">Guwahati</option>
+                                <option value="Jorhat">Jorhat</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        
                         <div class="input-group">
                             <label for="invoiceNumber">Invoice Number *</label>
                             <input type="text" id="invoiceNumber" placeholder="Enter SAP Invoice Number" value="">
@@ -834,6 +881,8 @@
                         <thead>
                             <tr>
                                 <th>Order #</th>
+                                <th>Date</th>
+                                <th>Location</th>
                                 <th>Invoice</th>
                                 <th>Seed</th>
                                 <th>SKU Code</th>
@@ -848,7 +897,7 @@
                         </thead>
                         <tbody id="resultsBody">
                             <tr>
-                                <td colspan="11" class="empty-message">No results yet. Import SKU data and enter a SKU code to get started.</td>
+                                <td colspan="13" class="empty-message">No results yet. Import SKU data and enter a SKU code to get started.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -919,7 +968,7 @@
                 </div>
                 
                 <div class="instructions">
-                    <p><i class="fas fa-info-circle"></i> File should contain columns: Order #, Invoice, Seed, SKU Code, SKU Name, Quantity, UOM, Total Liters, Per Case ($), Total ($)</p>
+                    <p><i class="fas fa-info-circle"></i> File should contain columns: Order #, Date, Location, Invoice, Seed, SKU Code, SKU Name, Quantity, UOM, Total Liters, Per Case ($), Total ($)</p>
                 </div>
                 
                 <div id="importResultsError" class="error-message"></div>
@@ -946,6 +995,8 @@
         const fileName = document.getElementById('fileName');
         const resultsFileInput = document.getElementById('resultsFileInput');
         const resultsFileName = document.getElementById('resultsFileName');
+        const dateInput = document.getElementById('dateInput');
+        const locationInput = document.getElementById('locationInput');
         const invoiceNumberInput = document.getElementById('invoiceNumber');
         const seedNumberInput = document.getElementById('seedNumber');
         const skuCodeInput = document.getElementById('skuCode');
@@ -985,6 +1036,16 @@
             RESULTS_DATA: 'purchase_calculator_results',
             ORDER_COUNTER: 'purchase_calculator_order_counter'
         };
+        
+        // Set default date to today
+        function setDefaultDate() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            const formattedDate = `${yyyy}-${mm}-${dd}`;
+            dateInput.value = formattedDate;
+        }
         
         // Get order number for invoice+seed combination
         function getOrderNumber(invoice, seed) {
@@ -1284,6 +1345,8 @@
                     orderGroups[key] = {
                         invoice: result.invoice,
                         seed: result.seed,
+                        date: result.date,
+                        location: result.location,
                         orderNumber: result.orderNumber,
                         items: []
                     };
@@ -1299,6 +1362,8 @@
                 <div class="order-item">
                     <div>
                         <span class="order-badge">Order ${group.orderNumber}</span>
+                        <span class="date-badge">${group.date}</span>
+                        <span class="location-badge">${group.location}</span>
                         <strong>${group.invoice}</strong> / ${group.seed}
                     </div>
                     <div>${group.items.length} SKUs</div>
@@ -1322,12 +1387,24 @@
         
         // Add SKU to results
         addBtn.addEventListener('click', function() {
+            const date = dateInput.value.trim();
+            const location = locationInput.value.trim();
             const invoice = invoiceNumberInput.value.trim();
             const seed = seedNumberInput.value.trim();
             const skuCode = skuCodeInput.value.trim();
             const quantity = parseFloat(quantityInput.value);
             
             // Validation
+            if (!date) {
+                alert('Please select a Date');
+                return;
+            }
+            
+            if (!location) {
+                alert('Please select a Location');
+                return;
+            }
+            
             if (!invoice) {
                 alert('Please enter an Invoice Number');
                 return;
@@ -1384,6 +1461,8 @@
             // Add to results
             const result = {
                 orderNumber: orderNumber,
+                date: date,
+                location: location,
                 invoice: invoice,
                 seed: seed,
                 code: sku.code,
@@ -1411,7 +1490,7 @@
         // Update the results table
         function updateResultsTable() {
             if (results.length === 0) {
-                resultsBody.innerHTML = '<tr><td colspan="11" class="empty-message">No results yet. Import SKU data and enter a SKU code to get started.</td></tr>';
+                resultsBody.innerHTML = '<tr><td colspan="13" class="empty-message">No results yet. Import SKU data and enter a SKU code to get started.</td></tr>';
                 return;
             }
             
@@ -1423,6 +1502,8 @@
                 html += `
                 <tr class="${highlightClass}" data-id="${result.id}">
                     <td><span class="order-badge">${result.orderNumber}</span></td>
+                    <td><span class="date-badge">${result.date}</span></td>
+                    <td><span class="location-badge">${result.location}</span></td>
                     <td><span class="invoice-badge">${result.invoice}</span></td>
                     <td>${result.seed}</td>
                     <td>${result.code}</td>
@@ -1539,6 +1620,8 @@
                     
                     // Find column indices
                     const orderIndex = headers.findIndex(h => h.toString().toLowerCase().includes('order'));
+                    const dateIndex = headers.findIndex(h => h.toString().toLowerCase().includes('date'));
+                    const locationIndex = headers.findIndex(h => h.toString().toLowerCase().includes('location'));
                     const invoiceIndex = headers.findIndex(h => h.toString().toLowerCase().includes('invoice'));
                     const seedIndex = headers.findIndex(h => h.toString().toLowerCase().includes('seed'));
                     const skuCodeIndex = headers.findIndex(h => h.toString().toLowerCase().includes('sku') && h.toString().toLowerCase().includes('code'));
@@ -1557,6 +1640,8 @@
                         
                         // Extract data based on column indices
                         const orderNumber = orderIndex >= 0 ? parseInt(row[orderIndex]) || 1 : 1;
+                        const date = dateIndex >= 0 ? String(row[dateIndex] || '').trim() : new Date().toISOString().slice(0, 10);
+                        const location = locationIndex >= 0 ? String(row[locationIndex] || '').trim() : 'Guwahati';
                         const invoice = invoiceIndex >= 0 ? String(row[invoiceIndex] || '').trim() : '';
                         const seed = seedIndex >= 0 ? String(row[seedIndex] || '').trim() : '';
                         const code = skuCodeIndex >= 0 ? String(row[skuCodeIndex] || '').trim() : '';
@@ -1580,6 +1665,8 @@
                         // Add to results
                         const result = {
                             orderNumber: orderNumber,
+                            date: date,
+                            location: location,
                             invoice: invoice,
                             seed: seed,
                             code: code,
@@ -1632,12 +1719,14 @@
             
             // Prepare data for export
             const exportData = [
-                ["Order #", "Invoice Number", "Seed Number", "SKU Code", "SKU Name", "Quantity", "UOM", "Total Liters", "Per Case Amount ($)", "Total Amount ($)"]
+                ["Order #", "Date", "Location", "Invoice Number", "Seed Number", "SKU Code", "SKU Name", "Quantity", "UOM", "Total Liters", "Per Case Amount ($)", "Total Amount ($)"]
             ];
             
             results.forEach(result => {
                 exportData.push([
                     result.orderNumber,
+                    result.date,
+                    result.location,
                     result.invoice,
                     result.seed,
                     result.code,
@@ -1655,8 +1744,8 @@
             const totalLiters = results.reduce((sum, item) => sum + item.totalLiters, 0);
             const totalAmount = results.reduce((sum, item) => sum + item.totalAmount, 0);
             
-            exportData.push(["", "", "", "", "", "", "", "", "", ""]);
-            exportData.push(["TOTALS", "", "", "", "", totalQuantity, "", totalLiters.toFixed(2), "", `$${totalAmount.toFixed(2)}`]);
+            exportData.push(["", "", "", "", "", "", "", "", "", "", "", ""]);
+            exportData.push(["TOTALS", "", "", "", "", "", totalQuantity, "", totalLiters.toFixed(2), "", `$${totalAmount.toFixed(2)}`]);
             
             // Create worksheet
             const ws = XLSX.utils.aoa_to_sheet(exportData);
@@ -1717,6 +1806,8 @@
             // Prepare table data
             const tableData = results.map(result => [
                 result.orderNumber.toString(),
+                result.date,
+                result.location,
                 result.invoice,
                 result.seed,
                 result.code,
@@ -1733,16 +1824,18 @@
             
             // Calculate column widths based on content
             const columnWidths = [
-                10,  // Order # (10mm)
-                20,  // Invoice (20mm)
-                15,  // Seed (15mm)
-                20,  // SKU Code (20mm)
-                40,  // SKU Name (40mm - widest for text)
-                12,  // Quantity (12mm)
-                12,  // UOM (12mm)
-                18,  // Total Liters (18mm)
-                18,  // Per Case ($) (18mm)
-                18   // Total ($) (18mm)
+                8,   // Order # (8mm)
+                12,  // Date (12mm)
+                12,  // Location (12mm)
+                15,  // Invoice (14mm)
+                15,  // Seed (14mm)
+                15,  // SKU Code (15mm)
+                30,  // SKU Name (30mm - widest for text)
+                8,   // Quantity (8mm)
+                8,   // UOM (8mm)
+                11,  // Total Liters (13mm)
+                13,  // Per Case ($) (13mm)
+                13   // Total ($) (13mm)
             ];
             
             // Adjust if total width exceeds contentWidth
@@ -1756,21 +1849,21 @@
             
             // Create table
             doc.autoTable({
-                head: [['Order #', 'Invoice', 'Seed', 'SKU Code', 'SKU Name', 'Qty', 'UOM', 'Total Liters', 'Per Case ($)', 'Total ($)']],
+                head: [['Order #', 'Date', 'Location', 'Invoice', 'Seed', 'SKU Code', 'SKU Name', 'Qty', 'UOM', 'Total Liters', 'Per Case ($)', 'Total ($)']],
                 body: tableData,
                 startY: startY,
                 theme: 'grid',
                 headStyles: {
                     fillColor: [44, 62, 80],
                     textColor: [255, 255, 255],
-                    fontSize: 7,
+                    fontSize: 6.5,
                     fontStyle: 'bold',
                     halign: 'center',
                     cellPadding: 1.5,
                     minCellHeight: 5
                 },
                 bodyStyles: {
-                    fontSize: 6.5,
+                    fontSize: 6,
                     cellPadding: 1.5,
                     lineWidth: 0.1,
                     lineColor: [200, 200, 200],
@@ -1796,8 +1889,7 @@
                     },
                     4: { 
                         cellWidth: columnWidths[4],
-                        halign: 'left',
-                        fontStyle: 'normal'
+                        halign: 'center'
                     },
                     5: { 
                         cellWidth: columnWidths[5],
@@ -1805,7 +1897,8 @@
                     },
                     6: { 
                         cellWidth: columnWidths[6],
-                        halign: 'center'
+                        halign: 'left',
+                        fontStyle: 'normal'
                     },
                     7: { 
                         cellWidth: columnWidths[7],
@@ -1818,12 +1911,20 @@
                     9: { 
                         cellWidth: columnWidths[9],
                         halign: 'center'
+                    },
+                    10: { 
+                        cellWidth: columnWidths[10],
+                        halign: 'center'
+                    },
+                    11: { 
+                        cellWidth: columnWidths[11],
+                        halign: 'center'
                     }
                 },
                 styles: {
                     lineWidth: 0.1,
                     lineColor: [200, 200, 200],
-                    fontSize: 6.5,
+                    fontSize: 6,
                     cellPadding: 1.5
                 },
                 alternateRowStyles: {
@@ -1893,7 +1994,7 @@
                 doc.text(`Total Quantity: ${totalQuantity}`, margin + 60, finalY + 14);
                 doc.text(`Total Liters: ${totalLiters.toFixed(2)}`, margin + 60, finalY + 19);
                 
-                doc.text(`Total Amount: $${totalAmount.toFixed(2)}`, margin + 130, finalY + 16);
+                doc.text(`Total Amount: $${totalAmount.toFixed(2)}`, margin + 120, finalY + 16);
             }
             
             // Add footer at the very bottom
@@ -1907,11 +2008,17 @@
         
         // Initialize on page load
         window.addEventListener('DOMContentLoaded', function() {
+            // Set default date to today
+            setDefaultDate();
+            
+            // Set default location to
+            locationInput.value = "Guwahati";
+            
             // Load data from localStorage automatically
             loadDataFromStorage();
             
             // Focus on first input field
-            invoiceNumberInput.focus();
+            dateInput.focus();
             
             // Set up click events for import modal
             document.getElementById('importResultsBtn').addEventListener('click', openImportModal);

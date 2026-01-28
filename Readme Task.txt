@@ -9,3 +9,5 @@
 5. Price list pricelist excel code folder
 a. brlp.html
 b. smlp.html
+
+6. **** current stock edit daily it is in  Stock Available from Not Received physical product ###Folder 
