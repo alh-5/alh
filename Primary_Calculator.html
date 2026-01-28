@@ -791,8 +791,8 @@
                     
                     <div class="quadruple-input">
                         <div class="input-group">
-                            <label for="dateInput">Date *</label>
-                            <input type="date" id="dateInput" value="">
+                            <label for="dateInput">Date (dd mmm yyyy) *</label>
+                            <input type="text" id="dateInput" value="" placeholder="e.g., 01 Jan 2026">
                         </div>
                         
                         <div class="input-group">
@@ -845,11 +845,7 @@
                         <input type="number" id="perCaseAmount" placeholder="Enter per case amount" min="0.01" step="0.01" value="0.00">
                         <div class="calculation-note">Total Amount will be calculated as Per Case Amount × Quantity</div>
                     </div>
-                    
-                    <div class="instructions">
-                        <p><i class="fas fa-info-circle"></i> <strong>Order Logic:</strong> Uses of Purchase calculator</p>
-                    </div>
-                    
+                                                          
                     <div class="button-group">
                         <button id="addBtn" class="btn"><i class="fas fa-plus-circle"></i> Add to Results</button>
                         <button id="clearBtn" class="btn btn-secondary"><i class="fas fa-trash-alt"></i> Clear All</button>
@@ -969,6 +965,7 @@
                 
                 <div class="instructions">
                     <p><i class="fas fa-info-circle"></i> File should contain columns: Order #, Date, Location, Invoice, Seed, SKU Code, SKU Name, Quantity, UOM, Total Liters, Per Case ($), Total ($)</p>
+                    <p><i class="fas fa-info-circle"></i> Date format should be "dd mmm yyyy" (e.g., 01 Jan 2026)</p>
                 </div>
                 
                 <div id="importResultsError" class="error-message"></div>
@@ -1037,14 +1034,96 @@
             ORDER_COUNTER: 'purchase_calculator_order_counter'
         };
         
-        // Set default date to today
+        // Month names for formatting
+        const monthNames = [
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        ];
+        
+        // Format date to "dd mmm yyyy" format
+        function formatDateToDDMMMYYYY(dateStr) {
+            // If already in correct format, return as is
+            if (typeof dateStr === 'string' && /^\d{2} [A-Za-z]{3} \d{4}$/.test(dateStr)) {
+                // Capitalize month name properly
+                const parts = dateStr.split(' ');
+                if (parts.length === 3) {
+                    const day = parts[0];
+                    const month = parts[1].charAt(0).toUpperCase() + parts[1].slice(1).toLowerCase();
+                    const year = parts[2];
+                    return `${day} ${month} ${year}`;
+                }
+                return dateStr;
+            }
+            
+            // Try to parse the date string
+            let date;
+            if (dateStr instanceof Date) {
+                date = dateStr;
+            } else if (typeof dateStr === 'string') {
+                // Try multiple date formats
+                date = parseDateString(dateStr);
+            } else {
+                // Default to current date
+                date = new Date();
+            }
+            
+            if (!date || isNaN(date.getTime())) {
+                // Return current date if parsing fails
+                date = new Date();
+            }
+            
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = monthNames[date.getMonth()];
+            const year = date.getFullYear();
+            
+            return `${day} ${month} ${year}`;
+        }
+        
+        // Parse date string from various formats
+        function parseDateString(dateStr) {
+            if (!dateStr) return new Date();
+            
+            // Try ISO format first (YYYY-MM-DD)
+            let date = new Date(dateStr);
+            if (!isNaN(date.getTime())) return date;
+            
+            // Try DD/MM/YYYY or MM/DD/YYYY
+            const parts = dateStr.split(/[/\- ]/);
+            if (parts.length === 3) {
+                // Check if it's likely DD/MM/YYYY or MM/DD/YYYY
+                const day = parseInt(parts[0]);
+                const month = parseInt(parts[1]) - 1;
+                const year = parseInt(parts[2]);
+                
+                if (day > 0 && day <= 31 && month >= 0 && month < 12 && year > 0) {
+                    // Try as DD/MM/YYYY first
+                    date = new Date(year, month, day);
+                    if (!isNaN(date.getTime())) return date;
+                    
+                    // Try as MM/DD/YYYY
+                    date = new Date(year, day - 1, month + 1);
+                    if (!isNaN(date.getTime())) return date;
+                }
+            }
+            
+            // Try Excel serial date (number of days since 1900)
+            const excelSerial = parseFloat(dateStr);
+            if (!isNaN(excelSerial) && excelSerial > 0) {
+                // Excel date system (1900 date system with leap year bug)
+                const excelBaseDate = new Date(1899, 11, 30); // December 30, 1899
+                const millisecondsPerDay = 24 * 60 * 60 * 1000;
+                date = new Date(excelBaseDate.getTime() + (excelSerial * millisecondsPerDay));
+                if (!isNaN(date.getTime())) return date;
+            }
+            
+            // Return current date as fallback
+            return new Date();
+        }
+        
+        // Set default date to today in "dd mmm yyyy" format
         function setDefaultDate() {
             const today = new Date();
-            const yyyy = today.getFullYear();
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
-            const dd = String(today.getDate()).padStart(2, '0');
-            const formattedDate = `${yyyy}-${mm}-${dd}`;
-            dateInput.value = formattedDate;
+            dateInput.value = formatDateToDDMMMYYYY(today);
         }
         
         // Get order number for invoice+seed combination
@@ -1090,7 +1169,7 @@
         function processFileData(fileData) {
             try {
                 const data = new Uint8Array(fileData);
-                const workbook = XLSX.read(data, {type: 'array'});
+                const workbook = XLSX.read(data, {type: 'array', cellDates: true});
                 
                 // Get the first worksheet
                 const firstSheetName = workbook.SheetNames[0];
@@ -1223,6 +1302,11 @@
                 
                 if (savedResults) {
                     results = JSON.parse(savedResults);
+                    // Convert any dates to correct format
+                    results.forEach(result => {
+                        result.date = formatDateToDDMMMYYYY(result.date);
+                    });
+                    
                     if (savedOrderCounter) {
                         orderCounter = JSON.parse(savedOrderCounter);
                     }
@@ -1396,7 +1480,14 @@
             
             // Validation
             if (!date) {
-                alert('Please select a Date');
+                alert('Please enter a Date in "dd mmm yyyy" format (e.g., 01 Jan 2026)');
+                return;
+            }
+            
+            // Validate date format
+            const formattedDate = formatDateToDDMMMYYYY(date);
+            if (!formattedDate || formattedDate.includes('Invalid')) {
+                alert('Please enter a valid date in "dd mmm yyyy" format (e.g., 01 Jan 2026)');
                 return;
             }
             
@@ -1461,7 +1552,7 @@
             // Add to results
             const result = {
                 orderNumber: orderNumber,
-                date: date,
+                date: formattedDate,
                 location: location,
                 invoice: invoice,
                 seed: seed,
@@ -1485,6 +1576,9 @@
             
             // Clear input fields for next entry
             clearInputFields();
+            
+            // Reset date to today for next entry
+            setDefaultDate();
         });
         
         // Update the results table
@@ -1604,7 +1698,7 @@
             reader.onload = function(event) {
                 try {
                     const data = new Uint8Array(event.target.result);
-                    const workbook = XLSX.read(data, {type: 'array'});
+                    const workbook = XLSX.read(data, {type: 'array', cellDates: true});
                     const firstSheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[firstSheetName];
                     
@@ -1640,7 +1734,7 @@
                         
                         // Extract data based on column indices
                         const orderNumber = orderIndex >= 0 ? parseInt(row[orderIndex]) || 1 : 1;
-                        const date = dateIndex >= 0 ? String(row[dateIndex] || '').trim() : new Date().toISOString().slice(0, 10);
+                        const date = dateIndex >= 0 ? formatDateToDDMMMYYYY(row[dateIndex]) : formatDateToDDMMMYYYY(new Date());
                         const location = locationIndex >= 0 ? String(row[locationIndex] || '').trim() : 'Guwahati';
                         const invoice = invoiceIndex >= 0 ? String(row[invoiceIndex] || '').trim() : '';
                         const seed = seedIndex >= 0 ? String(row[seedIndex] || '').trim() : '';
@@ -1768,7 +1862,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `Purchase_sku_results_${new Date().toISOString().slice(0,10)}.xlsx`;
+            a.download = `Purchase_sku_results_${formatDateToDDMMMYYYY(new Date()).replace(/ /g, '_')}.xlsx`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -1801,7 +1895,7 @@
             // Date and time
             doc.setFontSize(9);
             doc.setTextColor(100, 100, 100);
-            doc.text(`Generated: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, pageWidth / 2, margin + 11, {align: 'center'});
+            doc.text(`Generated: ${formatDateToDDMMMYYYY(new Date())} ${new Date().toLocaleTimeString()}`, pageWidth / 2, margin + 11, {align: 'center'});
             
             // Prepare table data
             const tableData = results.map(result => [
@@ -2003,7 +2097,7 @@
             doc.text('SKU Purchase System - dbareh © 2026', pageWidth / 2, pageHeight - margin / 2, {align: 'center'});
             
             // Save the PDF
-            doc.save(`Purchase_Report_${new Date().toISOString().slice(0,10)}.pdf`);
+            doc.save(`Purchase_Report_${formatDateToDDMMMYYYY(new Date()).replace(/ /g, '_')}.pdf`);
         });
         
         // Initialize on page load
@@ -2011,13 +2105,13 @@
             // Set default date to today
             setDefaultDate();
             
-            // Set default location to
+            // Set default location to Guwahati
             locationInput.value = "Guwahati";
             
             // Load data from localStorage automatically
             loadDataFromStorage();
             
-            // Focus on first input field
+            // Focus on date input field
             dateInput.focus();
             
             // Set up click events for import modal
@@ -2050,6 +2144,27 @@
             // Set up results file input click
             document.querySelector('[for="resultsFileInput"]').addEventListener('click', function() {
                 resultsFileInput.click();
+            });
+            
+            // Add date format hint to date input
+            dateInput.addEventListener('focus', function() {
+                if (!this.value) {
+                    setDefaultDate();
+                }
+            });
+            
+            // Validate date format on blur
+            dateInput.addEventListener('blur', function() {
+                if (this.value && !/^\d{2} [A-Za-z]{3} \d{4}$/.test(this.value)) {
+                    // Try to format the date
+                    const formatted = formatDateToDDMMMYYYY(this.value);
+                    if (formatted && !formatted.includes('Invalid')) {
+                        this.value = formatted;
+                    } else {
+                        alert('Please use "dd mmm yyyy" format (e.g., 01 Jan 2026)');
+                        setDefaultDate();
+                    }
+                }
             });
         });
     </script>
