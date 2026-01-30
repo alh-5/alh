@@ -165,11 +165,153 @@
             border-bottom: 2px solid rgba(212, 175, 55, 0.3);
             display: flex;
             align-items: center;
+            justify-content: space-between;
         }
         
         .section-title i {
             margin-right: 10px;
             color: #3498db;
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .table-header .section-title {
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .table-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .search-container {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        
+        .search-input {
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            min-width: 200px;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .btn-search {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+        
+        .btn-search:hover {
+            background: linear-gradient(135deg, #2980b9, #3498db);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-search.active {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+        }
+        
+        .btn-sort {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+        
+        .btn-sort:hover {
+            background: linear-gradient(135deg, #2980b9, #3498db);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-sort.active {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+        }
+        
+        .search-summary {
+            background-color: #e1f5fe;
+            padding: 8px 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #0277bd;
+            border-left: 4px solid #0288d1;
+            display: none;
+        }
+        
+        .search-summary strong {
+            font-weight: 600;
+        }
+        
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .summary-header h3 {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .summary-mode {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background-color: #e1f5fe;
+            color: #0277bd;
+        }
+        
+        .summary-mode.search-mode {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .summary-mode.all-mode {
+            background-color: #fff3e0;
+            color: #ef6c00;
         }
         
         .import-section {
@@ -405,6 +547,12 @@
             font-weight: 600;
         }
         
+        .search-highlight {
+            background-color: #e1f5fe !important;
+            font-weight: 600;
+            border-left: 3px solid #3498db;
+        }
+        
         .order-badge {
             display: inline-block;
             background-color: #3498db;
@@ -515,10 +663,13 @@
             padding: 15px;
             border-radius: 8px;
             margin-top: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .summary-items-container {
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
-            border: 1px solid rgba(212, 175, 55, 0.2);
         }
         
         .summary-item {
@@ -693,7 +844,7 @@
                 border-bottom: 1px solid #eaeaea;
             }
             
-            .summary-section {
+            .summary-items-container {
                 flex-direction: column;
             }
             
@@ -738,6 +889,24 @@
             .modal-content {
                 width: 95%;
                 margin: 10% auto;
+            }
+            
+            .table-controls {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .search-container {
+                width: 100%;
+            }
+            
+            .search-input {
+                min-width: 100%;
+            }
+            
+            .btn-sort, .btn-search {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -871,7 +1040,31 @@
             </div>
             
             <div class="right-panel">
-                <h2 class="section-title"><i class="fas fa-list-alt"></i> Results Table</h2>
+                <div class="table-header">
+                    <h2 class="section-title"><i class="fas fa-list-alt"></i> Results Table</h2>
+                    <div class="table-controls">
+                        <div class="search-container">
+                            <input type="text" id="invoiceSearchInput" class="search-input" placeholder="Search by Invoice Number...">
+                            <button id="searchInvoiceBtn" class="btn-search">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                        <button id="sortByInvoiceBtn" class="btn-sort">
+                            <i class="fas fa-sort-alpha-down"></i> Sort by Invoice
+                        </button>
+                        <button id="sortByNameBtn" class="btn-sort">
+                            <i class="fas fa-sort-alpha-down"></i> Sort by SKU Name
+                        </button>
+                        <button id="resetSortBtn" class="btn-sort">
+                            <i class="fas fa-undo"></i> Show All
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="searchSummary" class="search-summary">
+                    Showing <span id="searchCount">0</span> of <span id="totalCount">0</span> results for invoice: "<span id="searchTerm"></span>"
+                </div>
+                
                 <div class="table-container">
                     <table class="results-table">
                         <thead>
@@ -900,25 +1093,31 @@
                 </div>
                 
                 <div class="summary-section">
-                    <div class="summary-item">
-                        <div class="summary-label">Total Items</div>
-                        <div class="summary-value" id="totalItems">0</div>
+                    <div class="summary-header">
+                        <h3><i class="fas fa-chart-bar"></i> Summary</h3>
+                        <div id="summaryMode" class="summary-mode all-mode">All Results</div>
                     </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Total Orders</div>
-                        <div class="summary-value" id="totalOrders">0</div>
-                    </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Total Quantity</div>
-                        <div class="summary-value" id="totalQuantity">0</div>
-                    </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Total Liters</div>
-                        <div class="summary-value" id="totalLiters">0.00</div>
-                    </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Total Amount</div>
-                        <div class="summary-value" id="totalAmountSum">$0.00</div>
+                    <div class="summary-items-container">
+                        <div class="summary-item">
+                            <div class="summary-label">Total Items</div>
+                            <div class="summary-value" id="totalItems">0</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Total Orders</div>
+                            <div class="summary-value" id="totalOrders">0</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Total Quantity</div>
+                            <div class="summary-value" id="totalQuantity">0</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Total Liters</div>
+                            <div class="summary-value" id="totalLiters">0.00</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Total Amount</div>
+                            <div class="summary-value" id="totalAmountSum">$0.00</div>
+                        </div>
                     </div>
                 </div>
                 
@@ -978,9 +1177,16 @@
         const sampleSKUData = [];
         
         let importedSKUs = [];
-        let results = [];
+        let allResults = []; // Store ALL results (complete dataset)
+        let filteredResults = []; // Store currently displayed results (search results or all)
         let orderCounter = {};
         let currentFileData = null;
+        let currentSort = {
+            field: null,
+            direction: 'asc' // 'asc' or 'desc'
+        };
+        let isSearchActive = false;
+        let currentSearchTerm = '';
         
         // DOM elements
         const fileInput = document.getElementById('fileInput');
@@ -1015,7 +1221,19 @@
         const importResultsError = document.getElementById('importResultsError');
         const importResultsSuccess = document.getElementById('importResultsSuccess');
         
+        // Search elements
+        const invoiceSearchInput = document.getElementById('invoiceSearchInput');
+        const searchInvoiceBtn = document.getElementById('searchInvoiceBtn');
+        const sortByInvoiceBtn = document.getElementById('sortByInvoiceBtn');
+        const sortByNameBtn = document.getElementById('sortByNameBtn');
+        const resetSortBtn = document.getElementById('resetSortBtn');
+        const searchSummary = document.getElementById('searchSummary');
+        const searchCount = document.getElementById('searchCount');
+        const totalCount = document.getElementById('totalCount');
+        const searchTerm = document.getElementById('searchTerm');
+        
         // Summary elements
+        const summaryMode = document.getElementById('summaryMode');
         const totalItemsEl = document.getElementById('totalItems');
         const totalOrdersEl = document.getElementById('totalOrders');
         const totalQuantityEl = document.getElementById('totalQuantity');
@@ -1131,6 +1349,246 @@
             }
             return orderCounter[key];
         }
+        
+        // Sort results by field
+        function sortResults(resultsArray, field, direction = 'asc') {
+            if (resultsArray.length === 0) return resultsArray;
+            
+            const sortedResults = [...resultsArray];
+            
+            sortedResults.sort((a, b) => {
+                let aValue = a[field];
+                let bValue = b[field];
+                
+                // Handle string comparison
+                if (typeof aValue === 'string' && typeof bValue === 'string') {
+                    aValue = aValue.toLowerCase();
+                    bValue = bValue.toLowerCase();
+                    return direction === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+                }
+                
+                // Handle number comparison
+                if (direction === 'asc') {
+                    return aValue - bValue;
+                } else {
+                    return bValue - aValue;
+                }
+            });
+            
+            return sortedResults;
+        }
+        
+        // Apply sorting to currently displayed results
+        function applySort(field) {
+            // Toggle direction if same field
+            if (currentSort.field === field) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.field = field;
+                currentSort.direction = 'asc';
+            }
+            
+            // Update button states
+            updateControlButtons();
+            
+            // Sort currently displayed results
+            filteredResults = sortResults(filteredResults, field, currentSort.direction);
+            
+            // Update table
+            updateResultsTable();
+            saveResultsToStorage();
+        }
+        
+        // Search by invoice number
+        function searchByInvoice(invoiceNumber) {
+            if (!invoiceNumber || invoiceNumber.trim() === '') {
+                resetSearch();
+                return;
+            }
+            
+            currentSearchTerm = invoiceNumber.trim().toLowerCase();
+            isSearchActive = true;
+            
+            // Filter all results based on search term
+            filteredResults = allResults.filter(item => 
+                item.invoice.toLowerCase().includes(currentSearchTerm)
+            );
+            
+            // Reset sort when searching
+            currentSort.field = null;
+            currentSort.direction = 'asc';
+            
+            // Update UI
+            updateResultsTable();
+            updateControlButtons();
+            updateSummary();
+            
+            // Update search input with search term
+            invoiceSearchInput.value = currentSearchTerm;
+            
+            // Update search summary
+            updateSearchSummary();
+            
+            // Show search results count
+            if (filteredResults.length === 0) {
+                showNotification(`No results found for invoice: "${currentSearchTerm}"`, 'warning');
+            } else {
+                showNotification(`Found ${filteredResults.length} result(s) for invoice: "${currentSearchTerm}"`, 'success');
+            }
+        }
+        
+        // Update search summary display
+        function updateSearchSummary() {
+            if (isSearchActive) {
+                searchCount.textContent = filteredResults.length;
+                totalCount.textContent = allResults.length;
+                searchTerm.textContent = currentSearchTerm;
+                searchSummary.style.display = 'block';
+            } else {
+                searchSummary.style.display = 'none';
+            }
+        }
+        
+        // Reset search and show all results
+        function resetSearch() {
+            isSearchActive = false;
+            currentSearchTerm = '';
+            invoiceSearchInput.value = '';
+            
+            // Show all results
+            filteredResults = [...allResults];
+            
+            // Reset sort
+            currentSort.field = null;
+            currentSort.direction = 'asc';
+            
+            // Update UI
+            updateResultsTable();
+            updateControlButtons();
+            updateSummary();
+            updateSearchSummary();
+            
+            showNotification('Showing all results', 'info');
+        }
+        
+        // Update control button states
+        function updateControlButtons() {
+            // Update sort by invoice button
+            if (currentSort.field === 'invoice') {
+                const sortIcon = currentSort.direction === 'asc' ? 'fa-sort-alpha-down' : 'fa-sort-alpha-up';
+                sortByInvoiceBtn.classList.add('active');
+                sortByInvoiceBtn.innerHTML = `<i class="fas ${sortIcon}"></i> Invoice ${currentSort.direction === 'asc' ? '(A-Z)' : '(Z-A)'}`;
+            } else {
+                sortByInvoiceBtn.classList.remove('active');
+                sortByInvoiceBtn.innerHTML = `<i class="fas fa-sort-alpha-down"></i> Sort by Invoice`;
+            }
+            
+            // Update sort by name button
+            if (currentSort.field === 'name') {
+                const sortIcon = currentSort.direction === 'asc' ? 'fa-sort-alpha-down' : 'fa-sort-alpha-up';
+                sortByNameBtn.classList.add('active');
+                sortByNameBtn.innerHTML = `<i class="fas ${sortIcon}"></i> SKU Name ${currentSort.direction === 'asc' ? '(A-Z)' : '(Z-A)'}`;
+            } else {
+                sortByNameBtn.classList.remove('active');
+                sortByNameBtn.innerHTML = `<i class="fas fa-sort-alpha-down"></i> Sort by SKU Name`;
+            }
+            
+            // Update search button
+            if (isSearchActive) {
+                searchInvoiceBtn.classList.add('active');
+                searchInvoiceBtn.innerHTML = `<i class="fas fa-times"></i> Clear Search`;
+            } else {
+                searchInvoiceBtn.classList.remove('active');
+                searchInvoiceBtn.innerHTML = `<i class="fas fa-search"></i> Search`;
+            }
+            
+            // Update reset button text
+            if (isSearchActive || currentSort.field) {
+                resetSortBtn.innerHTML = `<i class="fas fa-undo"></i> Reset View`;
+            } else {
+                resetSortBtn.innerHTML = `<i class="fas fa-undo"></i> Show All`;
+            }
+        }
+        
+        // Update summary mode indicator
+        function updateSummaryMode() {
+            if (isSearchActive) {
+                summaryMode.textContent = 'Search Results';
+                summaryMode.className = 'summary-mode search-mode';
+            } else {
+                summaryMode.textContent = 'All Results';
+                summaryMode.className = 'summary-mode all-mode';
+            }
+        }
+        
+        // Show notification
+        function showNotification(message, type = 'info') {
+            // Remove any existing notifications
+            const existingNotification = document.querySelector('.custom-notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `custom-notification ${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 12px 20px;
+                border-radius: 6px;
+                font-weight: 600;
+                z-index: 10000;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                animation: slideDown 0.3s ease;
+            `;
+            
+            // Set style based on type
+            if (type === 'success') {
+                notification.style.backgroundColor = '#2ecc71';
+                notification.style.color = 'white';
+            } else if (type === 'warning') {
+                notification.style.backgroundColor = '#e67e22';
+                notification.style.color = 'white';
+            } else if (type === 'error') {
+                notification.style.backgroundColor = '#e74c3c';
+                notification.style.color = 'white';
+            } else {
+                notification.style.backgroundColor = '#3498db';
+                notification.style.color = 'white';
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.style.animation = 'slideUp 0.3s ease';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.remove();
+                        }
+                    }, 300);
+                }
+            }, 3000);
+        }
+        
+        // Add CSS for notification animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { top: -100px; opacity: 0; }
+                to { top: 20px; opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { top: 20px; opacity: 1; }
+                to { top: -100px; opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
         
         // Toggle between total amount and per case amount input
         priceOption.addEventListener('change', function() {
@@ -1272,7 +1730,7 @@
         // Save results data to localStorage
         function saveResultsToStorage() {
             try {
-                localStorage.setItem(STORAGE_KEYS.RESULTS_DATA, JSON.stringify(results));
+                localStorage.setItem(STORAGE_KEYS.RESULTS_DATA, JSON.stringify(allResults));
                 localStorage.setItem(STORAGE_KEYS.ORDER_COUNTER, JSON.stringify(orderCounter));
                 console.log('Results data saved to localStorage');
             } catch (error) {
@@ -1296,15 +1754,19 @@
                 const savedOrderCounter = localStorage.getItem(STORAGE_KEYS.ORDER_COUNTER);
                 
                 if (savedResults) {
-                    results = JSON.parse(savedResults);
+                    allResults = JSON.parse(savedResults);
                     // Convert any dates to correct format
-                    results.forEach(result => {
+                    allResults.forEach(result => {
                         result.date = formatDateToDDMMMYYYY(result.date);
                     });
+                    
+                    // Set filtered results to all results initially
+                    filteredResults = [...allResults];
                     
                     if (savedOrderCounter) {
                         orderCounter = JSON.parse(savedOrderCounter);
                     }
+                    
                     updateResultsTable();
                     updateSummary();
                     updateOrdersSummary();
@@ -1320,34 +1782,13 @@
             saveSKUDataToStorage();
             saveResultsToStorage();
             
-            // Show success message
-            const successMsg = document.createElement('div');
-            successMsg.className = 'success-message';
-            successMsg.textContent = 'All data saved successfully! It will be available next time you open the application.';
-            successMsg.style.display = 'block';
-            
-            saveDataBtn.parentNode.insertBefore(successMsg, saveDataBtn.nextSibling);
-            
-            setTimeout(() => {
-                successMsg.style.display = 'none';
-            }, 3000);
+            showNotification('All data saved successfully!', 'success');
         });
         
         // Load Data button click
         loadDataBtn.addEventListener('click', function() {
             loadDataFromStorage();
-            
-            // Show success message
-            const successMsg = document.createElement('div');
-            successMsg.className = 'success-message';
-            successMsg.textContent = `Data loaded successfully! ${results.length} results and ${importedSKUs.length} SKUs loaded.`;
-            successMsg.style.display = 'block';
-            
-            loadDataBtn.parentNode.insertBefore(successMsg, loadDataBtn.nextSibling);
-            
-            setTimeout(() => {
-                successMsg.style.display = 'none';
-            }, 3000);
+            showNotification(`Data loaded successfully! ${allResults.length} results and ${importedSKUs.length} SKUs loaded.`, 'success');
         });
         
         // Refresh button event listener
@@ -1411,14 +1852,14 @@
         
         // Update orders summary
         function updateOrdersSummary() {
-            if (results.length === 0) {
+            if (filteredResults.length === 0) {
                 ordersList.innerHTML = '<p class="empty-message" style="padding: 10px;">No orders yet</p>';
                 return;
             }
             
             // Group results by invoice+seed combination
             const orderGroups = {};
-            results.forEach(result => {
+            filteredResults.forEach(result => {
                 const key = `${result.invoice}_${result.seed}`;
                 if (!orderGroups[key]) {
                     orderGroups[key] = {
@@ -1456,11 +1897,30 @@
         // Remove item from results
         function removeResult(index) {
             if (confirm('Are you sure you want to remove this item?')) {
-                results.splice(index, 1);
+                // Get the item from filtered results
+                const itemToRemove = filteredResults[index];
+                
+                // Find and remove from allResults
+                const allResultsIndex = allResults.findIndex(item => item.id === itemToRemove.id);
+                if (allResultsIndex !== -1) {
+                    allResults.splice(allResultsIndex, 1);
+                }
+                
+                // Remove from filteredResults
+                filteredResults.splice(index, 1);
+                
+                // If in search mode, we need to reapply search
+                if (isSearchActive) {
+                    filteredResults = allResults.filter(item => 
+                        item.invoice.toLowerCase().includes(currentSearchTerm)
+                    );
+                }
+                
                 updateResultsTable();
                 updateSummary();
                 updateOrdersSummary();
                 saveResultsToStorage();
+                showNotification('Item removed successfully', 'success');
             }
         }
         
@@ -1475,39 +1935,39 @@
             
             // Validation
             if (!date) {
-                alert('Please enter a Date in "dd mmm yyyy" format (e.g., 01 Jan 2026)');
+                showNotification('Please enter a Date in "dd mmm yyyy" format (e.g., 01 Jan 2026)', 'warning');
                 return;
             }
             
             // Validate date format
             const formattedDate = formatDateToDDMMMYYYY(date);
             if (!formattedDate || formattedDate.includes('Invalid')) {
-                alert('Please enter a valid date in "dd mmm yyyy" format (e.g., 01 Jan 2026)');
+                showNotification('Please enter a valid date in "dd mmm yyyy" format (e.g., 01 Jan 2026)', 'warning');
                 return;
             }
             
             if (!location) {
-                alert('Please select a Location');
+                showNotification('Please select a Location', 'warning');
                 return;
             }
             
             if (!invoice) {
-                alert('Please enter an Invoice Number');
+                showNotification('Please enter an Invoice Number', 'warning');
                 return;
             }
             
             if (!seed) {
-                alert('Please enter a Seed Number');
+                showNotification('Please enter a Seed Number', 'warning');
                 return;
             }
             
             if (!skuCode) {
-                alert('Please enter a SKU code');
+                showNotification('Please enter a SKU code', 'warning');
                 return;
             }
             
             if (isNaN(quantity) || quantity <= 0) {
-                alert('Please enter a valid quantity (greater than 0)');
+                showNotification('Please enter a valid quantity (greater than 0)', 'warning');
                 return;
             }
             
@@ -1515,7 +1975,7 @@
             const sku = importedSKUs.find(item => item.code.toUpperCase() === skuCode.toUpperCase());
             
             if (!sku) {
-                alert(`SKU code "${skuCode}" not found in imported data. Please check the code and try again.`);
+                showNotification(`SKU code "${skuCode}" not found in imported data. Please check the code and try again.`, 'warning');
                 return;
             }
             
@@ -1528,14 +1988,14 @@
             if (priceOption.value === 'total') {
                 totalAmount = parseFloat(totalAmountInput.value);
                 if (isNaN(totalAmount) || totalAmount <= 0) {
-                    alert('Please enter a valid total amount (greater than 0)');
+                    showNotification('Please enter a valid total amount (greater than 0)', 'warning');
                     return;
                 }
                 perCaseAmount = totalAmount / quantity;
             } else {
                 perCaseAmount = parseFloat(perCaseAmountInput.value);
                 if (isNaN(perCaseAmount) || perCaseAmount <= 0) {
-                    alert('Please enter a valid per case amount (greater than 0)');
+                    showNotification('Please enter a valid per case amount (greater than 0)', 'warning');
                     return;
                 }
                 totalAmount = perCaseAmount * quantity;
@@ -1544,7 +2004,7 @@
             // Calculate total liters
             const totalLiters = sku.uom * quantity;
             
-            // Add to results
+            // Create new result
             const result = {
                 orderNumber: orderNumber,
                 date: formattedDate,
@@ -1561,7 +2021,18 @@
                 id: Date.now() + Math.random() // Unique ID for removal
             };
             
-            results.push(result);
+            // Add to allResults (complete dataset)
+            allResults.push(result);
+            
+            // Add to filteredResults if it matches current search
+            if (isSearchActive) {
+                if (result.invoice.toLowerCase().includes(currentSearchTerm)) {
+                    filteredResults.push(result);
+                }
+            } else {
+                filteredResults.push(result);
+            }
+            
             updateResultsTable();
             updateSummary();
             updateOrdersSummary();
@@ -1574,22 +2045,29 @@
             
             // Reset date to today for next entry
             setDefaultDate();
+            
+            showNotification('SKU added successfully to results', 'success');
         });
         
         // Update the results table
         function updateResultsTable() {
-            if (results.length === 0) {
+            if (filteredResults.length === 0) {
                 resultsBody.innerHTML = '<tr><td colspan="13" class="empty-message">No results yet. Import SKU data and enter a SKU code to get started.</td></tr>';
                 return;
             }
             
             let html = '';
-            results.forEach((result, index) => {
+            filteredResults.forEach((result, index) => {
+                // Check if this result matches the current search
+                const isSearchMatch = isSearchActive && 
+                    result.invoice.toLowerCase().includes(currentSearchTerm);
+                
                 // Highlight the most recent entry
-                const highlightClass = index === results.length - 1 ? 'highlight' : '';
+                const highlightClass = index === filteredResults.length - 1 ? 'highlight' : '';
+                const searchClass = isSearchMatch ? 'search-highlight' : '';
                 
                 html += `
-                <tr class="${highlightClass}" data-id="${result.id}">
+                <tr class="${highlightClass} ${searchClass}" data-id="${result.id}">
                     <td><span class="order-badge">${result.orderNumber}</span></td>
                     <td><span class="date-badge">${result.date}</span></td>
                     <td><span class="location-badge">${result.location}</span></td>
@@ -1614,43 +2092,90 @@
             resultsBody.innerHTML = html;
         }
         
-        // Update the summary section
+        // Update the summary section (Now calculates only displayed/search results)
         function updateSummary() {
-            const totalItems = results.length;
+            const dataToCalculate = filteredResults;
+            
+            const totalItems = dataToCalculate.length;
             
             // Count unique orders (based on invoice+seed+orderNumber combination)
             const orderSet = new Set();
-            results.forEach(item => {
+            dataToCalculate.forEach(item => {
                 orderSet.add(`${item.invoice}_${item.seed}_${item.orderNumber}`);
             });
             const totalOrders = orderSet.size;
             
-            const totalQuantity = results.reduce((sum, item) => sum + item.quantity, 0);
-            const totalLiters = results.reduce((sum, item) => sum + item.totalLiters, 0);
-            const totalAmount = results.reduce((sum, item) => sum + item.totalAmount, 0);
+            const totalQuantity = dataToCalculate.reduce((sum, item) => sum + item.quantity, 0);
+            const totalLiters = dataToCalculate.reduce((sum, item) => sum + item.totalLiters, 0);
+            const totalAmount = dataToCalculate.reduce((sum, item) => sum + item.totalAmount, 0);
             
             totalItemsEl.textContent = totalItems;
             totalOrdersEl.textContent = totalOrders;
             totalQuantityEl.textContent = totalQuantity;
             totalLitersEl.textContent = totalLiters.toFixed(2);
             totalAmountSumEl.textContent = `$${totalAmount.toFixed(2)}`;
+            
+            // Update summary mode and search summary
+            updateSummaryMode();
+            updateSearchSummary();
         }
         
         // Clear all results
         clearBtn.addEventListener('click', function() {
-            if (results.length === 0) {
-                alert('No results to clear.');
+            if (allResults.length === 0) {
+                showNotification('No results to clear.', 'info');
                 return;
             }
             
             if (confirm('Are you sure you want to clear all results? This will also reset order counters.')) {
-                results = [];
+                allResults = [];
+                filteredResults = [];
                 orderCounter = {};
+                isSearchActive = false;
+                currentSearchTerm = '';
+                invoiceSearchInput.value = '';
                 updateResultsTable();
                 updateSummary();
                 updateOrdersSummary();
                 saveResultsToStorage();
+                updateControlButtons();
+                updateSearchSummary();
+                showNotification('All results cleared successfully', 'success');
             }
+        });
+        
+        // Search button event listeners
+        searchInvoiceBtn.addEventListener('click', function() {
+            if (isSearchActive) {
+                resetSearch();
+            } else {
+                const searchTerm = invoiceSearchInput.value.trim();
+                if (searchTerm) {
+                    searchByInvoice(searchTerm);
+                } else {
+                    showNotification('Please enter an invoice number to search', 'warning');
+                }
+            }
+        });
+        
+        // Add Enter key support for search
+        invoiceSearchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchInvoiceBtn.click();
+            }
+        });
+        
+        // Sort buttons event listeners
+        sortByInvoiceBtn.addEventListener('click', function() {
+            applySort('invoice');
+        });
+        
+        sortByNameBtn.addEventListener('click', function() {
+            applySort('name');
+        });
+        
+        resetSortBtn.addEventListener('click', function() {
+            resetSearch();
         });
         
         // Import Results button click
@@ -1768,11 +2293,20 @@
                             id: Date.now() + Math.random()
                         };
                         
-                        results.push(result);
+                        allResults.push(result);
                         importedCount++;
                     }
                     
                     if (importedCount > 0) {
+                        // Update filtered results
+                        if (isSearchActive) {
+                            filteredResults = allResults.filter(item => 
+                                item.invoice.toLowerCase().includes(currentSearchTerm)
+                            );
+                        } else {
+                            filteredResults = [...allResults];
+                        }
+                        
                         updateResultsTable();
                         updateSummary();
                         updateOrdersSummary();
@@ -1781,6 +2315,8 @@
                         importResultsSuccess.textContent = `Successfully imported ${importedCount} results from the Excel file.`;
                         importResultsSuccess.style.display = 'block';
                         importResultsError.style.display = 'none';
+                        
+                        showNotification(`Successfully imported ${importedCount} results from the Excel file.`, 'success');
                         
                         setTimeout(() => {
                             closeImportModal();
@@ -1801,8 +2337,8 @@
         
         // Export results to Excel
         exportBtn.addEventListener('click', function() {
-            if (results.length === 0) {
-                alert('No results to export.');
+            if (filteredResults.length === 0) {
+                showNotification('No results to export.', 'warning');
                 return;
             }
             
@@ -1811,7 +2347,7 @@
                 ["Order #", "Date", "Location", "Invoice Number", "Seed Number", "SKU Code", "SKU Name", "Quantity", "UOM", "Total Liters", "Per Case Amount ($)", "Total Amount ($)"]
             ];
             
-            results.forEach(result => {
+            filteredResults.forEach(result => {
                 exportData.push([
                     result.orderNumber,
                     result.date,
@@ -1829,9 +2365,9 @@
             });
             
             // Add summary row
-            const totalQuantity = results.reduce((sum, item) => sum + item.quantity, 0);
-            const totalLiters = results.reduce((sum, item) => sum + item.totalLiters, 0);
-            const totalAmount = results.reduce((sum, item) => sum + item.totalAmount, 0);
+            const totalQuantity = filteredResults.reduce((sum, item) => sum + item.quantity, 0);
+            const totalLiters = filteredResults.reduce((sum, item) => sum + item.totalLiters, 0);
+            const totalAmount = filteredResults.reduce((sum, item) => sum + item.totalAmount, 0);
             
             exportData.push(["", "", "", "", "", "", "", "", "", "", "", ""]);
             exportData.push(["TOTALS", "", "", "", "", "", totalQuantity, "", totalLiters.toFixed(2), "", `$${totalAmount.toFixed(2)}`]);
@@ -1857,17 +2393,21 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `Purchase_sku_results_${formatDateToDDMMMYYYY(new Date()).replace(/ /g, '_')}.xlsx`;
+            a.download = isSearchActive 
+                ? `Purchase_sku_results_Invoice_${currentSearchTerm}_${formatDateToDDMMMYYYY(new Date()).replace(/ /g, '_')}.xlsx`
+                : `Purchase_sku_results_${formatDateToDDMMMYYYY(new Date()).replace(/ /g, '_')}.xlsx`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+            
+            showNotification('Results exported to Excel successfully', 'success');
         });
         
-        // Export results to PDF - PORTRAIT MODE WITH MAXIMIZED SPACE
+        // Export results to PDF - IMPROVED CLARITY WITH BETTER READABILITY
         exportPdfBtn.addEventListener('click', function() {
-            if (results.length === 0) {
-                alert('No results to export.');
+            if (filteredResults.length === 0) {
+                showNotification('No results to export.', 'warning');
                 return;
             }
             
@@ -1878,22 +2418,29 @@
             const pageWidth = doc.internal.pageSize.getWidth();
             const pageHeight = doc.internal.pageSize.getHeight();
             
-            // Use almost full page width (5mm margins on each side)
-            const margin = 3; // Minimal margin for readability
+            // Use margins for readability
+            const margin = 10; // Increased margin for better readability
             const contentWidth = pageWidth - (margin * 2);
             
             // Title at the very top
-            doc.setFontSize(18);
+            doc.setFontSize(20); // Increased font size
             doc.setTextColor(44, 62, 80);
-            doc.text('AUTO LUBE HOUSE - NOT RECEIVED PURCHASE REPORT', pageWidth / 2, margin + 5, {align: 'center'});
+            doc.text('AUTO LUBE HOUSE - NOT RECEIVED PURCHASE REPORT', pageWidth / 2, margin + 10, {align: 'center'});
             
             // Date and time
-            doc.setFontSize(9);
+            doc.setFontSize(11); // Increased font size
             doc.setTextColor(100, 100, 100);
-            doc.text(`Generated: ${formatDateToDDMMMYYYY(new Date())} ${new Date().toLocaleTimeString()}`, pageWidth / 2, margin + 11, {align: 'center'});
+            doc.text(`Generated: ${formatDateToDDMMMYYYY(new Date())} ${new Date().toLocaleTimeString()}`, pageWidth / 2, margin + 18, {align: 'center'});
+            
+            // Add search filter note if active
+            if (isSearchActive) {
+                doc.setFontSize(10);
+                doc.setTextColor(231, 76, 60);
+                doc.text(`Filtered by Invoice: ${currentSearchTerm}`, pageWidth / 2, margin + 24, {align: 'center'});
+            }
             
             // Prepare table data
-            const tableData = results.map(result => [
+            const tableData = filteredResults.map(result => [
                 result.orderNumber.toString(),
                 result.date,
                 result.location,
@@ -1909,22 +2456,22 @@
             ]);
             
             // Start table position (right after title)
-            const startY = margin + 15;
+            const startY = isSearchActive ? margin + 30 : margin + 25;
             
-            // Calculate column widths based on content
+            // Calculate column widths - optimized for readability
             const columnWidths = [
-                8,   // Order # (8mm)
-                12,  // Date (12mm)
-                12,  // Location (12mm)
-                15,  // Invoice (14mm)
-                15,  // Seed (14mm)
-                15,  // SKU Code (15mm)
-                30,  // SKU Name (30mm - widest for text)
-                8,   // Quantity (8mm)
-                8,   // UOM (8mm)
-                11,  // Total Liters (13mm)
-                13,  // Per Case ($) (13mm)
-                13   // Total ($) (13mm)
+                12,   // Order # (12mm)
+                18,   // Date (18mm)
+                18,   // Location (18mm)
+                20,   // Invoice (20mm)
+                18,   // Seed (18mm)
+                18,   // SKU Code (18mm)
+                45,   // SKU Name (45mm - widest for text)
+                15,   // Quantity (15mm)
+                12,   // UOM (12mm)
+                18,   // Total Liters (18mm)
+                20,   // Per Case ($) (20mm)
+                20    // Total ($) (20mm)
             ];
             
             // Adjust if total width exceeds contentWidth
@@ -1936,7 +2483,7 @@
                 });
             }
             
-            // Create table
+            // Create table with improved readability
             doc.autoTable({
                 head: [['Order #', 'Date', 'Location', 'Invoice', 'Seed', 'SKU Code', 'SKU Name', 'Qty', 'UOM', 'Total Liters', 'Per Case ($)', 'Total ($)']],
                 body: tableData,
@@ -1945,18 +2492,18 @@
                 headStyles: {
                     fillColor: [44, 62, 80],
                     textColor: [255, 255, 255],
-                    fontSize: 6.5,
+                    fontSize: 10, // Increased font size
                     fontStyle: 'bold',
                     halign: 'center',
-                    cellPadding: 1.5,
-                    minCellHeight: 5
+                    cellPadding: 3, // Increased padding
+                    minCellHeight: 8
                 },
                 bodyStyles: {
-                    fontSize: 6,
-                    cellPadding: 1.5,
-                    lineWidth: 0.1,
-                    lineColor: [200, 200, 200],
-                    minCellHeight: 5,
+                    fontSize: 9, // Increased font size
+                    cellPadding: 2.5, // Increased padding
+                    lineWidth: 0.2,
+                    lineColor: [150, 150, 150], // Darker lines for better visibility
+                    minCellHeight: 7,
                     overflow: 'linebreak'
                 },
                 columnStyles: {
@@ -2011,13 +2558,14 @@
                     }
                 },
                 styles: {
-                    lineWidth: 0.1,
-                    lineColor: [200, 200, 200],
-                    fontSize: 6,
-                    cellPadding: 1.5
+                    lineWidth: 0.2,
+                    lineColor: [150, 150, 150], // Darker lines
+                    fontSize: 9,
+                    cellPadding: 2.5,
+                    font: 'helvetica' // Clearer font
                 },
                 alternateRowStyles: {
-                    fillColor: [248, 250, 252]
+                    fillColor: [245, 247, 250] // Slightly darker alternate rows for better readability
                 },
                 margin: { 
                     left: margin, 
@@ -2028,11 +2576,11 @@
                 tableWidth: contentWidth,
                 showHead: 'everyPage',
                 didDrawPage: function (data) {
-                    // Add page number
+                    // Add page number with larger font
                     const pageCount = doc.internal.getNumberOfPages();
-                    doc.setFontSize(7);
+                    doc.setFontSize(10);
                     doc.setTextColor(100, 100, 100);
-                    doc.text(`Page ${data.pageNumber} of ${pageCount}`, pageWidth / 2, pageHeight - margin, {align: 'center'});
+                    doc.text(`Page ${data.pageNumber} of ${pageCount}`, pageWidth / 2, pageHeight - margin/2, {align: 'center'});
                 }
             });
             
@@ -2040,59 +2588,68 @@
             let finalY = doc.lastAutoTable.finalY || startY + 30;
             
             // Add summary section if there's space
-            if (finalY < pageHeight - 30) {
-                doc.setFontSize(9);
+            if (finalY < pageHeight - 40) {
+                doc.setFontSize(12); // Increased font size
                 doc.setTextColor(44, 62, 80);
                 
                 // Draw a separator line
                 doc.setDrawColor(212, 175, 55);
-                doc.setLineWidth(0.5);
-                doc.line(margin, finalY + 5, pageWidth - margin, finalY + 5);
+                doc.setLineWidth(0.8); // Thicker line
+                doc.line(margin, finalY + 8, pageWidth - margin, finalY + 8);
                 
-                finalY += 10;
+                finalY += 15;
                 
-                // Summary data
-                const totalItems = results.length;
-                const totalQuantity = results.reduce((sum, item) => sum + item.quantity, 0);
-                const totalLiters = results.reduce((sum, item) => sum + item.totalLiters, 0);
-                const totalAmount = results.reduce((sum, item) => sum + item.totalAmount, 0);
+                // Summary data - only from displayed/search results
+                const totalItems = filteredResults.length;
+                const totalQuantity = filteredResults.reduce((sum, item) => sum + item.quantity, 0);
+                const totalLiters = filteredResults.reduce((sum, item) => sum + item.totalLiters, 0);
+                const totalAmount = filteredResults.reduce((sum, item) => sum + item.totalAmount, 0);
                 
                 // Count unique orders
                 const orderSet = new Set();
-                results.forEach(item => {
+                filteredResults.forEach(item => {
                     orderSet.add(`${item.invoice}_${item.seed}_${item.orderNumber}`);
                 });
                 const totalOrders = orderSet.size;
                 
-                // Summary box
-                doc.setFillColor(248, 250, 252);
-                doc.rect(margin, finalY, pageWidth - (margin * 2), 20, 'F');
+                // Summary box with better styling
+                doc.setFillColor(245, 247, 250);
+                doc.rect(margin, finalY, pageWidth - (margin * 2), 28, 'F');
                 doc.setDrawColor(212, 175, 55);
-                doc.setLineWidth(0.3);
-                doc.rect(margin, finalY, pageWidth - (margin * 2), 20);
+                doc.setLineWidth(0.5);
+                doc.rect(margin, finalY, pageWidth - (margin * 2), 28);
                 
-                // Summary text
-                doc.setFontSize(10);
+                // Summary text with improved formatting
+                doc.setFontSize(14);
                 doc.setTextColor(44, 62, 80);
-                doc.text('SUMMARY', margin + 5, finalY + 7);
+                doc.text('SUMMARY', margin + 8, finalY + 10);
                 
-                doc.setFontSize(8);
-                doc.text(`Total Items: ${totalItems}`, margin + 5, finalY + 14);
-                doc.text(`Total Orders: ${totalOrders}`, margin + 5, finalY + 19);
+                doc.setFontSize(10);
+                doc.text(`Total Items: ${totalItems}`, margin + 8, finalY + 18);
+                doc.text(`Total Orders: ${totalOrders}`, margin + 8, finalY + 24);
                 
-                doc.text(`Total Quantity: ${totalQuantity}`, margin + 60, finalY + 14);
-                doc.text(`Total Liters: ${totalLiters.toFixed(2)}`, margin + 60, finalY + 19);
+                doc.text(`Total Quantity: ${totalQuantity}`, margin + 70, finalY + 18);
+                doc.text(`Total Liters: ${totalLiters.toFixed(2)}`, margin + 70, finalY + 24);
                 
-                doc.text(`Total Amount: $${totalAmount.toFixed(2)}`, margin + 120, finalY + 16);
+                // Highlight total amount
+                doc.setFontSize(12);
+                doc.setTextColor(46, 204, 113); // Green color for emphasis
+                doc.text(`Total Amount: $${totalAmount.toFixed(2)}`, margin + 140, finalY + 21);
             }
             
             // Add footer at the very bottom
-            doc.setFontSize(7);
+            doc.setFontSize(9);
             doc.setTextColor(100, 100, 100);
-            doc.text('SKU Purchase System - dbareh © 2026', pageWidth / 2, pageHeight - margin / 2, {align: 'center'});
+            doc.text('SKU Purchase System - dbareh © 2026 | Auto Lube House Purchase Report', pageWidth / 2, pageHeight - margin/3, {align: 'center'});
             
             // Save the PDF
-            doc.save(`Purchase_Report_${formatDateToDDMMMYYYY(new Date()).replace(/ /g, '_')}.pdf`);
+            const fileName = isSearchActive 
+                ? `Purchase_Report_Invoice_${currentSearchTerm}_${formatDateToDDMMMYYYY(new Date()).replace(/ /g, '_')}.pdf`
+                : `Purchase_Report_${formatDateToDDMMMYYYY(new Date()).replace(/ /g, '_')}.pdf`;
+            
+            doc.save(fileName);
+            
+            showNotification('Results exported to PDF successfully', 'success');
         });
         
         // Initialize on page load
@@ -2156,11 +2713,16 @@
                     if (formatted && !formatted.includes('Invalid')) {
                         this.value = formatted;
                     } else {
-                        alert('Please use "dd mmm yyyy" format (e.g., 01 Jan 2026)');
+                        showNotification('Please use "dd mmm yyyy" format (e.g., 01 Jan 2026)', 'warning');
                         setDefaultDate();
                     }
                 }
             });
+            
+            // Initialize control buttons
+            updateControlButtons();
+            updateSummaryMode();
+            updateSearchSummary();
         });
     </script>
 </body>
